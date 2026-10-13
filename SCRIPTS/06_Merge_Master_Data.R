@@ -25,9 +25,11 @@
 #          source("SCRIPTS/06_Merge_Master_Data.R")
 #
 # DATA TRAPS THIS SCRIPT FIXES (found while profiling the irr_* tables)
-#   1. Skip pattern. From 2020, "Was this plot irrigated?" is only asked when
-#      the farmer said yes to "irrigated ANY plot this season". About 90% of
-#      plots are NA for that reason. They are NOT missing: they are "No".
+#   1. Skip patterns. From 2020, "Was this plot irrigated?" is mostly asked only
+#      when the farmer said yes to "irrigated ANY plot this season". Blanks are
+#      set to "No" ONLY in seasons where the data confirm the skip (see
+#      skip_pattern_audit.csv); otherwise they stay missing. Same check for
+#      fertiliser, pesticide, micronutrients, machines and anti-erosion.
 #   2. Wrong value labels. In 2022A-C and 2025A-B the irrigation TOOL codes
 #      carry the WATER SOURCE labels (e.g. tool = "Lake/stream water").
 #      Codes are re-labelled by position (code 1 = Irrigation machine ...).
@@ -78,8 +80,29 @@ yes   <- function(x) case_when(str_detect(str_to_lower(x), "^yes") ~ 1L,
 wmean <- function(x, w) { ok <- !is.na(x) & !is.na(w); if (!any(ok)) NA_real_ else sum(x[ok] * w[ok]) / sum(w[ok]) }
 wsum  <- function(x, w) { ok <- !is.na(x) & !is.na(w); if (!any(ok)) NA_real_ else sum(x[ok] * w[ok]) }
 fix_district <- function(x) recode(x, "Nyarugenege" = "Nyarugenge")
-# skip patterns: a plot question is NA when the farmer-level gate was "No" -> 0
-gate_fill <- function(plot, gate) case_when(plot == 1L ~ 1L, plot == 0L ~ 0L, gate == 0L ~ 0L, TRUE ~ NA_integer_)
+# Skip patterns, checked season by season (not a blanket "missing = No" rule).
+# A plot question left blank is set to "No" ONLY in seasons where the data
+# prove the skip: the farmer-level gate question exists for (almost) every row,
+# and plots whose gate is "No" were (almost) never asked the plot question.
+# Every decision is written to skip_pattern_audit.csv.
+skip_audit <- list()
+gate_fill <- function(plot, gate, ys, var) {
+  aud <- tibble(plot, gate, ys) |>
+    group_by(ys) |>
+    summarise(rows = n(), gate_present_pct = round(100 * mean(!is.na(gate)), 1),
+              gate_no = sum(gate == 0L, na.rm = TRUE),
+              answered_when_gate_no = sum(gate == 0L & !is.na(plot), na.rm = TRUE),
+              gate_yes = sum(gate == 1L, na.rm = TRUE),
+              blank_when_gate_yes = sum(gate == 1L & is.na(plot), na.rm = TRUE),
+              plot_blank = sum(is.na(plot)), .groups = "drop") |>
+    mutate(variable = var, .before = 1,
+           skip_confirmed = gate_present_pct >= 95 & gate_no > 0 &
+             answered_when_gate_no / pmax(gate_no, 1) < 0.02,
+           blanks_set_to_no = if_else(skip_confirmed, gate_no - answered_when_gate_no, 0L))
+  skip_audit[[var]] <<- aud
+  ok <- ys %in% aud$ys[aud$skip_confirmed]
+  case_when(plot == 1L ~ 1L, plot == 0L ~ 0L, ok & gate == 0L ~ 0L, TRUE ~ NA_integer_)
+}
 any_yes <- function(x) if (all(is.na(x))) NA_integer_ else as.integer(any(x == 1L, na.rm = TRUE))
 
 # Harmonised categories --------------------------------------------------------
@@ -235,8 +258,7 @@ ap_std <- ap |>
     # irrigation (trap 1: skip pattern)
     irrig_any_farmer = yes(take(ap, "irrigation_any_plot_this_season", "chr")),
     irrig_plot_raw   = yes(take(ap, "plot_irrigated_this_season", "chr")),
-    irrigated = case_when(irrig_plot_raw == 1L ~ 1L, irrig_plot_raw == 0L ~ 0L,
-                          irrig_any_farmer == 0L ~ 0L, TRUE ~ NA_integer_),
+    irrigated = gate_fill(irrig_plot_raw, irrig_any_farmer, ys, "irrigated"),
     irrig_technique = std_technique(take(ap, "irrigation_technique", "chr")),
     irrig_source    = std_source(take(ap, "irrigation_water_source", "chr")),
     irrig_tool      = std_tool(take(ap, "irrigation_tool", "chr"), ys),
@@ -249,11 +271,11 @@ ap_std <- ap |>
     mech_gate = coalesce(yes(take(ap, "use_any_mechanical_equipment_for_agriculture_activities_on_this", "chr")),
                          if_else(yes(take(ap, "use_any_mechanical_equipment_for_agriculture_activities_in_any", "chr")) == 0L, 0L, NA_integer_)),
     oxen    = gate_fill(yes(take(ap, c("used_ploughing_animals_oxen_in_this_plot_during_this_season",
-                                       "used_ploughing_animals_oxen_during_this_season"), "chr")), mech_gate),
+                                       "used_ploughing_animals_oxen_during_this_season"), "chr")), mech_gate, ys, "oxen"),
     tractor = gate_fill(yes(take(ap, c("used_a_ploughing_tractor_in_this_plot_during_this_season",
-                                       "used_a_ploughing_tractor_during_this_season"), "chr")), mech_gate),
+                                       "used_a_ploughing_tractor_during_this_season"), "chr")), mech_gate, ys, "tractor"),
     other_machine = gate_fill(yes(take(ap, c("used_any_other_mechanical_equipment_not_mentioned_in_this_plot_d",
-                                             "used_any_other_mechanical_equipment_during_this_season"), "chr")), mech_gate),
+                                             "used_any_other_mechanical_equipment_during_this_season"), "chr")), mech_gate, ys, "other_machine"),
     mechanised = coalesce(mech_gate, pmax(oxen, tractor, other_machine, na.rm = TRUE)),
     tractor_cost_rwf = take(ap, c("amount_paid_on_ploughing_tractor_rwf_in_this_season",
                                   "amount_paid_on_rent_of_ploughing_tractor_rwf")),
@@ -262,7 +284,7 @@ ap_std <- ap |>
     # land and soil
     erosion_degree = std_erosion(take(ap, "degree_of_erosion_on_this_plot", "chr")),
     anti_erosion   = gate_fill(yes(take(ap, "anti_erosion_activity_on_this_plot", "chr")),
-                               yes(take(ap, "anti_erosion_activity_in_any_of_your_plots", "chr"))),
+                               yes(take(ap, "anti_erosion_activity_in_any_of_your_plots", "chr")), ys, "anti_erosion"),
     land_consolidated = yes(take(ap, "is_this_plot_located_in_land_consolidated_site_in_this_season", "chr"))
   ) |>
   select(-irrig_plot_raw, -mech_gate)
@@ -285,14 +307,14 @@ fp_std <- fp |>
             farmer_id = if ("farmer_id" %in% names(fp)) farmer_id else NA_real_,
             # each plot question is gated by "...in ANY of your plots" from 2020 (skip pattern)
             organic_fert   = gate_fill(yes(take(fp, "used_organic_fertilizer_in_this_plot_during_this_season", "chr")),
-                                       yes(take(fp, "use_organic_fertilizer_in_any_of_your_plots_during_this_season", "chr"))),
+                                       yes(take(fp, "use_organic_fertilizer_in_any_of_your_plots_during_this_season", "chr")), ys, "organic_fert"),
             inorganic_fert = gate_fill(yes(take(fp, "used_inorganic_fertilizer_in_this_plot_during_this_season", "chr")),
-                                       yes(take(fp, "use_inorganic_fertilizer_in_any_of_your_plots_during_this_season", "chr"))),
+                                       yes(take(fp, "use_inorganic_fertilizer_in_any_of_your_plots_during_this_season", "chr")), ys, "inorganic_fert"),
             pesticide      = gate_fill(yes(take(fp, c("used_pesticide_fungicide_in_this_plot_during_this_current_season",
                                                       "used_pesticides_in_this_plot_during_this_season"), "chr")),
-                                       yes(take(fp, "use_pesticide_fungicide_in_any_of_your_plots_during_this_season", "chr"))),
+                                       yes(take(fp, "use_pesticide_fungicide_in_any_of_your_plots_during_this_season", "chr")), ys, "pesticide"),
             micronutrient  = gate_fill(yes(take(fp, "use_any_type_of_micro_nutrients_in_this_plot_during_this_season", "chr")),
-                                       yes(take(fp, "use_any_type_of_micro_nutrients_in_any_of_your_plots_in_this", "chr")))) |>
+                                       yes(take(fp, "use_any_type_of_micro_nutrients_in_any_of_your_plots_in_this", "chr")), ys, "micronutrient")) |>
   group_by(ys, district_std, stratum, segment_id, segment_number, plot_number, farmer_id) |>
   summarise(across(c(organic_fert, inorganic_fert, pesticide, micronutrient), any_yes), .groups = "drop")
 
@@ -358,7 +380,15 @@ cp_std <- cp |>
     gender_cp = take(cp, "gender", "chr"), age_cp = take(cp, "age_years")
   ) |>
   mutate(sold_kg = if_else(sold_kg < 0, NA_real_, sold_kg),
-         own_consumption_kg = if_else(own_consumption_kg < 0, NA_real_, own_consumption_kg))
+         own_consumption_kg = if_else(own_consumption_kg < 0, NA_real_, own_consumption_kg),
+         # Price codes 999 / 9999 / 99999 mean "don't know" (999 alone is 68k rows),
+         # and 0 means nothing was sold (2025A-B), so neither is a price.
+         price_rwf_kg = if_else(price_rwf_kg <= 0 | price_rwf_kg %in% c(99, 999, 9999, 99999, 999999),
+                                NA_real_, price_rwf_kg)) |>
+  # drop extreme prices: above 10x the crop's median price that season
+  group_by(ys, crop_name) |>
+  mutate(price_rwf_kg = if_else(price_rwf_kg > 10 * median(price_rwf_kg, na.rm = TRUE), NA_real_, price_rwf_kg)) |>
+  ungroup()
 
 # crop area fallback from crop screening (same plot, same crop) - fills 2024
 cs_area <- cs |>
@@ -401,11 +431,20 @@ master_crop_plot <- cp_std |>
     # sold quantity is asked per crop (all plots) in some years: cap at this plot's harvest
     sold_share = if_else(harvest_kg > 0, pmin(sold_kg / harvest_kg, 1), NA_real_),
     sold_kg_plot = harvest_kg * sold_share,
-    sales_value_rwf = sold_kg_plot * price_rwf_kg,
     modern_inputs_n = rowSums(cbind(irrigated, improved_seed, inorganic_fert, mechanised) == 1L, na.rm = TRUE),
     age_band = cut(age_years, c(-Inf, 34, 54, Inf), labels = c("<35", "35-54", "55+"))
   ) |>
+  # Sales value: reported price, else the median reported price for the same crop,
+  # season and district, else for the crop and season. Half of the sellers give no
+  # usable price, so without this the value of sales is badly undercounted.
+  group_by(crop_name, ys, district_std) |>
+  mutate(price_med_dist = median(price_rwf_kg, na.rm = TRUE)) |>
   group_by(crop_name, ys) |>
+  mutate(price_med_nat = median(price_rwf_kg, na.rm = TRUE),
+         price_used = coalesce(price_rwf_kg, price_med_dist, price_med_nat),
+         price_imputed = is.na(price_rwf_kg) & !is.na(price_used),
+         sales_value_rwf = sold_kg_plot * price_used) |>
+  select(-price_med_dist, -price_med_nat) |>
   mutate(yield_ok = !is.na(yield_kg_ha) & harvest_kg > 0 &
            between(yield_kg_ha, quantile(yield_kg_ha, yield_trim_pct[1], na.rm = TRUE),
                                 quantile(yield_kg_ha, yield_trim_pct[2], na.rm = TRUE))) |>
@@ -526,7 +565,7 @@ dict <- tribble(
   "harvest_kg", "Total harvest of the crop on the plot this season", "kg", "crop_prod",
   "crop_area_ha / crop_area_source / crop_area_capped", "Crop area (crop_prod, else crop_screen); capped at plot area", "ha", "harmonised",
   "yield_kg_ha / yield_ok", "harvest_kg / crop_area_ha; yield_ok = FALSE outside the 1st-99th pct per crop-season", "kg/ha", "derived",
-  "sold_kg / sold_kg_plot / price_rwf_kg / sales_value_rwf", "Quantity sold as reported, capped at plot harvest; price; gross sales value (not net income)", "kg, RWF", "crop_prod",
+  "sold_kg / sold_kg_plot / price_rwf_kg / sales_value_rwf", "Quantity sold as reported, capped at plot harvest; price (codes 999/9999/99999 and 0 removed); gross sales value using the reported price or, if missing, the crop-season-district median price (price_imputed flag); not net income", "kg, RWF", "crop_prod",
   "improved_seed", "Improved seed used for this crop", "0/1", "crop_prod",
   "modern_inputs_n", "Count of irrigation + improved seed + inorganic fertiliser + mechanisation", "0-4", "derived",
   "gender / age_years / age_band", "Farmer gender and age", "", "crop_prod / agri_prac",
@@ -557,6 +596,8 @@ if (write_csv_copies) iwalk(out[!names(out) %in% c("master_crop_plot", "master_p
                             \(d, n) write_csv(d, file.path(dir_master, paste0(n, ".csv")), na = ""))
 write_csv(dict, file.path(dir_master, "master_dictionary.csv"))
 write_csv(cov, file.path(dir_master, "master_coverage.csv"), na = "")
+skip_audit <- bind_rows(skip_audit)
+write_csv(skip_audit, file.path(dir_master, "skip_pattern_audit.csv"), na = "")
 join_log <- bind_rows(join_log)
 write_csv(join_log, file.path(dir_master, "master_join_log.csv"))
 
@@ -583,6 +624,10 @@ summarise_measures <- function(d, by = character()) {
 # ---- 11. PRINT A SHORT REPORT ------------------------------------------------
 cat("\n== MASTER TABLES (DATA/processed/master) ==\n")
 iwalk(out, \(d, n) cat(sprintf("  %-30s %9d rows %4d cols\n", n, nrow(d), ncol(d))))
+cat("\n== Skip patterns confirmed (blanks set to No) ==\n")
+print(skip_audit |> group_by(variable) |>
+        summarise(seasons_confirmed = sum(skip_confirmed), seasons = n(),
+                  blanks_set_to_no = sum(blanks_set_to_no)), n = 20)
 cat("\n== Join match rates (lowest 5) ==\n"); print(arrange(join_log, match_rate) |> head(5))
 cat("\n== National irrigation and production, by season ==\n")
 print(master_national_season |>
