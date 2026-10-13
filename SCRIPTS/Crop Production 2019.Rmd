@@ -1,0 +1,88 @@
+---
+title: "Agriculture Practive 2019 All Seasons"
+author: "Niyobyose Brancal"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Agriculture Practice 2019 Analysis
+
+### Required Packages
+
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(sjPlot))
+suppressPackageStartupMessages(library(esquisse))
+suppressPackageStartupMessages(library(plotly))
+suppressPackageStartupMessages(library(sf))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(esquisse))
+suppressPackageStartupMessages(library(broom))
+suppressPackageStartupMessages(library(readxl))
+suppressPackageStartupMessages(library(writexl))
+suppressPackageStartupMessages(library(DataExplorer))
+suppressPackageStartupMessages(library(readr))
+```
+
+
+```{r}
+head(agri_prac2019A, n = 5) %>% View()
+```
+
+```{r}
+names(agri_prac2019A)
+```
+
+```{r}
+rwanda <- sf::st_read("C:\\Users\\branc\\OneDrive\\Documenti\\Hackathon\\DATA\\GADM\\gadm41_RWA_2.shp")
+```
+
+```{r}
+rwanda <- rwanda %>% 
+  select(NAME_1, NAME_2) %>% 
+  rename(
+    province = NAME_1,
+    district = NAME_2
+    ) %>% 
+  select(
+    province,
+    district,
+    geometry
+  )
+```
+
+
+```{r}
+summarized_ir <- agri_prac2019A %>% 
+  group_by(district) %>% 
+  summarise(
+    count = n(),
+    area_size = sum(ptot_area_in_sqm),
+    irrigation_cost = sum(irrigation_cost_rwf, na.rm = T)
+  ) %>% mutate(
+    cost_per_sqm = irrigation_cost/area_size
+  )
+
+dist_summ <- left_join(summarized_ir, rwanda, by = "district") %>% 
+  select(-province)
+
+dist_summ <- sf::st_as_sf(dist_summ)
+```
+
+
+```{r}
+p <- irr_rainfall %>% 
+  dplyr::filter(year == 2019, season == "A") %>% 
+  dplyr::group_by(district) %>% 
+  dplyr::summarise(rainfall = sum(rainfall_mm)) %>% 
+  left_join(as.data.frame(dist_summ, by = "district"))%>% 
+  st_as_sf()
+
+```
+
+
+
