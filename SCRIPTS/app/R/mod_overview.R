@@ -1,0 +1,232 @@
+# ---- Page 1: Overview (includes the former Home page) ------------------------
+trend_inds <- c("irrigated", "irrig_modern", "irrig_any_farmer", "inorganic_fert", "organic_fert", "anti_erosion")
+
+mod_overview_ui <- function(id, tr) {
+  ns <- NS(id)
+  tagList(
+    div(class = "hero",
+        div(class = "hero-text",
+            span(class = "hero-kicker", fontawesome::fa("droplet"), " NISR Big Data Hackathon 2026 \u00B7 Track 1"),
+            h1(tr("hero_title")), p(tr("hero_sub")),
+            div(class = "hero-meta",
+                span(fontawesome::fa("database"), " ", tr("hero_m1")), span(fontawesome::fa("calendar"), " ", tr("hero_m2")),
+                span(fontawesome::fa("map"), " ", tr("hero_m3")), span(fontawesome::fa("cloud-rain"), " ", tr("hero_m4")))),
+        div(class = "hero-steps",
+            actionLink(ns("go_map"), tagList(fontawesome::fa("droplet"), tr("act_gap"))),
+            actionLink(ns("go_evidence"), tagList(fontawesome::fa("seedling"), tr("act_payoff"))),
+            actionLink(ns("go_priority"), tagList(fontawesome::fa("map-location-dot"), tr("act_action")))),
+        div(class = "hero-hills")),
+    filters_used(tr, c("years", "seasons", "area")),
+    section_title(tr("s_findings"), tr("s_findings_sub")),
+    uiOutput(ns("findings")),
+    section_title(tr("s_numbers"), tr("s_numbers_sub")),
+    uiOutput(ns("tiles")),
+    layout_columns(
+      col_widths = c(8, 4),
+      chart_card(tr("c_trend"),
+                 tagList(radioButtons(ns("trend_ind"), NULL, inline = TRUE, width = "100%",
+                                      choices = setNames(trend_inds, tr(paste0("ind_", trend_inds)))),
+                         plotlyOutput(ns("trend"), height = "340px")),
+                 ns("trend_means"), tr("src_sas_ci"), icon = "chart-line"),
+      chart_card(tr("c_inputs"), plotlyOutput(ns("inputs"), height = "400px"), ns("inputs_means"), tr("src_sas_ci"),
+                 icon = "flask")),
+    layout_columns(
+      col_widths = c(5, 7),
+      chart_card(tr("c_province"), plotlyOutput(ns("prov"), height = "320px"), ns("prov_means"), tr("src_sas_ci"),
+                 icon = "layer-group"),
+      chart_card(tr("c_production"), plotlyOutput(ns("prod"), height = "320px"), ns("prod_means"), tr("src_sas_totals"),
+                 icon = "wheat-awn")),
+    chart_card(tr("c_season_c"), plotlyOutput(ns("seasonc"), height = "280px"), ns("seasonc_means"), tr("src_sas_ci"),
+               icon = "sun"))
+}
+
+mod_overview_server <- function(id, f, tr, goto = NULL) {
+  moduleServer(id, function(input, output, session) {
+    if (!is.null(goto)) {
+      observeEvent(input$go_map, goto("map")); observeEvent(input$go_evidence, goto("evidence"))
+      observeEvent(input$go_priority, goto("priority"))
+    }
+    # yearly series for an indicator (n-weighted mean of the chosen seasons)
+    yearly <- function(ind, ff = f(), seasons = c("A", "B")) {
+      s <- if (identical(seasons, "C")) "C" else intersect(ff$seasons, seasons) %||% seasons
+      est_for(ff, ind, seasons = s) |>
+        group_by(sas_year) |> summarise(estimate = weighted.mean(estimate, n), n = sum(n),
+                                        rel = names(sort(table(reliability), decreasing = TRUE))[1], .groups = "drop") |>
+        arrange(sas_year)
+    }
+
+    output$findings <- renderUI({
+      ab <- yearly("irrigated")
+      eq <- D$equity$equity |> filter(dimension == "gender")
+      cs <- D$equity$equity |> filter(dimension == "consolidated")
+      top <- D$screen$table |> arrange(rank) |> head(3)
+      ya <- D$model_yield$table |> filter(adjusted_low > 0) |> arrange(desc(adjusted_pct))
+      if (nrow(ab) < 2) return(NULL)
+      div(class = "insight-grid",
+        insight("droplet", tr("f1_t", fmt_pct(tail(ab$estimate, 1))),
+                tr("f1", f()$area, tail(ab$sas_year, 1), fmt_pct(ab$estimate[1]), ab$sas_year[1]), brand$blue),
+        insight("seedling", tr("f2_t", nrow(ya)), tr("f2", paste(head(ya$crop_name, 4), collapse = ", ")), brand$green),
+        insight("venus-mars", tr("f3_t"), tr("f3", fmt_pct(eq$estimate[eq$group == "Female"]), fmt_pct(eq$estimate[eq$group == "Male"]),
+                fmt_pct(cs$estimate[cs$group == "In consolidated site"])), "#B07A1C"),
+        insight("ranking-star", tr("f4_t"), tr("f4", paste(top$district_std, collapse = ", ")), brand$terracotta))
+    })
+
+    output$tiles <- renderUI({
+      irr <- yearly("irrigated"); mod <- yearly("irrig_modern"); anyf <- yearly("irrig_any_farmer")
+      fert <- yearly("inorganic_fert")
+      sc <- yearly("irrigated", seasons = "C")
+      tot <- totals_for(f()) |> filter(sas_season != "C") |> group_by(sas_year) |>
+        summarise(ha = sum(irrigated_area_ha, na.rm = TRUE), t = sum(production_t, na.rm = TRUE),
+                  cult = sum(cultivated_area_ha, na.rm = TRUE), .groups = "drop") |> arrange(sas_year)
+      ya <- D$model_yield$table |> filter(crop_name == "Maize")
+      lst <- function(d, v = "estimate") if (nrow(d)) tail(d[[v]], 1) else NA
+      dlt <- function(d, v = "estimate") if (nrow(d) >= 2) tail(d[[v]], 1) - d[[v]][1] else NA
+      yr <- function(d) if (nrow(d)) paste0(tail(d$sas_year, 1), " \u00B7 ") else ""
+      since <- function(d) if (nrow(d)) tr("k_pts_since", d$sas_year[1]) else ""
+      tagList(
+        tile_row(
+          stat_tile(tr("k_irrigated"), fmt_pct(lst(irr)), "droplet", brand$blue, dlt(irr), TRUE, irr$estimate,
+                    tagList(yr(irr), since(irr), " ", rel_badge(lst(irr, "rel"), tr)), num = lst(irr), suffix = "%", decimals = 1),
+          stat_tile(tr("k_area"), paste(fmt_num(lst(tot, "ha")), "ha"), "water", "#00897B", NULL, TRUE, tot$ha,
+                    tagList(yr(tot), tr("k_area_sub2", fmt_pct(100 * lst(tot, "ha") / lst(tot, "cult")))),
+                    num = round(lst(tot, "ha")), suffix = " ha"),
+          stat_tile(tr("k_modern"), fmt_pct(lst(mod)), "gears", "#B07A1C", dlt(mod), TRUE, mod$estimate,
+                    tagList(yr(mod), tr("k_modern_sub2"), " ", rel_badge(lst(mod, "rel"), tr)), num = lst(mod), suffix = "%", decimals = 1),
+          stat_tile(tr("ind_irrig_any_farmer"), fmt_pct(lst(anyf)), "user-check", brand$green, dlt(anyf), TRUE, anyf$estimate,
+                    tagList(yr(anyf), tr("k_any_sub")), num = lst(anyf), suffix = "%", decimals = 1)),
+        tile_row(
+          stat_tile(tr("ind_inorganic_fert"), fmt_pct(lst(fert)), "flask", "#6A4C93", dlt(fert), TRUE, fert$estimate,
+                    tagList(yr(fert), tr("k_fert_sub")), num = lst(fert), suffix = "%", decimals = 1),
+          stat_tile(tr("k_production"), paste(fmt_num(lst(tot, "t") / 1000), "kt"), "wheat-awn", "#B07A1C", NULL, TRUE, tot$t,
+                    tagList(yr(tot), tr("k_production_sub")), num = round(lst(tot, "t") / 1000), suffix = " kt"),
+          stat_tile(tr("k_season_c"), fmt_pct(lst(sc)), "sun", brand$terracotta, dlt(sc), TRUE, sc$estimate,
+                    tagList(yr(sc), tr("k_season_c_sub")), num = lst(sc), suffix = "%", decimals = 1),
+          stat_tile(tr("k_maize"), paste0("+", fmt_num(ya$adjusted_pct, 0), "%"), "seedling", brand$green, NULL, TRUE, NULL,
+                    tr("k_maize_sub", fmt_num(ya$adjusted_low, 0), fmt_num(ya$adjusted_high, 0), fmt_num(ya$raw_pct, 0)),
+                    num = round(ya$adjusted_pct), suffix = "%")))
+    })
+
+    trend_d <- reactive(est_for(f(), input$trend_ind %||% "irrigated"))
+    output$trend <- renderPlotly({
+      e <- trend_d(); validate(need(nrow(e) > 0, tr("no_data")))
+      p <- plot_ly()
+      for (s in intersect(c("A", "B", "C"), unique(e$sas_season))) {
+        d <- e |> filter(sas_season == s) |> arrange(sas_year)
+        p <- p |>
+          add_ribbons(data = d, x = ~sas_year, ymin = ~ci_low, ymax = ~ci_high, fillcolor = paste0(season_cols[[s]], "22"),
+                      line = list(width = 0), hoverinfo = "skip", showlegend = FALSE) |>
+          add_trace(data = d, x = ~sas_year, y = ~estimate, type = "scatter", mode = "lines+markers",
+                    name = tr(paste0("season_", tolower(s))), line = list(color = season_cols[[s]], width = 2.5),
+                    marker = list(size = 9, color = season_cols[[s]], line = list(color = "#fff", width = 2)),
+                    text = ~paste0(sas_year, sas_season, ": ", fmt_pct(estimate), " (95% CI ", fmt_pct(ci_low), "\u2013",
+                                   fmt_pct(ci_high), ") \u00B7 n = ", fmt_num(n)),
+                    hoverinfo = "text")
+      }
+      plotly_std(p, y = tr(paste0("ind_", input$trend_ind %||% "irrigated")), dtick = 1) |> layout(hovermode = "x unified")
+    })
+    output$trend_means <- renderUI({
+      e <- trend_d() |> filter(sas_season != "C") |> arrange(sas_year)
+      if (nrow(e) < 2) return(NULL)
+      a <- e |> slice(1); b <- e |> slice(n())
+      sig <- b$ci_low > a$ci_high || b$ci_high < a$ci_low
+      span(tr(if (!sig) "m_trend_stable" else if (b$estimate > a$estimate) "m_trend_up" else "m_trend_down",
+              f()$area, season_label(a$sas_year, a$sas_season), fmt_pct(a$estimate),
+              season_label(b$sas_year, b$sas_season), fmt_pct(b$estimate)))
+    })
+
+    inputs_d <- reactive({
+      ind <- c("irrigated", "inorganic_fert", "organic_fert", "pesticide", "anti_erosion", "mechanised", "agroforestry", "land_consolidated")
+      e <- est_for(f(), ind, seasons = intersect(f()$seasons, c("A", "B")) %||% "A")
+      if (!nrow(e)) return(e)
+      ly <- max(e$sas_year)
+      e |> filter(sas_year == ly) |> group_by(indicator) |>
+        summarise(estimate = weighted.mean(estimate, n), ci_low = weighted.mean(ci_low, n), ci_high = weighted.mean(ci_high, n),
+                  n = sum(n), year = ly, .groups = "drop") |>
+        mutate(label = tr(paste0("ind_", indicator))) |> arrange(estimate)
+    })
+    output$inputs <- renderPlotly({
+      d <- inputs_d(); validate(need(nrow(d) > 0, tr("no_data")))
+      plot_ly(d, y = ~factor(label, levels = label), x = ~estimate, type = "bar", orientation = "h",
+              marker = list(color = ifelse(d$indicator == "irrigated", brand$blue, "#A9C7B5")),
+              error_x = list(type = "data", symmetric = FALSE, array = ~ci_high - estimate,
+                             arrayminus = ~estimate - ci_low, color = brand$grey, thickness = 1),
+              hovertext = ~paste0("<b>", label, "</b><br>", fmt_pct(estimate), " (", fmt_pct(ci_low), "\u2013", fmt_pct(ci_high), ")<br>n = ", fmt_num(n)),
+              text = ~fmt_pct(estimate, 0), textposition = "outside", hoverinfo = "text",
+              textfont = list(size = 11, color = "#5E6A66"), cliponaxis = FALSE) |>
+        plotly_std(x = tr("x_pct_plots"), legend = FALSE) |> layout(yaxis = list(title = ""), bargap = 0.35)
+    })
+    output$inputs_means <- renderUI({
+      d <- inputs_d(); if (!nrow(d)) return(NULL)
+      hi <- d |> slice_max(estimate, n = 1); irr <- d |> filter(indicator == "irrigated")
+      span(tr("m_inputs", d$year[1], hi$label, fmt_pct(hi$estimate), fmt_pct(irr$estimate)))
+    })
+
+    prov_d <- reactive({
+      D$est |> filter(level == "province", indicator == "irrigated", sas_season %in% (intersect(f()$seasons, c("A", "B")) %||% "A"),
+                      sas_year %in% f()$years) |>
+        mutate(period = if_else(sas_year >= 2023, "2023-2025", "2019-2022")) |>
+        group_by(area, period) |> summarise(estimate = weighted.mean(estimate, n), n = sum(n), .groups = "drop")
+    })
+    output$prov <- renderPlotly({
+      d <- prov_d(); validate(need(nrow(d) > 0, tr("no_data")))
+      ord <- d |> filter(period == max(period)) |> arrange(estimate) |> pull(area)
+      w <- d |> tidyr::pivot_wider(id_cols = area, names_from = period, values_from = estimate)
+      p <- plot_ly()
+      if (ncol(w) == 3) p <- p |> add_segments(data = w, x = w[[2]], xend = w[[3]], y = ~factor(area, levels = ord),
+                                               yend = ~factor(area, levels = ord), line = list(color = "#D5DDD8", width = 5),
+                                               hoverinfo = "skip", showlegend = FALSE)
+      pc <- c("2019-2022" = "#A9C7B5", "2023-2025" = brand$blue)
+      for (pp in names(pc)) { x <- d |> filter(period == pp); if (!nrow(x)) next
+        p <- p |> add_markers(data = x, x = ~estimate, y = ~factor(area, levels = ord), name = pp,
+                              marker = list(size = 14, color = pc[[pp]], line = list(color = "#fff", width = 2)),
+                              text = ~paste0("<b>", area, "</b> ", pp, "<br>", fmt_pct(estimate), " \u00B7 n = ", fmt_num(n)), hoverinfo = "text") }
+      plotly_std(p, x = tr("y_pct_plots_ab")) |> layout(yaxis = list(title = ""))
+    })
+    output$prov_means <- renderUI({
+      d <- prov_d() |> filter(period == max(period)) |> arrange(desc(estimate)); if (!nrow(d)) return(NULL)
+      span(tr("m_prov", d$area[1], fmt_pct(d$estimate[1]), tail(d$area, 1), fmt_pct(tail(d$estimate, 1))))
+    })
+
+    prod_d <- reactive({
+      crops_for(f()) |> group_by(sas_year, crop_group) |>
+        summarise(production_t = sum(production_t, na.rm = TRUE), .groups = "drop")
+    })
+    output$prod <- renderPlotly({
+      d <- prod_d(); validate(need(nrow(d) > 0, tr("no_data")))
+      grp <- d |> group_by(crop_group) |> summarise(t = sum(production_t)) |> arrange(desc(t)) |> pull(crop_group)
+      top <- head(grp, 6)
+      d <- d |> mutate(crop_group = if_else(crop_group %in% top, crop_group, tr("other"))) |>
+        group_by(sas_year, crop_group) |> summarise(production_t = sum(production_t), .groups = "drop") |>
+        mutate(crop_group = factor(crop_group, levels = c(top, tr("other"))))
+      cols <- setNames(c(series_cols, brand$grey)[seq_along(levels(d$crop_group))], levels(d$crop_group))
+      plot_ly(d, x = ~sas_year, y = ~production_t / 1000, color = ~crop_group, colors = cols, type = "bar",
+              text = ~paste0("<b>", crop_group, "</b> \u00B7 ", sas_year, "<br>", fmt_num(production_t / 1000), " kt"),
+              hoverinfo = "text", textposition = "none", marker = list(line = list(color = "#FFFFFF", width = 1.5))) |>
+        plotly_std(y = tr("y_kt"), dtick = 1) |> layout(barmode = "stack", bargap = 0.3)
+    })
+    output$prod_means <- renderUI({
+      d <- prod_d(); if (!nrow(d)) return(NULL)
+      g <- d |> group_by(crop_group) |> summarise(t = sum(production_t)) |> mutate(s = 100 * t / sum(t)) |> slice_max(t, n = 1)
+      span(tr("m_prod", g$crop_group, fmt_pct(g$s, 0)))
+    })
+
+    sc_d <- reactive(est_for(f(), "irrigated", seasons = "C") |> arrange(sas_year))
+    output$seasonc <- renderPlotly({
+      d <- sc_d(); validate(need(nrow(d) > 0, tr("no_data")))
+      plot_ly(d, x = ~sas_year, y = ~estimate, type = "bar", marker = list(color = "#B07A1C"),
+              error_y = list(type = "data", symmetric = FALSE, array = ~ci_high - estimate, arrayminus = ~estimate - ci_low,
+                             color = brand$grey, thickness = 1),
+              hovertext = ~paste0("<b>", sas_year, "C</b><br>", fmt_pct(estimate), " (", fmt_pct(ci_low), "\u2013", fmt_pct(ci_high),
+                                  ")<br>n = ", fmt_num(n), " \u00B7 ", reliability),
+              text = ~fmt_pct(estimate, 0), textposition = "outside", hoverinfo = "text",
+              textfont = list(color = "#5E6A66"), cliponaxis = FALSE) |>
+        plotly_std(y = tr("y_pct_plots"), legend = FALSE, dtick = 1) |> layout(bargap = 0.45)
+    })
+    output$seasonc_means <- renderUI({
+      d <- sc_d(); if (!nrow(d)) return(NULL)
+      ab <- yearly("irrigated")
+      span(tr("m_season_c", fmt_pct(min(d$estimate), 0), fmt_pct(max(d$estimate), 0),
+              if (nrow(ab)) fmt_pct(mean(ab$estimate)) else "\u2013"))
+    })
+  })
+}

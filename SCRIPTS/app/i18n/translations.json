@@ -1,0 +1,2025 @@
+{
+ "filters": {
+  "en": "Filters",
+  "fr": "Filtres",
+  "rw": "Muyunguruzi"
+ },
+ "years": {
+  "en": "Years",
+  "fr": "Années",
+  "rw": "Imyaka"
+ },
+ "year": {
+  "en": "Year",
+  "fr": "Année",
+  "rw": "Umwaka"
+ },
+ "seasons": {
+  "en": "Seasons",
+  "fr": "Saisons",
+  "rw": "Ibihembwe"
+ },
+ "season": {
+  "en": "Season",
+  "fr": "Saison",
+  "rw": "Igihembwe"
+ },
+ "season_a": {
+  "en": "A (Sep–Feb)",
+  "fr": "A (sept–févr)",
+  "rw": "A (Nzeri–Gashyantare)"
+ },
+ "season_b": {
+  "en": "B (Mar–Jun)",
+  "fr": "B (mars–juin)",
+  "rw": "B (Werurwe–Kamena)"
+ },
+ "season_c": {
+  "en": "C (Jul–Sep, dry)",
+  "fr": "C (juil–sept, sèche)",
+  "rw": "C (Nyakanga–Nzeri, impeshyi)"
+ },
+ "seasons_ab": {
+  "en": "Seasons A+B",
+  "fr": "Saisons A+B",
+  "rw": "Ibihembwe A+B"
+ },
+ "province": {
+  "en": "Province",
+  "fr": "Province",
+  "rw": "Intara"
+ },
+ "all_rwanda": {
+  "en": "All Rwanda",
+  "fr": "Tout le Rwanda",
+  "rw": "U Rwanda rwose"
+ },
+ "district": {
+  "en": "District",
+  "fr": "District",
+  "rw": "Akarere"
+ },
+ "all": {
+  "en": "All",
+  "fr": "Tous",
+  "rw": "Byose"
+ },
+ "all_crops": {
+  "en": "All crops",
+  "fr": "Toutes les cultures",
+  "rw": "Ibihingwa byose"
+ },
+ "crop_group": {
+  "en": "Crop group",
+  "fr": "Groupe de cultures",
+  "rw": "Itsinda ry'ibihingwa"
+ },
+ "crop": {
+  "en": "Crop",
+  "fr": "Culture",
+  "rw": "Igihingwa"
+ },
+ "gender": {
+  "en": "Plot manager",
+  "fr": "Gestionnaire de parcelle",
+  "rw": "Ucunga umurima"
+ },
+ "female": {
+  "en": "Female",
+  "fr": "Femme",
+  "rw": "Gore"
+ },
+ "male": {
+  "en": "Male",
+  "fr": "Homme",
+  "rw": "Gabo"
+ },
+ "reset": {
+  "en": "Reset filters",
+  "fr": "Réinitialiser",
+  "rw": "Subiza uko byari bimeze"
+ },
+ "filter_note": {
+  "en": "Each page lists the filters it uses. Crop and gender filters only apply where the table has those columns.",
+  "fr": "Chaque page indique les filtres utilisés. Les filtres culture et genre ne s'appliquent qu'aux tableaux qui contiennent ces colonnes.",
+  "rw": "Buri paji yerekana muyunguruzi ikoresha. Muyunguruzi y'igihingwa n'igitsina ikora gusa aho imbonerahamwe ibifite."
+ },
+ "menu_story": {
+  "en": "Story",
+  "fr": "Récit",
+  "rw": "Inkuru"
+ },
+ "menu_analyse": {
+  "en": "Analyse",
+  "fr": "Analyser",
+  "rw": "Isesengura"
+ },
+ "menu_act": {
+  "en": "Act",
+  "fr": "Agir",
+  "rw": "Gufata ingamba"
+ },
+ "p_overview": {
+  "en": "Overview",
+  "fr": "Vue d'ensemble",
+  "rw": "Incamake"
+ },
+ "p_map": {
+  "en": "Irrigation map",
+  "fr": "Carte de l'irrigation",
+  "rw": "Ikarita yo kuhira"
+ },
+ "p_need": {
+  "en": "Need vs adoption",
+  "fr": "Besoin et adoption",
+  "rw": "Ibikenewe n'ikoreshwa"
+ },
+ "p_explorer": {
+  "en": "Data explorer",
+  "fr": "Explorateur de données",
+  "rw": "Gusesengura amakuru"
+ },
+ "p_evidence": {
+  "en": "Irrigation & Yield Evidence",
+  "fr": "Irrigation et rendement : les preuves",
+  "rw": "Kuhira n'umusaruro: ibimenyetso"
+ },
+ "p_how": {
+  "en": "How farmers irrigate",
+  "fr": "Comment les agriculteurs irriguent",
+  "rw": "Uko abahinzi buhira"
+ },
+ "p_who": {
+  "en": "Who is left behind",
+  "fr": "Qui est laissé pour compte",
+  "rw": "Abasigaye inyuma"
+ },
+ "p_model": {
+  "en": "Adoption model",
+  "fr": "Modèle d'adoption",
+  "rw": "Icyitegererezo cy'ikoreshwa"
+ },
+ "p_priority": {
+  "en": "Priority screening",
+  "fr": "Présélection des priorités",
+  "rw": "Isuzuma ry'ibyihutirwa"
+ },
+ "p_methods": {
+  "en": "Methods",
+  "fr": "Méthodes",
+  "rw": "Uburyo"
+ },
+ "footer_by": {
+  "en": "Powered by Team NiyoIshimwe",
+  "fr": "Réalisé par l'équipe NiyoIshimwe",
+  "rw": "Byakozwe n'itsinda NiyoIshimwe"
+ },
+ "footer_sources": {
+  "en": "Data: NISR Seasonal Agricultural Survey 2019–2025, CHIRPS, GADM",
+  "fr": "Données : NISR Enquête agricole saisonnière 2019–2025, CHIRPS, GADM",
+  "rw": "Amakuru: NISR Ubushakashatsi ku buhinzi bw'ibihembwe 2019–2025, CHIRPS, GADM"
+ },
+ "built": {
+  "en": "Data built",
+  "fr": "Données générées le",
+  "rw": "Amakuru yateguwe"
+ },
+ "search": {
+  "en": "Search:",
+  "fr": "Rechercher :",
+  "rw": "Shakisha:"
+ },
+ "fu_years": {
+  "en": "Years",
+  "fr": "Années",
+  "rw": "Imyaka"
+ },
+ "fu_seasons": {
+  "en": "Seasons",
+  "fr": "Saisons",
+  "rw": "Ibihembwe"
+ },
+ "fu_area": {
+  "en": "Area",
+  "fr": "Zone",
+  "rw": "Agace"
+ },
+ "fu_crop": {
+  "en": "Crop",
+  "fr": "Culture",
+  "rw": "Igihingwa"
+ },
+ "fu_gender": {
+  "en": "Gender",
+  "fr": "Genre",
+  "rw": "Igitsina"
+ },
+ "hero_title": {
+  "en": "Where can irrigation lift Rwanda's harvests next?",
+  "fr": "Où l'irrigation peut-elle augmenter les récoltes du Rwanda ?",
+  "rw": "Ni hehe kuhira byazamura umusaruro w'u Rwanda?"
+ },
+ "hero_sub": {
+  "en": "Seven years of the NISR Seasonal Agricultural Survey, joined with 45 years of rainfall, to show who irrigates, what it is associated with, and where support could matter most.",
+  "fr": "Sept années de l'Enquête agricole saisonnière du NISR, croisées avec 45 ans de pluviométrie, pour montrer qui irrigue, ce qui y est associé et où un appui compterait le plus.",
+  "rw": "Imyaka irindwi y'ubushakashatsi bwa NISR ku buhinzi, ihujwe n'imyaka 45 y'imvura, yerekana abuhira, ibyo bijyana na byo, n'aho ubufasha bwagira akamaro kurusha ahandi."
+ },
+ "act_gap": {
+  "en": "See the adoption gap",
+  "fr": "Voir l'écart d'adoption",
+  "rw": "Reba icyuho mu kuhira"
+ },
+ "act_payoff": {
+  "en": "Check the yield evidence",
+  "fr": "Vérifier les preuves de rendement",
+  "rw": "Suzuma ibimenyetso by'umusaruro"
+ },
+ "act_action": {
+  "en": "Screen priority districts",
+  "fr": "Présélectionner les districts",
+  "rw": "Hitamo uturere tw'ibanze"
+ },
+ "c_trend": {
+  "en": "Share of plots irrigated, by season",
+  "fr": "Part des parcelles irriguées, par saison",
+  "rw": "Igipimo cy'imirima yuhirwa, ku gihembwe"
+ },
+ "c_inputs": {
+  "en": "Modern practices, latest year",
+  "fr": "Pratiques modernes, dernière année",
+  "rw": "Uburyo bugezweho, umwaka uheruka"
+ },
+ "c_production": {
+  "en": "Production by crop group",
+  "fr": "Production par groupe de cultures",
+  "rw": "Umusaruro ku itsinda ry'ibihingwa"
+ },
+ "src_sas_ci": {
+  "en": "Source: NISR SAS, survey-weighted with 95% confidence intervals. Limitation: plot-level shares, not farmer-level.",
+  "fr": "Source : NISR SAS, pondéré, intervalles de confiance à 95 %. Limite : parts au niveau de la parcelle, pas de l'agriculteur.",
+  "rw": "Inkomoko: NISR SAS, ibipimo byahinduwe hakurikijwe icyitegererezo, intera y'icyizere 95%. Imbogamizi: ni ku murima, si ku muhinzi."
+ },
+ "src_sas_totals": {
+  "en": "Source: NISR SAS, weighted totals. Limitation: totals depend on crop-area measurement, weaker in 2024B–C.",
+  "fr": "Source : NISR SAS, totaux pondérés. Limite : dépend de la mesure des superficies, plus faible en 2024B–C.",
+  "rw": "Inkomoko: NISR SAS, igiteranyo cyahinduwe. Imbogamizi: biterwa n'ipimwa ry'ubuso, ritizewe cyane muri 2024B–C."
+ },
+ "k_irrigated": {
+  "en": "Plots irrigated",
+  "fr": "Parcelles irriguées",
+  "rw": "Imirima yuhirwa"
+ },
+ "k_irrigated_sub": {
+  "en": "%s, %s (was %s in %s)",
+  "fr": "%s, %s (contre %s en %s)",
+  "rw": "%s, %s (byari %s muri %s)"
+ },
+ "k_area": {
+  "en": "Irrigated area",
+  "fr": "Superficie irriguée",
+  "rw": "Ubuso bwuhirwa"
+ },
+ "k_area_sub": {
+  "en": "%s · %s of cultivated land",
+  "fr": "%s · %s des terres cultivées",
+  "rw": "%s · %s by'ubutaka buhingwa"
+ },
+ "k_modern": {
+  "en": "Modern irrigation",
+  "fr": "Irrigation moderne",
+  "rw": "Kuhira kugezweho"
+ },
+ "k_modern_sub": {
+  "en": "Share of irrigated plots using pumps, pivots or channels, %s (n = %s)",
+  "fr": "Part des parcelles irriguées avec pompes, pivots ou canaux, %s (n = %s)",
+  "rw": "Igipimo cy'imirima yuhirwa ikoresha pompe, imashini cyangwa imiyoboro, %s (n = %s)"
+ },
+ "k_maize": {
+  "en": "Maize yield, irrigated vs rain-fed",
+  "fr": "Rendement du maïs, irrigué vs pluvial",
+  "rw": "Umusaruro w'ibigori, wuhirwa vs imvura"
+ },
+ "k_maize_sub": {
+  "en": "Adjusted association (95%% CI %s to %s%%); raw gap %s%%",
+  "fr": "Association ajustée (IC 95 %% : %s à %s %%) ; écart brut %s %%",
+  "rw": "Isano yahinduwe (intera 95%%: %s kugeza %s%%); ikinyuranyo kidahinduwe %s%%"
+ },
+ "y_pct_plots": {
+  "en": "% of plots irrigated",
+  "fr": "% des parcelles irriguées",
+  "rw": "% y'imirima yuhirwa"
+ },
+ "y_pct_plots_ab": {
+  "en": "% of plots irrigated (A+B)",
+  "fr": "% des parcelles irriguées (A+B)",
+  "rw": "% y'imirima yuhirwa (A+B)"
+ },
+ "y_pct_plots_2325": {
+  "en": "% of plots irrigated, 2023–2025 A+B",
+  "fr": "% des parcelles irriguées, 2023–2025 A+B",
+  "rw": "% y'imirima yuhirwa, 2023–2025 A+B"
+ },
+ "x_pct_plots": {
+  "en": "% of plots",
+  "fr": "% des parcelles",
+  "rw": "% y'imirima"
+ },
+ "x_pct_plots_2325": {
+  "en": "% of plots irrigated, 2023–2025",
+  "fr": "% des parcelles irriguées, 2023–2025",
+  "rw": "% y'imirima yuhirwa, 2023–2025"
+ },
+ "y_kt": {
+  "en": "Production (thousand tonnes)",
+  "fr": "Production (milliers de tonnes)",
+  "rw": "Umusaruro (toni ibihumbi)"
+ },
+ "no_data": {
+  "en": "No data for this selection. Try widening the filters.",
+  "fr": "Aucune donnée pour cette sélection. Élargissez les filtres.",
+  "rw": "Nta makuru y'ibyo wahisemo. Gerageza kwagura muyunguruzi."
+ },
+ "m_trend_stable": {
+  "en": "In %s, the irrigated share moved from %s (%s) to %s (%s), but the confidence intervals overlap, so the change is not clear.",
+  "fr": "À %s, la part irriguée est passée de %s (%s) à %s (%s), mais les intervalles se chevauchent : le changement n'est pas net.",
+  "rw": "Muri %s, igipimo cyavuye kuri %s (%s) kigera kuri %s (%s), ariko intera z'icyizere zirahura, impinduka ntisobanutse."
+ },
+ "m_trend_up": {
+  "en": "In %s, the irrigated share rose from %s (%s) to %s (%s), and the confidence intervals do not overlap: a real increase.",
+  "fr": "À %s, la part irriguée est passée de %s (%s) à %s (%s), sans chevauchement des intervalles : une hausse réelle.",
+  "rw": "Muri %s, igipimo cyazamutse kiva kuri %s (%s) kigera kuri %s (%s), intera ntizihura: ni izamuka nyaryo."
+ },
+ "m_trend_down": {
+  "en": "In %s, the irrigated share fell from %s (%s) to %s (%s), and the confidence intervals do not overlap: a real decrease.",
+  "fr": "À %s, la part irriguée est passée de %s (%s) à %s (%s), sans chevauchement : une baisse réelle.",
+  "rw": "Muri %s, igipimo cyagabanutse kiva kuri %s (%s) kigera kuri %s (%s), intera ntizihura: ni igabanuka nyaryo."
+ },
+ "m_inputs": {
+  "en": "In %s, the most common practice was %s (%s of plots). Irrigation reached only %s.",
+  "fr": "En %s, la pratique la plus répandue était %s (%s des parcelles). L'irrigation n'atteignait que %s.",
+  "rw": "Muri %s, uburyo bwakoreshejwe cyane ni %s (%s y'imirima). Kuhira kwageze kuri %s gusa."
+ },
+ "m_prod": {
+  "en": "%s is the largest group, %s of production in the selection.",
+  "fr": "%s est le premier groupe, %s de la production sélectionnée.",
+  "rw": "%s ni ryo tsinda rinini, %s y'umusaruro wahiswemo."
+ },
+ "other": {
+  "en": "Other",
+  "fr": "Autre",
+  "rw": "Ibindi"
+ },
+ "ind_irrigated": {
+  "en": "Plots irrigated",
+  "fr": "Parcelles irriguées",
+  "rw": "Imirima yuhirwa"
+ },
+ "ind_irrig_modern": {
+  "en": "Modern irrigation (of irrigated)",
+  "fr": "Irrigation moderne (parmi irriguées)",
+  "rw": "Kuhira kugezweho (mu yuhirwa)"
+ },
+ "ind_irrig_any_farmer": {
+  "en": "Farmers irrigating any plot",
+  "fr": "Agriculteurs irriguant au moins une parcelle",
+  "rw": "Abahinzi buhira nibura umurima umwe"
+ },
+ "ind_inorganic_fert": {
+  "en": "Inorganic fertiliser",
+  "fr": "Engrais minéral",
+  "rw": "Ifumbire mvaruganda"
+ },
+ "ind_organic_fert": {
+  "en": "Organic fertiliser",
+  "fr": "Fumure organique",
+  "rw": "Ifumbire y'imborera"
+ },
+ "ind_pesticide": {
+  "en": "Pesticides",
+  "fr": "Pesticides",
+  "rw": "Imiti yica udukoko"
+ },
+ "ind_mechanised": {
+  "en": "Mechanisation",
+  "fr": "Mécanisation",
+  "rw": "Imashini"
+ },
+ "ind_anti_erosion": {
+  "en": "Anti-erosion measures",
+  "fr": "Lutte antiérosive",
+  "rw": "Kurwanya isuri"
+ },
+ "ind_land_consolidated": {
+  "en": "Land use consolidation",
+  "fr": "Remembrement des terres",
+  "rw": "Guhuza ubutaka"
+ },
+ "ind_agroforestry": {
+  "en": "Agroforestry",
+  "fr": "Agroforesterie",
+  "rw": "Ubuhinzi buvanze n'amashyamba"
+ },
+ "ind_irrigated_area_ha": {
+  "en": "Irrigated area (ha)",
+  "fr": "Superficie irriguée (ha)",
+  "rw": "Ubuso bwuhirwa (ha)"
+ },
+ "ind_production_t": {
+  "en": "Production (t)",
+  "fr": "Production (t)",
+  "rw": "Umusaruro (t)"
+ },
+ "unit_pct": {
+  "en": "% of plots",
+  "fr": "% des parcelles",
+  "rw": "% y'imirima"
+ },
+ "unit_irrigated_area_ha": {
+  "en": "Hectares",
+  "fr": "Hectares",
+  "rw": "Hegitari"
+ },
+ "unit_production_t": {
+  "en": "Tonnes",
+  "fr": "Tonnes",
+  "rw": "Toni"
+ },
+ "c_map": {
+  "en": "District map",
+  "fr": "Carte des districts",
+  "rw": "Ikarita y'uturere"
+ },
+ "src_map": {
+  "en": "Source: NISR SAS (weighted), GADM 4.1. Limitation: some district estimates rest on few irrigated plots, see n and the reliability badge.",
+  "fr": "Source : NISR SAS (pondéré), GADM 4.1. Limite : certaines estimations reposent sur peu de parcelles irriguées.",
+  "rw": "Inkomoko: NISR SAS, GADM 4.1. Imbogamizi: ibipimo bimwe by'uturere bishingiye ku mirima mike yuhirwa."
+ },
+ "c_profile": {
+  "en": "District profile",
+  "fr": "Profil du district",
+  "rw": "Umwirondoro w'akarere"
+ },
+ "c_ranking": {
+  "en": "District ranking",
+  "fr": "Classement des districts",
+  "rw": "Urutonde rw'uturere"
+ },
+ "m_map": {
+  "en": "For %s, the highest districts are %s; the lowest are %s.",
+  "fr": "Pour %s, les districts les plus élevés sont %s ; les plus bas sont %s.",
+  "rw": "Kuri %s, uturere turi hejuru ni %s; utwo hasi ni %s."
+ },
+ "m_click": {
+  "en": "Click a district to open its profile.",
+  "fr": "Cliquez sur un district pour voir son profil.",
+  "rw": "Kanda ku karere urebe umwirondoro wako."
+ },
+ "m_rank": {
+  "en": "Bars average the selected seasons, weighting each by its sample size. The amber bar is the selected district.",
+  "fr": "Les barres font la moyenne des saisons choisies, pondérée par la taille d'échantillon. La barre ambre est le district choisi.",
+  "rw": "Imirongo ni impuzandengo y'ibihembwe byahiswemo. Umurongo w'umuhondo ni akarere kahiswemo."
+ },
+ "profile_empty": {
+  "en": "Click a district on the map, or choose one in the sidebar.",
+  "fr": "Cliquez sur un district ou choisissez-le dans le menu.",
+  "rw": "Kanda ku karere ku ikarita, cyangwa ugahitemo ibumoso."
+ },
+ "profile_period": {
+  "en": "%s–%s, seasons %s",
+  "fr": "%s–%s, saisons %s",
+  "rw": "%s–%s, ibihembwe %s"
+ },
+ "profile_rain": {
+  "en": "Normal A+B rainfall %s mm, year-to-year variation %s%%, %s dry seasons since 2016.",
+  "fr": "Pluie normale A+B %s mm, variation interannuelle %s %%, %s saisons sèches depuis 2016.",
+  "rw": "Imvura isanzwe A+B %s mm, ihindagurika %s%%, ibihembwe %s by'izuba kuva 2016."
+ },
+ "profile_rank": {
+  "en": "Priority screening rank #%s (%s).",
+  "fr": "Rang de présélection n° %s (%s).",
+  "rw": "Umwanya mu isuzuma: #%s (%s)."
+ },
+ "need_caveat": {
+  "en": "District-level comparison: it shows where need and adoption coincide, not that rainfall causes adoption.",
+  "fr": "Comparaison au niveau des districts : elle montre où besoin et adoption coïncident, pas une causalité.",
+  "rw": "Ugereranya uturere: rwerekana aho ibikenewe n'ikoreshwa bihurira, si uko imvura itera kuhira."
+ },
+ "c_quadrant": {
+  "en": "Need vs adoption, by district",
+  "fr": "Besoin et adoption, par district",
+  "rw": "Ibikenewe n'ikoreshwa, ku karere"
+ },
+ "c_anomaly_map": {
+  "en": "Rainfall anomaly map",
+  "fr": "Carte des anomalies de pluie",
+  "rw": "Ikarita y'ihindagurika ry'imvura"
+ },
+ "c_rain_trend": {
+  "en": "Season rainfall vs the 1991–2020 normal",
+  "fr": "Pluie saisonnière vs normale 1991–2020",
+  "rw": "Imvura y'igihembwe ugereranyije n'isanzwe 1991–2020"
+ },
+ "src_need": {
+  "en": "Need score = rainfall variability + dry-season frequency + low normal rainfall (CHIRPS), scaled 0–100. Adoption: NISR SAS 2023–2025 A+B.",
+  "fr": "Score de besoin = variabilité + fréquence des saisons sèches + faible pluie normale (CHIRPS), 0–100. Adoption : NISR SAS 2023–2025 A+B.",
+  "rw": "Igipimo cy'ibikenewe = ihindagurika ry'imvura + inshuro z'izuba + imvura nke (CHIRPS), 0–100. Ikoreshwa: NISR SAS 2023–2025 A+B."
+ },
+ "src_chirps": {
+  "en": "Source: CHIRPS v2 monthly rainfall averaged over each district. Limitation: satellite estimate, about 5 km resolution.",
+  "fr": "Source : CHIRPS v2, pluie mensuelle moyenne par district. Limite : estimation satellitaire, ~5 km.",
+  "rw": "Inkomoko: CHIRPS v2, imvura y'ukwezi ku karere. Imbogamizi: igereranyo rya satelite, ~5 km."
+ },
+ "need_score": {
+  "en": "Need score (0–100)",
+  "fr": "Score de besoin (0–100)",
+  "rw": "Igipimo cy'ibikenewe (0–100)"
+ },
+ "normal_rain": {
+  "en": "Normal A+B rain",
+  "fr": "Pluie normale A+B",
+  "rw": "Imvura isanzwe A+B"
+ },
+ "normal": {
+  "en": "normal",
+  "fr": "normale",
+  "rw": "isanzwe"
+ },
+ "anomaly": {
+  "en": "Anomaly",
+  "fr": "Anomalie",
+  "rw": "Ihindagurika"
+ },
+ "anomaly_pct": {
+  "en": "% vs normal",
+  "fr": "% vs normale",
+  "rw": "% ugereranyije n'isanzwe"
+ },
+ "y_rain_mm": {
+  "en": "Season rainfall (mm)",
+  "fr": "Pluie saisonnière (mm)",
+  "rw": "Imvura y'igihembwe (mm)"
+ },
+ "q_highneedlowadoption": {
+  "en": "High need, low adoption",
+  "fr": "Besoin élevé, adoption faible",
+  "rw": "Ibikenewe byinshi, ikoreshwa rike"
+ },
+ "q_highneedhigheradoption": {
+  "en": "High need, higher adoption",
+  "fr": "Besoin élevé, adoption plus forte",
+  "rw": "Ibikenewe byinshi, ikoreshwa riri hejuru"
+ },
+ "q_lowerneedlowadoption": {
+  "en": "Lower need, low adoption",
+  "fr": "Besoin moindre, adoption faible",
+  "rw": "Ibikenewe bike, ikoreshwa rike"
+ },
+ "q_lowerneedhigheradoption": {
+  "en": "Lower need, higher adoption",
+  "fr": "Besoin moindre, adoption plus forte",
+  "rw": "Ibikenewe bike, ikoreshwa riri hejuru"
+ },
+ "q_hnla_label": {
+  "en": "High need, low adoption →",
+  "fr": "Besoin élevé, adoption faible →",
+  "rw": "Ibikenewe byinshi, ikoreshwa rike →"
+ },
+ "m_quadrant": {
+  "en": "%s districts sit in the high-need, low-adoption corner: %s. These are candidates for a closer look, not conclusions.",
+  "fr": "%s districts sont dans le coin besoin élevé, adoption faible : %s. Ce sont des pistes, pas des conclusions.",
+  "rw": "Uturere %s turi mu gice cy'ibikenewe byinshi n'ikoreshwa rike: %s. Ni utwo gusuzuma, si imyanzuro."
+ },
+ "m_anom_dry": {
+  "en": "In %s, %s districts had at least 15%% less rain than normal, driest first: %s.",
+  "fr": "En %s, %s districts ont reçu au moins 15 %% de pluie en moins, du plus sec : %s.",
+  "rw": "Muri %s, uturere %s twabonye imvura nke nibura 15%% ugereranyije n'isanzwe: %s."
+ },
+ "m_anom_ok": {
+  "en": "In %s, no district was more than 15%% below normal; the average anomaly was %s%%.",
+  "fr": "En %s, aucun district n'était à plus de 15 %% sous la normale ; anomalie moyenne %s %%.",
+  "rw": "Muri %s, nta karere kari munsi ya 15%% y'isanzwe; ihindagurika riringaniye ni %s%%."
+ },
+ "m_rain_trend": {
+  "en": "In %s, %s of the %s selected seasons had rain at least 15%% below normal: %s.",
+  "fr": "À %s, %s des %s saisons choisies ont eu au moins 15 %% de pluie en moins : %s.",
+  "rw": "Muri %s, ibihembwe %s kuri %s byabonye imvura iri munsi ya 15%%: %s."
+ },
+ "explorer_intro": {
+  "en": "Start with all crops for the whole area, then narrow with the crop group and crop filters. Every number below follows the sidebar.",
+  "fr": "Commencez avec toutes les cultures, puis affinez avec les filtres groupe et culture. Tous les chiffres suivent le menu latéral.",
+  "rw": "Tangira n'ibihingwa byose, hanyuma ugabanye ukoresheje muyunguruzi y'itsinda n'igihingwa."
+ },
+ "c_top_crops": {
+  "en": "Top crops by measure",
+  "fr": "Principales cultures par mesure",
+  "rw": "Ibihingwa by'imbere ku gipimo"
+ },
+ "c_measure_trend": {
+  "en": "Measure over time",
+  "fr": "Évolution de la mesure",
+  "rw": "Igipimo uko imyaka ihita"
+ },
+ "c_table": {
+  "en": "Crop table (filtered)",
+  "fr": "Tableau des cultures (filtré)",
+  "rw": "Imbonerahamwe y'ibihingwa"
+ },
+ "download_csv": {
+  "en": "Download CSV",
+  "fr": "Télécharger CSV",
+  "rw": "Kuramo CSV"
+ },
+ "src_table": {
+  "en": "Aggregates from NISR SAS (crop × season, n ≥ 10 crop plots). No microdata are published. Province totals sum districts with n ≥ 10 only.",
+  "fr": "Agrégats NISR SAS (culture × saison, n ≥ 10). Aucune microdonnée publiée. Les totaux provinciaux additionnent les districts avec n ≥ 10.",
+  "rw": "Ibiteranyo bya NISR SAS (igihingwa × igihembwe, n ≥ 10). Nta makuru y'umuntu ku giti cye atangazwa."
+ },
+ "ms_production_t": {
+  "en": "Production (t)",
+  "fr": "Production (t)",
+  "rw": "Umusaruro (t)"
+ },
+ "ms_crop_area_ha": {
+  "en": "Crop area (ha)",
+  "fr": "Superficie (ha)",
+  "rw": "Ubuso (ha)"
+ },
+ "ms_yield_kg_ha": {
+  "en": "Yield (kg/ha)",
+  "fr": "Rendement (kg/ha)",
+  "rw": "Umusaruro kuri ha (kg/ha)"
+ },
+ "ms_yield_irrigated_kg_ha": {
+  "en": "Yield, irrigated plots (kg/ha)",
+  "fr": "Rendement, irrigué (kg/ha)",
+  "rw": "Umusaruro, wuhirwa (kg/ha)"
+ },
+ "ms_yield_rainfed_kg_ha": {
+  "en": "Yield, rain-fed plots (kg/ha)",
+  "fr": "Rendement, pluvial (kg/ha)",
+  "rw": "Umusaruro, imvura (kg/ha)"
+ },
+ "ms_sold_t": {
+  "en": "Quantity sold (t)",
+  "fr": "Quantité vendue (t)",
+  "rw": "Ingano yagurishijwe (t)"
+ },
+ "ms_sold_share_pct": {
+  "en": "Share of harvest sold",
+  "fr": "Part de la récolte vendue",
+  "rw": "Igipimo cy'umusaruro wagurishijwe"
+ },
+ "ms_price_rwf_kg": {
+  "en": "Price (RWF/kg)",
+  "fr": "Prix (RWF/kg)",
+  "rw": "Igiciro (RWF/kg)"
+ },
+ "ms_sales_value_mrwf": {
+  "en": "Sales value (million RWF)",
+  "fr": "Valeur des ventes (millions RWF)",
+  "rw": "Agaciro k'ibyagurishijwe (miliyoni RWF)"
+ },
+ "ms_improved_seed_pct": {
+  "en": "Improved seed (% of area)",
+  "fr": "Semences améliorées (% superficie)",
+  "rw": "Imbuto z'indobanure (% y'ubuso)"
+ },
+ "k_per_year": {
+  "en": "Per year, %s, %s",
+  "fr": "Par an, %s, %s",
+  "rw": "Ku mwaka, %s, %s"
+ },
+ "k_sold_sub": {
+  "en": "%s kt sold per year, worth %s billion RWF",
+  "fr": "%s kt vendues par an, %s milliards RWF",
+  "rw": "%s kt zagurishijwe ku mwaka, miliyari %s RWF"
+ },
+ "k_n_crops": {
+  "en": "Crops in selection",
+  "fr": "Cultures sélectionnées",
+  "rw": "Ibihingwa byahiswemo"
+ },
+ "k_n_crops_sub": {
+  "en": "Choose one crop to see its yield",
+  "fr": "Choisissez une culture pour voir son rendement",
+  "rw": "Hitamo igihingwa kimwe urebe umusaruro wacyo"
+ },
+ "k_yield_sub": {
+  "en": "Area-weighted, %s crop plots",
+  "fr": "Pondéré par superficie, %s parcelles",
+  "rw": "Bipimwe ku buso, imirima %s"
+ },
+ "m_bycrop": {
+  "en": "%s leads on %s.",
+  "fr": "%s arrive en tête pour %s.",
+  "rw": "%s ni cyo kiri imbere kuri %s."
+ },
+ "m_bycrop_share": {
+  "en": " It accounts for %s of the total among crops shown.",
+  "fr": " Elle représente %s du total.",
+  "rw": " Ifite %s by'igiteranyo."
+ },
+ "m_bycrop_note": {
+  "en": "Crops with fewer than 30 plots are hidden.",
+  "fr": "Les cultures avec moins de 30 parcelles sont masquées.",
+  "rw": "Ibihingwa bifite imirima itageze kuri 30 ntibigaragara."
+ },
+ "m_measure_trend": {
+  "en": "%s changed from %s to %s by %s (A+B average).",
+  "fr": "%s a varié entre %s et %s de %s (moyenne A+B).",
+  "rw": "%s yahindutse kuva %s kugeza %s ku kigero cya %s (A+B)."
+ },
+ "m_measure_caveat": {
+  "en": "Crop area in 2024B–C was weakly captured, so read those seasons with care.",
+  "fr": "Les superficies 2024B–C sont peu fiables.",
+  "rw": "Ubuso bwa 2024B–C ntibwizewe neza."
+ },
+ "evidence_caveat": {
+  "en": "These are observed associations, not proof that irrigation causes higher yields. Farmers who irrigate differ in land, inputs and location; the adjusted estimate controls for some of these.",
+  "fr": "Ce sont des associations observées, pas une preuve de causalité. Les irrigants diffèrent en terres, intrants et lieu ; l'estimation ajustée en tient partiellement compte.",
+  "rw": "Ibi ni amasano agaragara, si gihamya ko kuhira gutera umusaruro mwinshi. Abuhira batandukanye mu butaka, inyongeramusaruro n'aho bari."
+ },
+ "c_forest": {
+  "en": "Yield difference, irrigated vs rain-fed: raw and adjusted",
+  "fr": "Écart de rendement irrigué vs pluvial : brut et ajusté",
+  "rw": "Ikinyuranyo cy'umusaruro: kidahinduwe n'icyahinduwe"
+ },
+ "choose_crop": {
+  "en": "Choose a crop",
+  "fr": "Choisir une culture",
+  "rw": "Hitamo igihingwa"
+ },
+ "c_dumbbell": {
+  "en": "Average yield with 95% CI",
+  "fr": "Rendement moyen avec IC 95 %",
+  "rw": "Umusaruro uringaniye n'intera 95%"
+ },
+ "c_yield_year": {
+  "en": "Yield by year",
+  "fr": "Rendement par année",
+  "rw": "Umusaruro ku mwaka"
+ },
+ "c_ladder": {
+  "en": "Yield by number of modern inputs",
+  "fr": "Rendement selon le nombre d'intrants modernes",
+  "rw": "Umusaruro ukurikije umubare w'inyongeramusaruro"
+ },
+ "src_model_yield": {
+  "en": "Survey-weighted regression of log yield, NISR SAS 2019–2025 A+B. Bars = 95% CI; grey ring = raw gap.",
+  "fr": "Régression pondérée du log-rendement, NISR SAS 2019–2025 A+B. Barres = IC 95 % ; anneau gris = écart brut.",
+  "rw": "Isesengura rya log y'umusaruro, NISR SAS 2019–2025 A+B. Imirongo = intera 95%."
+ },
+ "src_yield": {
+  "en": "Source: NISR SAS, ratio estimator (harvest / crop area), yields trimmed at the 1st–99th percentile by crop and season.",
+  "fr": "Source : NISR SAS, estimateur ratio (récolte / superficie), rendements tronqués aux 1er–99e centiles.",
+  "rw": "Inkomoko: NISR SAS, umusaruro / ubuso, hakuweho ibipimo bikabije (1–99%)."
+ },
+ "src_ladder": {
+  "en": "Modern inputs counted: irrigation, improved seed, inorganic fertiliser, mechanisation (0–4). Pale bars are unreliable.",
+  "fr": "Intrants comptés : irrigation, semences améliorées, engrais minéral, mécanisation (0–4). Barres pâles : peu fiables.",
+  "rw": "Inyongeramusaruro: kuhira, imbuto z'indobanure, ifumbire mvaruganda, imashini (0–4)."
+ },
+ "raw_diff": {
+  "en": "Raw gap",
+  "fr": "Écart brut",
+  "rw": "Ikinyuranyo kidahinduwe"
+ },
+ "adj_diff": {
+  "en": "Adjusted",
+  "fr": "Ajusté",
+  "rw": "Cyahinduwe"
+ },
+ "n_irrigated": {
+  "en": "irrigated",
+  "fr": "irriguées",
+  "rw": "yuhirwa"
+ },
+ "x_yield_diff": {
+  "en": "Yield difference, irrigated vs rain-fed (%)",
+  "fr": "Écart de rendement (%)",
+  "rw": "Ikinyuranyo cy'umusaruro (%)"
+ },
+ "y_yield": {
+  "en": "Yield (kg/ha)",
+  "fr": "Rendement (kg/ha)",
+  "rw": "Umusaruro (kg/ha)"
+ },
+ "x_modern_inputs": {
+  "en": "Number of modern inputs on the plot",
+  "fr": "Nombre d'intrants modernes",
+  "rw": "Umubare w'inyongeramusaruro"
+ },
+ "inputs": {
+  "en": "inputs",
+  "fr": "intrants",
+  "rw": "inyongeramusaruro"
+ },
+ "k_adj_sub": {
+  "en": "adjusted (95%% CI %s to %s%%)",
+  "fr": "ajusté (IC 95 %% : %s à %s %%)",
+  "rw": "cyahinduwe (intera 95%%: %s kugeza %s%%)"
+ },
+ "no_adjusted": {
+  "en": "Not enough irrigated plots for an adjusted estimate.",
+  "fr": "Pas assez de parcelles irriguées pour une estimation ajustée.",
+  "rw": "Nta mirima ihagije yuhirwa."
+ },
+ "m_forest": {
+  "en": "After adjustment, %s of %s crops show a clearly positive association: %s. %s crops show no clear difference.",
+  "fr": "Après ajustement, %s cultures sur %s montrent une association clairement positive : %s. %s ne montrent pas d'écart net.",
+  "rw": "Nyuma yo guhindura, ibihingwa %s kuri %s bigaragaza isano nziza: %s. Ibihingwa %s nta kinyuranyo kigaragara."
+ },
+ "m_forest_controls": {
+  "en": "Controls: %s.",
+  "fr": "Contrôles : %s.",
+  "rw": "Ibyitaweho: %s."
+ },
+ "m_dumb_overlap": {
+  "en": "For %s, irrigated plots average %s kg/ha vs %s kg/ha rain-fed, but the intervals overlap.",
+  "fr": "Pour %s, %s kg/ha irrigué vs %s kg/ha pluvial, mais les intervalles se chevauchent.",
+  "rw": "Kuri %s, imirima yuhirwa: %s kg/ha, iy'imvura: %s kg/ha, ariko intera zirahura."
+ },
+ "m_dumb_diff": {
+  "en": "For %s, irrigated plots average %s kg/ha vs %s kg/ha rain-fed, and the intervals do not overlap.",
+  "fr": "Pour %s, %s kg/ha irrigué vs %s kg/ha pluvial, sans chevauchement des intervalles.",
+  "rw": "Kuri %s, imirima yuhirwa: %s kg/ha, iy'imvura: %s kg/ha, intera ntizihura."
+ },
+ "m_byyear": {
+  "en": "Irrigated plots out-yielded rain-fed plots in %s of %s years for %s.",
+  "fr": "Les parcelles irriguées ont fait mieux %s années sur %s pour %s.",
+  "rw": "Imirima yuhirwa yatanze umusaruro mwinshi mu myaka %s kuri %s kuri %s."
+ },
+ "m_ladder": {
+  "en": "For %s, yields go from %s kg/ha with no modern input to %s kg/ha with %s inputs (reliable groups only).",
+  "fr": "Pour %s, le rendement passe de %s kg/ha sans intrant moderne à %s kg/ha avec %s intrants.",
+  "rw": "Kuri %s, umusaruro uva kuri %s kg/ha nta nyongeramusaruro ukagera kuri %s kg/ha ufite %s."
+ },
+ "how_intro": {
+  "en": "Shares are among irrigated plots only. Choose what to look at:",
+  "fr": "Parts calculées parmi les parcelles irriguées. Choisissez :",
+  "rw": "Ibipimo bibarwa mu mirima yuhirwa gusa. Hitamo:"
+ },
+ "dim_irrig_tool_level": {
+  "en": "Technology ladder",
+  "fr": "Échelle technologique",
+  "rw": "Urwego rw'ikoranabuhanga"
+ },
+ "dim_irrig_technique": {
+  "en": "Technique",
+  "fr": "Technique",
+  "rw": "Uburyo"
+ },
+ "dim_irrig_source": {
+  "en": "Water source",
+  "fr": "Source d'eau",
+  "rw": "Inkomoko y'amazi"
+ },
+ "c_mix_trend": {
+  "en": "Mix by season",
+  "fr": "Répartition par saison",
+  "rw": "Imiterere ku gihembwe"
+ },
+ "c_cost": {
+  "en": "Reported irrigation cost per hectare",
+  "fr": "Coût déclaré de l'irrigation par hectare",
+  "rw": "Igiciro cyo kuhira kuri hegitari"
+ },
+ "c_mix_district": {
+  "en": "Mix by district, 2023–2025",
+  "fr": "Répartition par district, 2023–2025",
+  "rw": "Imiterere ku karere, 2023–2025"
+ },
+ "src_tech": {
+  "en": "Source: NISR SAS. 2022 and 2025A–B tool codes were relabelled (they carried water-source labels).",
+  "fr": "Source : NISR SAS. Codes d'outils 2022 et 2025A–B réétiquetés.",
+  "rw": "Inkomoko: NISR SAS. Kode z'ibikoresho 2022 na 2025A–B zarakosowe."
+ },
+ "src_tech_district": {
+  "en": "Source: NISR SAS 2023–2025, all seasons. Districts with few irrigated plots are noisy.",
+  "fr": "Source : NISR SAS 2023–2025. Les districts avec peu de parcelles irriguées sont instables.",
+  "rw": "Inkomoko: NISR SAS 2023–2025. Uturere dufite imirima mike yuhirwa ntitwizewe."
+ },
+ "src_cost": {
+  "en": "Unweighted quartiles of reported cost / plot area, irrigated plots with a cost > 0. Indicative only.",
+  "fr": "Quartiles non pondérés du coût déclaré / superficie. Indicatif.",
+  "rw": "Ibipimo by'igiciro cyatangajwe / ubuso. Ni icyerekezo gusa."
+ },
+ "irrigated_plots_n": {
+  "en": "irrigated plots:",
+  "fr": "parcelles irriguées :",
+  "rw": "imirima yuhirwa:"
+ },
+ "y_share_irrigated": {
+  "en": "% of irrigated plots",
+  "fr": "% des parcelles irriguées",
+  "rw": "% y'imirima yuhirwa"
+ },
+ "median": {
+  "en": "Median",
+  "fr": "Médiane",
+  "rw": "Hagati"
+ },
+ "iqr": {
+  "en": "Middle half",
+  "fr": "Moitié centrale",
+  "rw": "Igice cyo hagati"
+ },
+ "x_cost": {
+  "en": "Cost (thousand RWF per ha)",
+  "fr": "Coût (milliers RWF/ha)",
+  "rw": "Igiciro (ibihumbi RWF/ha)"
+ },
+ "m_mix": {
+  "en": "Across the selected seasons, %s is the most common category (%s of irrigated plots).",
+  "fr": "Sur les saisons choisies, %s est la catégorie la plus fréquente (%s des parcelles irriguées).",
+  "rw": "Mu bihembwe byahiswemo, %s ni cyo gikoreshwa cyane (%s by'imirima yuhirwa)."
+ },
+ "m_mix_small": {
+  "en": " Some seasons have fewer than 100 irrigated plots, so their mix is noisy.",
+  "fr": " Certaines saisons ont moins de 100 parcelles irriguées.",
+  "rw": " Ibihembwe bimwe bifite imirima yuhirwa itageze ku 100."
+ },
+ "m_cost": {
+  "en": "%s is the cheapest per hectare (median %sk RWF); the most expensive median is %sk RWF.",
+  "fr": "%s est le moins cher par hectare (médiane %sk RWF) ; la médiane la plus élevée est %sk RWF.",
+  "rw": "%s ni bwo buhendutse kuri ha (%sk RWF); igihenze cyane ni %sk RWF."
+ },
+ "m_mix_district": {
+  "en": "Districts are sorted by the first category.",
+  "fr": "Districts triés selon la première catégorie.",
+  "rw": "Uturere dukurikije icyiciro cya mbere."
+ },
+ "m_thin": {
+  "en": " %s districts have fewer than 30 irrigated plots.",
+  "fr": " %s districts ont moins de 30 parcelles irriguées.",
+  "rw": " Uturere %s dufite imirima yuhirwa itageze kuri 30."
+ },
+ "c_equity": {
+  "en": "Irrigation by group, 2023–2025 A+B",
+  "fr": "Irrigation par groupe, 2023–2025 A+B",
+  "rw": "Kuhira ku itsinda, 2023–2025 A+B"
+ },
+ "c_gender_trend": {
+  "en": "Women vs men over time",
+  "fr": "Femmes et hommes dans le temps",
+  "rw": "Abagore n'abagabo uko imyaka ihita"
+ },
+ "c_gender_district": {
+  "en": "Women vs men by district, 2023–2025",
+  "fr": "Femmes et hommes par district, 2023–2025",
+  "rw": "Abagore n'abagabo ku karere, 2023–2025"
+ },
+ "src_equity": {
+  "en": "Source: NISR SAS, survey-weighted, plot manager's gender and age. Open circles are unreliable.",
+  "fr": "Source : NISR SAS, pondéré, genre et âge du gestionnaire. Cercles vides : peu fiables.",
+  "rw": "Inkomoko: NISR SAS, igitsina n'imyaka y'ucunga umurima. Uruziga rurimo ubusa ntirwizewe."
+ },
+ "dim_gender": {
+  "en": "Gender",
+  "fr": "Genre",
+  "rw": "Igitsina"
+ },
+ "dim_age_band": {
+  "en": "Age",
+  "fr": "Âge",
+  "rw": "Imyaka"
+ },
+ "dim_plot_size": {
+  "en": "Plot size",
+  "fr": "Taille de parcelle",
+  "rw": "Ingano y'umurima"
+ },
+ "dim_erosion": {
+  "en": "Erosion",
+  "fr": "Érosion",
+  "rw": "Isuri"
+ },
+ "dim_consolidated": {
+  "en": "Land consolidation",
+  "fr": "Remembrement",
+  "rw": "Guhuza ubutaka"
+ },
+ "m_equity": {
+  "en": "Plots managed by women are irrigated at %s vs %s for men. Plots in consolidated sites reach %s vs %s elsewhere.",
+  "fr": "Les parcelles gérées par des femmes sont irriguées à %s contre %s pour les hommes. En sites remembrés : %s contre %s.",
+  "rw": "Imirima icungwa n'abagore yuhirwa ku %s, iy'abagabo ku %s. Mu butaka buhujwe: %s, ahandi: %s."
+ },
+ "m_gender_trend": {
+  "en": "Men's plots were irrigated more often in %s of %s years.",
+  "fr": "Les parcelles des hommes étaient plus irriguées %s années sur %s.",
+  "rw": "Imirima y'abagabo yuhiwe kurusha mu myaka %s kuri %s."
+ },
+ "m_gender_district": {
+  "en": "Men lead in %s of %s districts; the widest gaps are in %s.",
+  "fr": "Les hommes devancent dans %s districts sur %s ; plus grands écarts : %s.",
+  "rw": "Abagabo bari imbere mu turere %s kuri %s; ikinyuranyo kinini: %s."
+ },
+ "m_open_unreliable": {
+  "en": "Many district-by-gender estimates are unreliable; use them as a prompt, not a verdict.",
+  "fr": "Beaucoup d'estimations district × genre sont peu fiables.",
+  "rw": "Ibipimo byinshi by'akarere × igitsina ntibyizewe."
+ },
+ "model_caveat": {
+  "en": "Validation first: the model was trained on 2020–2023 (%s plots) and tested on 2024–2025 (%s plots) it never saw. It describes patterns; it does not decide who gets support.",
+  "fr": "Validation d'abord : entraîné sur 2020–2023 (%s parcelles), testé sur 2024–2025 (%s parcelles). Il décrit des tendances, il ne décide pas.",
+  "rw": "Icyitegererezo cyigishijwe kuri 2020–2023 (imirima %s) kigeragezwa kuri 2024–2025 (imirima %s). Cyerekana imiterere, ntigifata ibyemezo."
+ },
+ "k_auc": {
+  "en": "AUC, logistic (out-of-time)",
+  "fr": "AUC, logistique (hors période)",
+  "rw": "AUC, logistic"
+ },
+ "k_auc_sub": {
+  "en": "Random forest: %s. 0.5 = chance, 1 = perfect",
+  "fr": "Forêt aléatoire : %s. 0,5 = hasard",
+  "rw": "Random forest: %s. 0.5 = amahirwe"
+ },
+ "k_brier": {
+  "en": "Brier score",
+  "fr": "Score de Brier",
+  "rw": "Brier score"
+ },
+ "k_brier_sub": {
+  "en": "Lower is better",
+  "fr": "Plus bas = meilleur",
+  "rw": "Hasi ni byiza"
+ },
+ "k_obs_pred": {
+  "en": "Observed / predicted",
+  "fr": "Observé / prédit",
+  "rw": "Ibyabonetse / ibyateganyijwe"
+ },
+ "k_obs_pred_sub": {
+  "en": "Irrigated share in the test years",
+  "fr": "Part irriguée, années test",
+  "rw": "Igipimo mu myaka y'igerageza"
+ },
+ "k_validation": {
+  "en": "Test years",
+  "fr": "Années test",
+  "rw": "Imyaka y'igerageza"
+ },
+ "k_validation_sub": {
+  "en": "Never used in training",
+  "fr": "Jamais utilisées à l'entraînement",
+  "rw": "Ntiyakoreshejwe mu kwigisha"
+ },
+ "c_calibration": {
+  "en": "Calibration (test years)",
+  "fr": "Calibration (années test)",
+  "rw": "Calibration"
+ },
+ "c_fairness": {
+  "en": "Fairness: accuracy by group",
+  "fr": "Équité : précision par groupe",
+  "rw": "Ubutabera: ukuri ku itsinda"
+ },
+ "c_importance": {
+  "en": "What the model relies on",
+  "fr": "Variables les plus utiles",
+  "rw": "Ibyo icyitegererezo gishingiraho"
+ },
+ "c_odds": {
+  "en": "Odds ratios (logistic model, districts hidden)",
+  "fr": "Rapports de cotes (districts masqués)",
+  "rw": "Odds ratios"
+ },
+ "c_simulator": {
+  "en": "Adoption simulator",
+  "fr": "Simulateur d'adoption",
+  "rw": "Igerageza ry'ikoreshwa"
+ },
+ "c_potential": {
+  "en": "Hidden potential: predicted minus observed",
+  "fr": "Potentiel caché : prédit moins observé",
+  "rw": "Ubushobozi buhishe"
+ },
+ "src_model": {
+  "en": "Source: NISR SAS 2020–2025 A+B, weighted logistic regression and random forest (ranger).",
+  "fr": "Source : NISR SAS 2020–2025 A+B, régression logistique pondérée et forêt aléatoire.",
+  "rw": "Inkomoko: NISR SAS 2020–2025 A+B."
+ },
+ "decile": {
+  "en": "Decile",
+  "fr": "Décile",
+  "rw": "Icyiciro"
+ },
+ "predicted": {
+  "en": "Predicted",
+  "fr": "Prédit",
+  "rw": "Byateganyijwe"
+ },
+ "observed": {
+  "en": "Observed",
+  "fr": "Observé",
+  "rw": "Byabonetse"
+ },
+ "model": {
+  "en": "Model",
+  "fr": "Modèle",
+  "rw": "Icyitegererezo"
+ },
+ "perfect": {
+  "en": "Perfect",
+  "fr": "Parfait",
+  "rw": "Bitunganye"
+ },
+ "x_predicted": {
+  "en": "Predicted % irrigated",
+  "fr": "% irrigué prédit",
+  "rw": "% byateganyijwe"
+ },
+ "y_observed": {
+  "en": "Observed % irrigated",
+  "fr": "% irrigué observé",
+  "rw": "% byabonetse"
+ },
+ "calib_gap": {
+  "en": "Calibration gap",
+  "fr": "Écart de calibration",
+  "rw": "Ikinyuranyo"
+ },
+ "x_importance": {
+  "en": "Relative importance (0–100)",
+  "fr": "Importance relative (0–100)",
+  "rw": "Akamaro (0–100)"
+ },
+ "x_odds": {
+  "en": "Odds ratio (log scale)",
+  "fr": "Rapport de cotes (échelle log)",
+  "rw": "Odds ratio (log)"
+ },
+ "m_calib": {
+  "en": "In the riskiest tenth of plots the model predicts %s and %s were observed. Points near the dotted line mean honest probabilities.",
+  "fr": "Dans le dixième le plus probable, le modèle prédit %s et on observe %s.",
+  "rw": "Mu cyiciro cya nyuma: byateganyijwe %s, byabonetse %s."
+ },
+ "m_fair": {
+  "en": "AUC ranges from %s to %s across groups. The largest calibration gap is for %s (%s points).",
+  "fr": "L'AUC varie de %s à %s selon les groupes. Plus grand écart : %s (%s points).",
+  "rw": "AUC iri hagati ya %s na %s. Ikinyuranyo kinini: %s (%s)."
+ },
+ "m_imp": {
+  "en": "%s and %s carry the most information. Importance is predictive, not causal.",
+  "fr": "%s et %s apportent le plus d'information. Importance prédictive, pas causale.",
+  "rw": "%s na %s ni byo bifite amakuru menshi."
+ },
+ "m_odds": {
+  "en": "Above 1 = more likely to irrigate, holding the other features fixed. Green and terracotta intervals exclude 1.",
+  "fr": "Au-dessus de 1 = plus probable d'irriguer, toutes choses égales.",
+  "rw": "Hejuru ya 1 = birashoboka cyane kuhira."
+ },
+ "plot_area_ha": {
+  "en": "Plot area (ha)",
+  "fr": "Superficie (ha)",
+  "rw": "Ubuso (ha)"
+ },
+ "rain_z": {
+  "en": "Rain anomaly (SD)",
+  "fr": "Anomalie de pluie (ET)",
+  "rw": "Ihindagurika ry'imvura"
+ },
+ "farm_type": {
+  "en": "Farm type",
+  "fr": "Type d'exploitation",
+  "rw": "Ubwoko bw'umurima"
+ },
+ "sim_prob": {
+  "en": "predicted chance this plot is irrigated",
+  "fr": "probabilité prédite que la parcelle soit irriguée",
+  "rw": "amahirwe y'uko uyu murima wuhirwa"
+ },
+ "sim_alt": {
+  "en": "With land consolidation and inorganic fertiliser: %s.",
+  "fr": "Avec remembrement et engrais minéral : %s.",
+  "rw": "Hamwe no guhuza ubutaka n'ifumbire: %s."
+ },
+ "sim_caveat": {
+  "en": "A what-if on the logistic model, for exploration only. It shows association, not the effect of a policy.",
+  "fr": "Simulation exploratoire ; association, pas effet d'une politique.",
+  "rw": "Ni igerageza gusa; ryerekana isano, si ingaruka za politiki."
+ },
+ "gap": {
+  "en": "Gap",
+  "fr": "Écart",
+  "rw": "Ikinyuranyo"
+ },
+ "gap_pts": {
+  "en": "Points",
+  "fr": "Points",
+  "rw": "Amanota"
+ },
+ "m_potential": {
+  "en": "Amber districts irrigate less than similar plots elsewhere would predict: %s lead. Blue districts already exceed it.",
+  "fr": "Les districts ambre irriguent moins que prévu : %s en tête. Les bleus dépassent déjà.",
+  "rw": "Uturere tw'umuhondo twuhira munsi y'ibiteganyijwe: %s. Utw'ubururu turenze."
+ },
+ "prelim_title": {
+  "en": "Preliminary screening.",
+  "fr": "Présélection préliminaire.",
+  "rw": "Isuzuma ry'ibanze."
+ },
+ "prelim_text": {
+  "en": "This ranks districts for a closer look using transparent weights you can change. It is not an allocation rule and does not estimate returns.",
+  "fr": "Classement indicatif selon des pondérations modifiables. Ce n'est pas une règle d'allocation.",
+  "rw": "Uru rutonde ni urwo gusuzuma, ukoresheje ibipimo ushobora guhindura. Si itegeko ryo kugabanya."
+ },
+ "weights": {
+  "en": "Weights",
+  "fr": "Pondérations",
+  "rw": "Ibipimo"
+ },
+ "w_c_need": {
+  "en": "Rainfall need",
+  "fr": "Besoin en eau",
+  "rw": "Ibikenewe by'imvura"
+ },
+ "w_c_gap": {
+  "en": "Adoption gap",
+  "fr": "Écart d'adoption",
+  "rw": "Icyuho cy'ikoreshwa"
+ },
+ "w_c_scale": {
+  "en": "Cultivated area",
+  "fr": "Superficie cultivée",
+  "rw": "Ubuso buhingwa"
+ },
+ "w_c_equity": {
+  "en": "Gender gap",
+  "fr": "Écart de genre",
+  "rw": "Ikinyuranyo cy'igitsina"
+ },
+ "w_c_readiness": {
+  "en": "Input readiness",
+  "fr": "Préparation (intrants)",
+  "rw": "Kwitegura (inyongeramusaruro)"
+ },
+ "reset_weights": {
+  "en": "Default weights",
+  "fr": "Pondérations par défaut",
+  "rw": "Ibipimo by'ibanze"
+ },
+ "weights_help": {
+  "en": "Weights are rescaled to sum to 1. Each component is scaled 0–1 across the 30 districts.",
+  "fr": "Les pondérations sont normalisées. Chaque composante est ramenée à 0–1.",
+  "rw": "Ibipimo bihuzwa bikagera kuri 1."
+ },
+ "c_priority_map": {
+  "en": "Screening score",
+  "fr": "Score de présélection",
+  "rw": "Amanota y'isuzuma"
+ },
+ "c_sensitivity": {
+  "en": "Rank stability (2,000 random weight sets)",
+  "fr": "Stabilité du rang (2 000 jeux de poids)",
+  "rw": "Gutekana k'umwanya"
+ },
+ "c_priority_table": {
+  "en": "Screening table",
+  "fr": "Tableau de présélection",
+  "rw": "Imbonerahamwe y'isuzuma"
+ },
+ "src_priority": {
+  "en": "Components from NISR SAS 2023–2025 and CHIRPS. Equity uses the gender gap only where both groups have n ≥ 30.",
+  "fr": "Composantes NISR SAS 2023–2025 et CHIRPS. L'équité n'utilise l'écart de genre que si n ≥ 30.",
+  "rw": "Ibigize: NISR SAS 2023–2025 na CHIRPS."
+ },
+ "src_sensitivity": {
+  "en": "Grey bar = 10th–90th percentile rank across 2,000 Dirichlet weight draws; dot = rank with your weights.",
+  "fr": "Barre grise = rangs 10e–90e centiles ; point = rang avec vos poids.",
+  "rw": "Umurongo w'ikijuju = intera y'imyanya; akadomo = umwanya wawe."
+ },
+ "score": {
+  "en": "Score",
+  "fr": "Score",
+  "rw": "Amanota"
+ },
+ "stability": {
+  "en": "Stability",
+  "fr": "Stabilité",
+  "rw": "Gutekana"
+ },
+ "your_rank": {
+  "en": "Your rank",
+  "fr": "Votre rang",
+  "rw": "Umwanya wawe"
+ },
+ "rank_range": {
+  "en": "Rank range",
+  "fr": "Plage de rang",
+  "rw": "Intera y'umwanya"
+ },
+ "prob_top5": {
+  "en": "Chance of top 5",
+  "fr": "Probabilité top 5",
+  "rw": "Amahirwe yo kuba muri 5"
+ },
+ "x_rank": {
+  "en": "Rank (1 = highest priority)",
+  "fr": "Rang (1 = priorité maximale)",
+  "rw": "Umwanya (1 = ibanze)"
+ },
+ "reliability": {
+  "en": "Reliability",
+  "fr": "Fiabilité",
+  "rw": "Kwizerwa"
+ },
+ "m_priority": {
+  "en": "With these weights the top five are %s.",
+  "fr": "Avec ces pondérations, les cinq premiers sont %s.",
+  "rw": "Hakoreshejwe ibi bipimo, dutanu twa mbere ni %s."
+ },
+ "m_priority_moved": {
+  "en": "%s districts moved compared with the default weights.",
+  "fr": "%s districts ont changé de rang.",
+  "rw": "Uturere %s twahinduye umwanya."
+ },
+ "m_priority_default": {
+  "en": "These are the default weights.",
+  "fr": "Pondérations par défaut.",
+  "rw": "Ibi ni ibipimo by'ibanze."
+ },
+ "m_sens": {
+  "en": "Stable top-ten districts whatever the weights: %s. Treat sensitive districts as discussion points.",
+  "fr": "Districts stables dans le top 10 : %s. Les districts sensibles sont à discuter.",
+  "rw": "Uturere duhamye muri 10 twa mbere: %s."
+ },
+ "t_about": {
+  "en": "About",
+  "fr": "À propos",
+  "rw": "Ibyerekeye"
+ },
+ "t_pipeline": {
+  "en": "Pipeline",
+  "fr": "Chaîne de traitement",
+  "rw": "Inzira y'amakuru"
+ },
+ "t_traps": {
+  "en": "Data quality",
+  "fr": "Qualité des données",
+  "rw": "Ubuziranenge"
+ },
+ "t_kpi": {
+  "en": "KPI definitions",
+  "fr": "Définitions des indicateurs",
+  "rw": "Ibisobanuro"
+ },
+ "t_ai": {
+  "en": "AI use",
+  "fr": "Usage de l'IA",
+  "rw": "Ikoreshwa rya AI"
+ },
+ "t_downloads": {
+  "en": "Downloads",
+  "fr": "Téléchargements",
+  "rw": "Gukuramo"
+ },
+ "about_title": {
+  "en": "SmartIrrigate Rwanda",
+  "fr": "SmartIrrigate Rwanda",
+  "rw": "SmartIrrigate Rwanda"
+ },
+ "about_text": {
+  "en": "A trilingual dashboard (English, Kinyarwanda, French) for the NISR 2026 Big Data Hackathon (Track 1, agricultural productivity). It turns the Seasonal Agricultural Survey into survey-weighted, reliability-labelled evidence on irrigation.",
+  "fr": "Un tableau de bord pour le Hackathon Big Data NISR 2026 (volet 1). Il transforme l'Enquête agricole saisonnière en indicateurs pondérés et qualifiés.",
+  "rw": "Urubuga rw'amakuru rwa NISR Big Data Hackathon 2026. Ruhindura ubushakashatsi bw'ubuhinzi mo ibimenyetso byizewe ku kuhira."
+ },
+ "personas": {
+  "en": "Who it is for",
+  "fr": "Pour qui",
+  "rw": "Bigenewe nde"
+ },
+ "persona_farmer": {
+  "en": "Farmers and cooperatives:",
+  "fr": "Agriculteurs et coopératives :",
+  "rw": "Abahinzi n'amakoperative:"
+ },
+ "persona_farmer_txt": {
+  "en": "see what irrigation looks like in their district.",
+  "fr": "voir l'irrigation dans leur district.",
+  "rw": "kureba uko kuhira guhagaze mu karere kabo."
+ },
+ "persona_planner": {
+  "en": "District and MINAGRI planners:",
+  "fr": "Planificateurs (districts, MINAGRI) :",
+  "rw": "Abategura (uturere, MINAGRI):"
+ },
+ "persona_planner_txt": {
+  "en": "find gaps and screen priorities.",
+  "fr": "repérer les écarts et présélectionner.",
+  "rw": "kubona ibyuho no guhitamo iby'ibanze."
+ },
+ "persona_research": {
+  "en": "Researchers and judges:",
+  "fr": "Chercheurs et jury :",
+  "rw": "Abashakashatsi n'abakemurampaka:"
+ },
+ "persona_research_txt": {
+  "en": "check methods, uncertainty and data quality.",
+  "fr": "vérifier méthodes et incertitude.",
+  "rw": "gusuzuma uburyo n'ubuziranenge."
+ },
+ "team": {
+  "en": "Team",
+  "fr": "Équipe",
+  "rw": "Itsinda"
+ },
+ "sources": {
+  "en": "Sources",
+  "fr": "Sources",
+  "rw": "Inkomoko"
+ },
+ "source": {
+  "en": "Source",
+  "fr": "Source",
+  "rw": "Inkomoko"
+ },
+ "used_for": {
+  "en": "Used for",
+  "fr": "Utilisée pour",
+  "rw": "Icyo ikoreshwa"
+ },
+ "definition": {
+  "en": "Definition",
+  "fr": "Définition",
+  "rw": "Igisobanuro"
+ },
+ "rb_good": {
+  "en": "Good",
+  "fr": "Fiable",
+  "rw": "Byizewe"
+ },
+ "rb_caution": {
+  "en": "Use with caution",
+  "fr": "Avec prudence",
+  "rw": "Witonde"
+ },
+ "rb_unreliable": {
+  "en": "Unreliable",
+  "fr": "Peu fiable",
+  "rw": "Ntibyizewe"
+ },
+ "rel_good": {
+  "en": "n ≥ 50 and coefficient of variation ≤ 20%",
+  "fr": "n ≥ 50 et CV ≤ 20 %",
+  "rw": "n ≥ 50 na CV ≤ 20%"
+ },
+ "rel_caution": {
+  "en": "CV between 20% and 35%, or n 30–49",
+  "fr": "CV entre 20 et 35 %, ou n 30–49",
+  "rw": "CV hagati ya 20% na 35%"
+ },
+ "rel_unreliable": {
+  "en": "CV above 35% or n below 30: do not use alone",
+  "fr": "CV > 35 % ou n < 30 : à ne pas utiliser seul",
+  "rw": "CV > 35% cyangwa n < 30"
+ },
+ "pipe_1_t": {
+  "en": "Import.",
+  "fr": "Import.",
+  "rw": "Kwinjiza."
+ },
+ "pipe_1": {
+  "en": "111 SAS files 2019–2025 read and standardised (03, 04).",
+  "fr": "111 fichiers SAS lus et standardisés.",
+  "rw": "Amadosiye 111 ya SAS yasomwe."
+ },
+ "pipe_2_t": {
+  "en": "Select.",
+  "fr": "Sélection.",
+  "rw": "Guhitamo."
+ },
+ "pipe_2": {
+  "en": "Irrigation, input, production and sales variables kept (05).",
+  "fr": "Variables utiles conservées (05).",
+  "rw": "Impinduka z'ingenzi zagumishijwe (05)."
+ },
+ "pipe_3_t": {
+  "en": "Merge.",
+  "fr": "Fusion.",
+  "rw": "Guhuza."
+ },
+ "pipe_3": {
+  "en": "Seven master tables on common keys, with a join log (06).",
+  "fr": "Sept tables maîtres avec journal des jointures (06).",
+  "rw": "Imbonerahamwe 7 zihujwe (06)."
+ },
+ "pipe_4_t": {
+  "en": "Audit.",
+  "fr": "Audit.",
+  "rw": "Igenzura."
+ },
+ "pipe_4": {
+  "en": "Skip patterns checked per season before any blank becomes No (06).",
+  "fr": "Sauts de questions vérifiés par saison (06).",
+  "rw": "Ibibazo byasimbutswe byagenzuwe (06)."
+ },
+ "pipe_5_t": {
+  "en": "Estimate.",
+  "fr": "Estimation.",
+  "rw": "Kubara."
+ },
+ "pipe_5": {
+  "en": "Survey-weighted means, ratios and CIs with a reliability label (07).",
+  "fr": "Moyennes pondérées, IC et fiabilité (07).",
+  "rw": "Impuzandengo zahinduwe n'intera z'icyizere (07)."
+ },
+ "pipe_6_t": {
+  "en": "Model.",
+  "fr": "Modèle.",
+  "rw": "Icyitegererezo."
+ },
+ "pipe_6": {
+  "en": "Adoption model with out-of-time validation, adjusted yield associations (08).",
+  "fr": "Modèle validé hors période (08).",
+  "rw": "Icyitegererezo cyagenzuwe (08)."
+ },
+ "pipe_7_t": {
+  "en": "Publish.",
+  "fr": "Publication.",
+  "rw": "Gutangaza."
+ },
+ "pipe_7": {
+  "en": "Only aggregates go into the app; no microdata.",
+  "fr": "Seuls les agrégats sont publiés.",
+  "rw": "Ibiteranyo gusa ni byo bitangazwa."
+ },
+ "trap_1": {
+  "en": "From 2020, plot irrigated is blank when skipped; blanks become No only where the per-season audit confirms the skip.",
+  "fr": "Depuis 2020, les blancs deviennent Non seulement si l'audit confirme le saut.",
+  "rw": "Kuva 2020, ahatarasubijwe haba Oya gusa iyo igenzura ryemeje."
+ },
+ "trap_2": {
+  "en": "2022 and 2025A–B irrigation tool codes carried water-source labels and were relabelled.",
+  "fr": "Codes d'outils 2022 et 2025A–B réétiquetés.",
+  "rw": "Kode z'ibikoresho 2022 na 2025A–B zakosowe."
+ },
+ "trap_3": {
+  "en": "2021 crop area equals plot area, so crop screening areas are used instead.",
+  "fr": "En 2021, superficie culture = parcelle : on utilise le screening.",
+  "rw": "Muri 2021 ubuso bw'igihingwa = ubw'umurima."
+ },
+ "trap_4": {
+  "en": "2022C has no segment id; joins use district, stratum and segment number.",
+  "fr": "2022C sans identifiant de segment.",
+  "rw": "2022C nta segment_id ifite."
+ },
+ "trap_5": {
+  "en": "Sold quantity is capped at the plot harvest.",
+  "fr": "Quantité vendue plafonnée à la récolte.",
+  "rw": "Ingano yagurishijwe ntirenga umusaruro."
+ },
+ "trap_6": {
+  "en": "Yields are trimmed at the 1st and 99th percentile by crop and season.",
+  "fr": "Rendements tronqués (1er–99e centiles).",
+  "rw": "Umusaruro ukabije wakuweho."
+ },
+ "trap_7": {
+  "en": "2024B–C crop areas are sparse, so yields there are weak.",
+  "fr": "Superficies 2024B–C rares.",
+  "rw": "Ubuso bwa 2024B–C ni buke."
+ },
+ "skip_audit": {
+  "en": "Skip-pattern audit",
+  "fr": "Audit des sauts",
+  "rw": "Igenzura ry'ibibazo byasimbutswe"
+ },
+ "skip_audit_help": {
+  "en": "A blank is set to No only if the gate question is present for ≥ 95% of plots and almost nobody answers after a No.",
+  "fr": "Un blanc devient Non seulement si la question filtre est présente à ≥ 95 %.",
+  "rw": "Ahatarasubijwe haba Oya iyo ikibazo kibanza kiri ku ≥ 95%."
+ },
+ "join_log": {
+  "en": "Join log",
+  "fr": "Journal des jointures",
+  "rw": "Igitabo cyo guhuza"
+ },
+ "join_log_help": {
+  "en": "Key used and match rate for every table join, by season.",
+  "fr": "Clé et taux d'appariement par saison.",
+  "rw": "Urufunguzo n'igipimo cyo guhura."
+ },
+ "kpi_rule": {
+  "en": "Every KPI states its date, unit, numerator and denominator, sample size and quality, and source.",
+  "fr": "Chaque indicateur précise date, unité, numérateur/dénominateur, échantillon et source.",
+  "rw": "Buri gipimo kigaragaza itariki, igipimo, n, n'inkomoko."
+ },
+ "kd_irrigated_n": {
+  "en": "Plots irrigated",
+  "fr": "Parcelles irriguées",
+  "rw": "Imirima yuhirwa"
+ },
+ "kd_irrigated": {
+  "en": "Weighted plots reported irrigated ÷ all weighted plots, per season, %.",
+  "fr": "Parcelles irriguées pondérées ÷ toutes, %.",
+  "rw": "Imirima yuhirwa ÷ imirima yose, %."
+ },
+ "kd_irrig_modern_n": {
+  "en": "Modern irrigation",
+  "fr": "Irrigation moderne",
+  "rw": "Kuhira kugezweho"
+ },
+ "kd_irrig_modern": {
+  "en": "Irrigated plots using pumps, pivots/machines or channels ÷ irrigated plots, %.",
+  "fr": "Pompes, pivots ou canaux ÷ parcelles irriguées.",
+  "rw": "Pompe, imashini cyangwa imiyoboro ÷ imirima yuhirwa."
+ },
+ "kd_irrigated_area_ha_n": {
+  "en": "Irrigated area",
+  "fr": "Superficie irriguée",
+  "rw": "Ubuso bwuhirwa"
+ },
+ "kd_irrigated_area_ha": {
+  "en": "Sum of weight × plot area for irrigated plots, hectares.",
+  "fr": "Somme poids × superficie, ha.",
+  "rw": "Igiteranyo cy'ubuso, ha."
+ },
+ "kd_yield_n": {
+  "en": "Yield",
+  "fr": "Rendement",
+  "rw": "Umusaruro"
+ },
+ "kd_yield": {
+  "en": "Weighted harvest ÷ weighted crop area (ratio estimator), kg/ha.",
+  "fr": "Récolte pondérée ÷ superficie pondérée, kg/ha.",
+  "rw": "Umusaruro ÷ ubuso, kg/ha."
+ },
+ "kd_adjusted_n": {
+  "en": "Adjusted yield association",
+  "fr": "Association ajustée",
+  "rw": "Isano yahinduwe"
+ },
+ "kd_adjusted": {
+  "en": "exp(β) − 1 from survey-weighted log-yield regression with inputs, area, district and season controls, %.",
+  "fr": "exp(β) − 1, régression pondérée du log-rendement, %.",
+  "rw": "exp(β) − 1, %."
+ },
+ "kd_need_n": {
+  "en": "Need score",
+  "fr": "Score de besoin",
+  "rw": "Igipimo cy'ibikenewe"
+ },
+ "kd_need": {
+  "en": "Mean of scaled rainfall CV, dry-season count 2016–2025 and inverse normal rain, 0–100.",
+  "fr": "Moyenne de trois composantes normalisées, 0–100.",
+  "rw": "Impuzandengo y'ibipimo bitatu, 0–100."
+ },
+ "kd_priority_n": {
+  "en": "Screening score",
+  "fr": "Score de présélection",
+  "rw": "Amanota y'isuzuma"
+ },
+ "kd_priority": {
+  "en": "Weighted mean of five 0–1 components × 100; preliminary.",
+  "fr": "Moyenne pondérée de cinq composantes × 100 ; préliminaire.",
+  "rw": "Impuzandengo y'ibigize bitanu × 100."
+ },
+ "ai_text": {
+  "en": "This project used AI assistance (Claude by Anthropic) and discloses it as the hackathon requires:",
+  "fr": "Ce projet a utilisé une assistance IA (Claude, Anthropic), déclarée conformément au règlement :",
+  "rw": "Uyu mushinga wakoresheje AI (Claude ya Anthropic):"
+ },
+ "ai_1": {
+  "en": "Code drafting for data preparation, the app and the models, reviewed and run by the team.",
+  "fr": "Rédaction de code, relue et exécutée par l'équipe.",
+  "rw": "Kwandika kode, yasuzumwe n'itsinda."
+ },
+ "ai_2": {
+  "en": "Draft French and Kinyarwanda translations, pending native-speaker review.",
+  "fr": "Traductions provisoires, à relire par des locuteurs natifs.",
+  "rw": "Ubusemuzi bw'agateganyo, buzasuzumwa."
+ },
+ "ai_3": {
+  "en": "All figures come from code run on NISR data; no number was written by AI without computation.",
+  "fr": "Tous les chiffres proviennent du code.",
+  "rw": "Imibare yose ituruka kuri kode."
+ },
+ "ai_4": {
+  "en": "Any AI-generated image is labelled as such.",
+  "fr": "Toute image générée par IA est signalée.",
+  "rw": "Ishusho yose ya AI iragaragazwa."
+ },
+ "downloads_text": {
+  "en": "Aggregated tables only (no microdata). Each CSV carries n and reliability where relevant.",
+  "fr": "Tableaux agrégés uniquement. Chaque CSV contient n et la fiabilité.",
+  "rw": "Imbonerahamwe z'ibiteranyo gusa."
+ },
+ "dl_est_plot": {
+  "en": "Indicator estimates",
+  "fr": "Estimations des indicateurs",
+  "rw": "Ibipimo"
+ },
+ "dl_totals": {
+  "en": "Area and production totals",
+  "fr": "Totaux superficie et production",
+  "rw": "Ubuso n'umusaruro"
+ },
+ "dl_crop_season": {
+  "en": "Crop × season table",
+  "fr": "Table culture × saison",
+  "rw": "Igihingwa × igihembwe"
+ },
+ "dl_priority_screening": {
+  "en": "Priority screening",
+  "fr": "Présélection",
+  "rw": "Isuzuma"
+ },
+ "dl_need_adoption": {
+  "en": "Need vs adoption",
+  "fr": "Besoin et adoption",
+  "rw": "Ibikenewe n'ikoreshwa"
+ },
+ "dl_yield_adjusted": {
+  "en": "Adjusted yield associations",
+  "fr": "Associations ajustées",
+  "rw": "Amasano yahinduwe"
+ },
+ "dl_model_validation": {
+  "en": "Model validation",
+  "fr": "Validation du modèle",
+  "rw": "Igenzura ry'icyitegererezo"
+ },
+ "p_district": {
+  "en": "District report card",
+  "fr": "Fiche du district",
+  "rw": "Ifishi y'akarere"
+ },
+ "hero_m1": {
+  "en": "21 survey seasons, 2019–2025",
+  "fr": "21 saisons d'enquête, 2019–2025",
+  "rw": "Ibihembwe 21, 2019–2025"
+ },
+ "hero_m2": {
+  "en": "Seasons A, B and C",
+  "fr": "Saisons A, B et C",
+  "rw": "Ibihembwe A, B na C"
+ },
+ "hero_m3": {
+  "en": "30 districts, 5 provinces",
+  "fr": "30 districts, 5 provinces",
+  "rw": "Uturere 30, intara 5"
+ },
+ "hero_m4": {
+  "en": "Rainfall since 1981",
+  "fr": "Pluie depuis 1981",
+  "rw": "Imvura kuva 1981"
+ },
+ "s_findings": {
+  "en": "Key findings",
+  "fr": "Constats clés",
+  "rw": "Ibyagaragaye by'ingenzi"
+ },
+ "s_findings_sub": {
+  "en": "Written from the data each time it loads; they follow the sidebar where they can.",
+  "fr": "Rédigés à partir des données ; ils suivent les filtres quand c'est possible.",
+  "rw": "Byandikwa hashingiwe ku makuru; bikurikira muyunguruzi aho bishoboka."
+ },
+ "s_numbers": {
+  "en": "The numbers at a glance",
+  "fr": "Les chiffres en un coup d'œil",
+  "rw": "Imibare mu ncamake"
+ },
+ "s_numbers_sub": {
+  "en": "Latest year in your selection; the line shows the trend, the pill the change since the first year.",
+  "fr": "Dernière année sélectionnée ; la courbe montre la tendance, la pastille l'évolution depuis la première année.",
+  "rw": "Umwaka uheruka; umurongo werekana uko byagenze, akamenyetso kerekana impinduka kuva umwaka wa mbere."
+ },
+ "f1_t": {
+  "en": "%s of plots are irrigated",
+  "fr": "%s des parcelles sont irriguées",
+  "rw": "%s by'imirima birahirwa"
+ },
+ "f1": {
+  "en": "In %s, Seasons A+B, %s. It was %s in %s: irrigation is growing from a very low base.",
+  "fr": "À %s, saisons A+B, %s. C'était %s en %s : l'irrigation progresse depuis un niveau très bas.",
+  "rw": "Muri %s, ibihembwe A+B, %s. Byari %s muri %s: kuhira biriyongera ariko biracyari hasi cyane."
+ },
+ "f2_t": {
+  "en": "Irrigation pays for %s crops",
+  "fr": "L'irrigation est associée à de meilleurs rendements pour %s cultures",
+  "rw": "Kuhira bijyana n'umusaruro mwinshi ku bihingwa %s"
+ },
+ "f2": {
+  "en": "After controlling for inputs and location, irrigated plots yield clearly more for %s.",
+  "fr": "Après contrôle des intrants et du lieu, les parcelles irriguées produisent nettement plus pour %s.",
+  "rw": "Nyuma yo kwita ku nyongeramusaruro n'aho biri, imirima yuhirwa itanga umusaruro mwinshi kuri %s."
+ },
+ "f3_t": {
+  "en": "Women and small plots are left behind",
+  "fr": "Les femmes et les petites parcelles sont à la traîne",
+  "rw": "Abagore n'imirima mito basigaye inyuma"
+ },
+ "f3": {
+  "en": "Plots managed by women: %s irrigated vs %s for men. In consolidated sites the rate reaches %s.",
+  "fr": "Parcelles gérées par des femmes : %s irriguées contre %s pour les hommes. En sites remembrés : %s.",
+  "rw": "Imirima icungwa n'abagore: %s, iy'abagabo: %s. Mu butaka buhujwe bigera kuri %s."
+ },
+ "f4_t": {
+  "en": "Where to look first",
+  "fr": "Où regarder d'abord",
+  "rw": "Aho guhera"
+ },
+ "f4": {
+  "en": "The preliminary screening puts %s at the top: high rainfall risk, low adoption and large cultivated area.",
+  "fr": "La présélection place %s en tête : risque pluviométrique élevé, faible adoption et grande surface cultivée.",
+  "rw": "Isuzuma rishyira %s imbere: ibyago by'imvura, ikoreshwa rike n'ubuso bunini."
+ },
+ "k_pts_since": {
+  "en": "change in points since %s",
+  "fr": "évolution en points depuis %s",
+  "rw": "impinduka kuva %s"
+ },
+ "k_area_sub2": {
+  "en": "%s of cultivated land (A+B)",
+  "fr": "%s des terres cultivées (A+B)",
+  "rw": "%s by'ubutaka buhingwa (A+B)"
+ },
+ "k_modern_sub2": {
+  "en": "of irrigated plots use pumps, pivots or channels",
+  "fr": "des parcelles irriguées utilisent pompes, pivots ou canaux",
+  "rw": "by'imirima yuhirwa ikoresha pompe, imashini cyangwa imiyoboro"
+ },
+ "k_any_sub": {
+  "en": "of farmers irrigate at least one plot",
+  "fr": "des agriculteurs irriguent au moins une parcelle",
+  "rw": "by'abahinzi buhira nibura umurima umwe"
+ },
+ "k_fert_sub": {
+  "en": "of plots receive inorganic fertiliser",
+  "fr": "des parcelles reçoivent de l'engrais minéral",
+  "rw": "by'imirima ihabwa ifumbire mvaruganda"
+ },
+ "k_production": {
+  "en": "Crop production",
+  "fr": "Production agricole",
+  "rw": "Umusaruro w'ibihingwa"
+ },
+ "k_production_sub": {
+  "en": "Seasons A+B, all crops",
+  "fr": "Saisons A+B, toutes cultures",
+  "rw": "Ibihembwe A+B, ibihingwa byose"
+ },
+ "k_season_c": {
+  "en": "Irrigated in dry Season C",
+  "fr": "Irrigué en saison sèche C",
+  "rw": "Byuhirwa mu gihembwe C cy'izuba"
+ },
+ "k_season_c_sub": {
+  "en": "marshland and valley plots in Jul–Sep",
+  "fr": "parcelles de marais et vallées, juil–sept",
+  "rw": "imirima y'ibishanga, Nyakanga–Nzeri"
+ },
+ "c_province": {
+  "en": "Irrigation by province: then and now",
+  "fr": "Irrigation par province : avant et maintenant",
+  "rw": "Kuhira ku ntara: mbere na none"
+ },
+ "m_prov": {
+  "en": "%s leads at %s in 2023–2025; %s is lowest at %s.",
+  "fr": "%s est en tête avec %s en 2023–2025 ; %s est le plus bas à %s.",
+  "rw": "%s iri imbere kuri %s muri 2023–2025; %s iri hasi kuri %s."
+ },
+ "c_season_c": {
+  "en": "Dry Season C: where irrigation already matters",
+  "fr": "Saison sèche C : là où l'irrigation compte déjà",
+  "rw": "Igihembwe C: aho kuhira bifite akamaro"
+ },
+ "m_season_c": {
+  "en": "In Season C between %s and %s of plots are irrigated, against about %s in the main seasons. The dry-season experience is a base to build on.",
+  "fr": "En saison C, %s à %s des parcelles sont irriguées, contre environ %s en saisons principales.",
+  "rw": "Mu gihembwe C, %s kugeza %s by'imirima birahirwa, ugereranyije na %s mu bihembwe by'ingenzi."
+ },
+ "animate_years": {
+  "en": "Play through the years",
+  "fr": "Animer par année",
+  "rw": "Reba uko imyaka ikurikirana"
+ },
+ "play": {
+  "en": "▶ Play",
+  "fr": "▶ Lecture",
+  "rw": "▶ Tangira"
+ },
+ "c_bubble": {
+  "en": "How each district moved, year by year (press Play)",
+  "fr": "Évolution de chaque district, année par année (Lecture)",
+  "rw": "Uko buri karere kagiye gahinduka (kanda Tangira)"
+ },
+ "m_bubble": {
+  "en": "Each bubble is a district, sized by cultivated area and coloured by province. Districts moving up on the right are closing their gap; those staying low on the right need attention.",
+  "fr": "Chaque bulle est un district (taille = surface cultivée, couleur = province). Ceux qui montent à droite comblent leur retard ; ceux qui restent bas à droite méritent l'attention.",
+  "rw": "Buri ruziga ni akarere (ingano = ubuso, ibara = intara). Utuzamuka iburyo turimo kugabanya icyuho; utuguma hasi iburyo dukeneye kwitabwaho."
+ },
+ "c_treemap": {
+  "en": "What Rwanda grows: crop groups and crops (click to zoom)",
+  "fr": "Ce que cultive le Rwanda : groupes et cultures (cliquez pour zoomer)",
+  "rw": "Ibyo u Rwanda ruhinga (kanda wegere)"
+ },
+ "m_tree": {
+  "en": "Box size follows the chosen measure. Click a crop group to zoom in, then use the path bar to go back.",
+  "fr": "La taille suit la mesure choisie. Cliquez sur un groupe pour zoomer.",
+  "rw": "Ingano ikurikira igipimo wahisemo. Kanda ku itsinda wegere."
+ },
+ "c_sources_any": {
+  "en": "Every water source used on irrigated plots",
+  "fr": "Toutes les sources d'eau des parcelles irriguées",
+  "rw": "Inkomoko zose z'amazi yo kuhira"
+ },
+ "m_sources": {
+  "en": "%s is the most used source (%s of irrigated plots), then %s (%s). Plots can use more than one source.",
+  "fr": "%s est la source la plus utilisée (%s), puis %s (%s). Une parcelle peut en utiliser plusieurs.",
+  "rw": "%s ni yo ikoreshwa cyane (%s), hakurikiraho %s (%s)."
+ },
+ "vs_rwanda": {
+  "en": "Rwanda: %s",
+  "fr": "Rwanda : %s",
+  "rw": "U Rwanda: %s"
+ },
+ "d_period": {
+  "en": "Tiles: 2023–2025 average of the selected main seasons; charts follow the sidebar.",
+  "fr": "Tuiles : moyenne 2023–2025 ; les graphiques suivent les filtres.",
+  "rw": "Ibipimo: impuzandengo ya 2023–2025; ibishushanyo bikurikira muyunguruzi."
+ },
+ "d_need_sub": {
+  "en": "Normal A+B rain %s mm · %s dry seasons since 2016",
+  "fr": "Pluie normale A+B %s mm · %s saisons sèches depuis 2016",
+  "rw": "Imvura isanzwe %s mm · ibihembwe %s by'izuba kuva 2016"
+ },
+ "d_prod_sub": {
+  "en": "per year, Seasons A+B, 2023–2025",
+  "fr": "par an, saisons A+B, 2023–2025",
+  "rw": "ku mwaka, A+B, 2023–2025"
+ },
+ "d_area_sub": {
+  "en": "cultivated per year, Seasons A+B",
+  "fr": "cultivés par an, saisons A+B",
+  "rw": "ubuso buhingwa ku mwaka"
+ },
+ "d_score_sub": {
+  "en": "Screening rank #%s (range %s–%s across weight sets)",
+  "fr": "Rang n° %s (plage %s–%s selon les poids)",
+  "rw": "Umwanya #%s (hagati ya %s na %s)"
+ },
+ "c_d_trend": {
+  "en": "Irrigation trend: district, province and Rwanda",
+  "fr": "Tendance : district, province et Rwanda",
+  "rw": "Uko kuhira kugenda: akarere, intara n'u Rwanda"
+ },
+ "c_d_radar": {
+  "en": "Screening profile vs the median district",
+  "fr": "Profil de présélection vs district médian",
+  "rw": "Umwirondoro ugereranyije n'akarere ko hagati"
+ },
+ "c_d_gap": {
+  "en": "Practices: district vs Rwanda",
+  "fr": "Pratiques : district vs Rwanda",
+  "rw": "Uburyo: akarere n'u Rwanda"
+ },
+ "c_d_crops": {
+  "en": "Top 10 crops (average production per year)",
+  "fr": "10 principales cultures (production annuelle moyenne)",
+  "rw": "Ibihingwa 10 by'imbere"
+ },
+ "c_d_rain": {
+  "en": "Season rainfall anomaly since 2010",
+  "fr": "Anomalie de pluie saisonnière depuis 2010",
+  "rw": "Ihindagurika ry'imvura kuva 2010"
+ },
+ "median_district": {
+  "en": "Median district",
+  "fr": "District médian",
+  "rw": "Akarere ko hagati"
+ },
+ "per_year": {
+  "en": "per year",
+  "fr": "par an",
+  "rw": "ku mwaka"
+ },
+ "m_d_trend": {
+  "en": "%s was above the national rate in %s of %s years; latest %s (%s).",
+  "fr": "%s était au-dessus du taux national %s années sur %s ; dernier %s (%s).",
+  "rw": "%s yari hejuru y'igipimo cy'igihugu mu myaka %s kuri %s; uheruka %s (%s)."
+ },
+ "m_d_radar": {
+  "en": "%s scores highest on %s and lowest on %s compared with other districts.",
+  "fr": "%s obtient le score le plus haut en %s et le plus bas en %s.",
+  "rw": "%s iri hejuru kuri %s, hasi kuri %s."
+ },
+ "m_d_gap": {
+  "en": "%s is furthest above Rwanda on %s (%s pts) and furthest below on %s (%s pts).",
+  "fr": "%s dépasse le plus le Rwanda en %s (%s pts) et est le plus en retard en %s (%s pts).",
+  "rw": "%s irusha u Rwanda kuri %s (%s), irasigara kuri %s (%s)."
+ },
+ "m_d_crops": {
+  "en": "%s mostly grows %s (%s kt a year), followed by %s.",
+  "fr": "%s produit surtout %s (%s kt par an), puis %s.",
+  "rw": "%s ihinga cyane %s (%s kt ku mwaka), hakurikiraho %s."
+ },
+ "m_d_rain": {
+  "en": "%s had %s of %s main seasons at least 15%% drier than normal since 2010: %s.",
+  "fr": "%s a connu %s saisons sur %s au moins 15 %% plus sèches que la normale depuis 2010 : %s.",
+  "rw": "%s yagize ibihembwe %s kuri %s byumye nibura 15%% kuva 2010: %s."
+ },
+ "_meta": {
+  "en": "French and Kinyarwanda are AI-assisted drafts pending native-speaker review."
+ }
+}
