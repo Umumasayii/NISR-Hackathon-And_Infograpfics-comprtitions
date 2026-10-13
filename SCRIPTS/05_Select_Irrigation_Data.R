@@ -101,7 +101,7 @@ col_groups <- list(
 
   sales_value = list(include = TRUE, modules = "crop_prod",
     why = "Economics: quantity sold x price = gross sales value (not net income).",
-    pattern = "selling_price|quantity_sold|sold_to_be_sold|on_which_market"),
+    pattern = "selling_price|quantity_sold|sold_to_be_sold|on_which_market|market_price|what_is_the_quantity_that"),  # 2025A-B names added 13 Oct
 
   seeds = list(include = TRUE, modules = "crop_prod",
     why = "Improved seed is a modern input that is usually combined with irrigation and fertiliser.",
@@ -121,7 +121,7 @@ col_groups <- list(
 
   storage_use = list(include = TRUE, modules = "crop_prod",
     why = "[Q7] Storage, own consumption, gifts, seeds kept: how much of the harvest reaches the market.",
-    pattern = "storage|stored|own_consumption|auto_consum|gift|wage|farm_rent|fodder|feed_animals|exchanged|transformed|processed"),
+    pattern = "storage|stored|own_consumption|auto_consum|hh_consumption|gift|wage|farm_rent|fodder|feed_animals|exchanged|transformed|processed"),
 
   agroforestry = list(include = TRUE, modules = c("crop_screen", "agrofor"),
     why = "[Q2] Agroforestry trees on plot: climate-smart practice, weak irrigation link.",
