@@ -40,7 +40,10 @@ reliability <- function(n, cv) case_when(
 add_design_vars <- function(d) d |>
   mutate(psu = coalesce(as.character(segment_id),
                         paste(district_std, stratum, segment_number, sep = "_")),
-         strat = coalesce(as.character(stratum), "unknown")) |>
+         strat = coalesce(as.character(stratum), "unknown"),
+         # integer codes: newer 'survey' versions coerce character strata with
+         # as.numeric() for lonely-PSU handling, giving NA and SE = Inf
+         psu = as.integer(factor(psu)), strat = as.integer(factor(strat))) |>
   filter(!is.na(weight), weight > 0)
 
 # Weighted mean of a 0/1 (or numeric) variable with design-based SE, by groups.
@@ -51,10 +54,11 @@ survey_mean_by <- function(d, var, by) {
   d |>
     group_by(across(all_of(by))) |>
     group_modify(\(g, k) {
-      if (nrow(g) < 2) return(tibble(estimate = mean(g[[var]]), se = NA_real_, n = nrow(g)))
+      if (nrow(g) < 2) return(tibble(estimate = mean(g[[var]]), se = NA_real_, n = nrow(g), wsum = sum(g$weight)))
       des <- survey::svydesign(ids = ~psu, strata = ~strat, weights = ~weight, data = g, nest = TRUE)
       m <- survey::svymean(as.formula(paste0("~", var)), des)
-      tibble(estimate = as.numeric(coef(m)), se = as.numeric(survey::SE(m)), n = nrow(g))
+      # wsum (weighted count) lets the app combine several districts or provinces
+      tibble(estimate = as.numeric(coef(m)), se = as.numeric(survey::SE(m)), n = nrow(g), wsum = sum(g$weight))
     }) |>
     ungroup() |>
     mutate(indicator = var,

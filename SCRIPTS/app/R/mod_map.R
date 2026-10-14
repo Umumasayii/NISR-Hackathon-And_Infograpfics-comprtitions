@@ -14,12 +14,12 @@ mod_map_ui <- function(id, tr) {
                     selectInput(ns("metric"), NULL, width = "320px",
                                 choices = setNames(map_metrics, sapply(paste0("ind_", map_metrics), tr))),
                     div(class = "form-switch-wrap", checkboxInput(ns("animate"), tagList(fontawesome::fa("play"), " ", tr("animate_years")), FALSE))),
-                conditionalPanel("!input.animate", ns = ns, plotlyOutput(ns("map"), height = "470px")),
-                conditionalPanel("input.animate", ns = ns, plotlyOutput(ns("map_anim"), height = "520px"))),
+                conditionalPanel("!input.animate", ns = ns, plotlyOutput(ns("map"), height = "420px")),
+                conditionalPanel("input.animate", ns = ns, plotlyOutput(ns("map_anim"), height = "460px"))),
         ns("map_means"), tr("src_map"), icon = "map-location-dot"),
       card(class = "profile-card", card_header(fontawesome::fa("location-dot"), " ", tr("c_profile")),
            card_body(uiOutput(ns("profile"))))),
-    chart_card(tr("c_ranking"), plotlyOutput(ns("rank"), height = "560px"), ns("rank_means"), tr("src_map"), icon = "arrow-down-wide-short"))
+    chart_card(tr("c_ranking"), plotlyOutput(ns("rank"), height = "470px"), ns("rank_means"), tr("src_map"), icon = "arrow-down-wide-short"))
 }
 
 mod_map_server <- function(id, f, tr, set_district) {
@@ -34,7 +34,7 @@ mod_map_server <- function(id, f, tr, set_district) {
       } else {
         D$est |> filter(level == "district", indicator == m, sas_year %in% f()$years, sas_season %in% f()$seasons) |>
           group_by(district = area) |>
-          summarise(value = weighted.mean(estimate, n), n = sum(n),
+          summarise(value = weighted.mean(estimate, wsum), n = sum(n),
                     reliability = names(sort(table(reliability), decreasing = TRUE))[1], .groups = "drop")
       }
     })
@@ -47,9 +47,11 @@ mod_map_server <- function(id, f, tr, set_district) {
                         fmt_num(d$value, if (is_total()) 0 else 1), unit(),
                         if (!is_total()) paste0("<br>n = ", fmt_num(d$n), " \u00B7 ", d$reliability) else "")
       choropleth(d, D$geo, "value", tr(paste0("unit_", if (is_total()) input$metric else "pct")),
-                 colorscale = if (input$metric == "production_t") seq_amber else seq_green, source = "map_click")
+                 colorscale = if (input$metric == "production_t") seq_amber else seq_green, source = "map_click",
+                 selected = if (f()$area_level != "national") f()$districts)
     })
     observeEvent(plotly_clicked(session, "map_click"), set_district(plotly_clicked(session, "map_click")))
+    observeEvent(input$pick, set_district(input$pick))
     observeEvent(plotly_clicked(session, "map_anim"), set_district(plotly_clicked(session, "map_anim")))
     # animated choropleth: one frame per year (selected seasons averaged)
     output$map_anim <- renderPlotly({
@@ -59,7 +61,7 @@ mod_map_server <- function(id, f, tr, set_district) {
           group_by(district = area, sas_year) |> summarise(value = sum(.data[[m]], na.rm = TRUE), .groups = "drop")
       } else {
         D$est |> filter(level == "district", indicator == m, sas_year %in% f()$years, sas_season %in% f()$seasons) |>
-          group_by(district = area, sas_year) |> summarise(value = weighted.mean(estimate, n), .groups = "drop")
+          group_by(district = area, sas_year) |> summarise(value = weighted.mean(estimate, wsum), .groups = "drop")
       }
       validate(need(nrow(d) > 0, tr("no_data")))
       d <- d |> arrange(sas_year) |> mutate(hover = paste0("<b>", district, "</b> \u00B7 ", sas_year, "<br>",
@@ -88,23 +90,35 @@ mod_map_server <- function(id, f, tr, set_district) {
 
     output$rank <- renderPlotly({
       d <- dist_vals() |> filter(!is.na(value)) |> arrange(value); validate(need(nrow(d) > 0, tr("no_data")))
-      sel <- f()$district
+      sel <- if (f()$area_level != "national") f()$districts else character()
       plot_ly(d, y = ~factor(district, levels = district), x = ~value, type = "bar", orientation = "h",
-              marker = list(color = ifelse(d$district == sel, brand$amber, col_irrigated)),
+              marker = list(color = ifelse(d$district %in% sel, brand$amber, col_irrigated)),
               text = ~paste0(district, ": ", fmt_num(value, if (is_total()) 0 else 1), unit()),
               hoverinfo = "text", textposition = "none") |>
         plotly_std(x = tr(paste0("unit_", if (is_total()) input$metric else "pct")), legend = FALSE) |>
-        layout(yaxis = list(title = "", tickfont = list(size = 11)))
+        layout(yaxis = list(title = "", tickfont = list(size = 10.5)), bargap = 0.25)
     })
     output$rank_means <- renderUI(span(tr("m_rank")))
 
     output$profile <- renderUI({
       dist <- f()$district
+      if (!nzchar(dist) && f()$area_level != "national") {
+        d <- dist_vals() |> filter(district %in% f()$districts) |> arrange(desc(value))
+        return(tagList(h4(f()$area), p(class = "muted", tr("profile_multi", nrow(d))),
+          tags$table(class = "profile-table",
+            tags$thead(tags$tr(tags$th(tr("district")), tags$th(tr(paste0("ind_", input$metric))))),
+            tags$tbody(lapply(seq_len(nrow(d)), \(i) tags$tr(
+              tags$td(tags$a(href = "#", class = "pick-link", d$district[i],
+                                 onclick = sprintf("Shiny.setInputValue('%s', '%s', {priority: 'event'})",
+                                                   session$ns("pick"), d$district[i]))),
+              tags$td(fmt_num(d$value[i], if (is_total()) 0 else 1), unit(), " ", rel_badge(d$reliability[i], tr)))))),
+          p(class = "source", tr("profile_pick"))))
+      }
       if (!nzchar(dist)) return(div(class = "profile-empty", fontawesome::fa("hand-pointer"), p(tr("profile_empty"))))
       inds <- c("irrigated", "irrig_modern", "inorganic_fert", "organic_fert", "anti_erosion", "mechanised")
       pick <- function(lv, ar) D$est |> filter(level == lv, area == ar, indicator %in% inds,
                                                sas_year %in% f()$years, sas_season %in% f()$seasons) |>
-        group_by(indicator) |> summarise(v = weighted.mean(estimate, n), n = sum(n),
+        group_by(indicator) |> summarise(v = weighted.mean(estimate, wsum), n = sum(n),
                                          rel = names(sort(table(reliability), decreasing = TRUE))[1], .groups = "drop")
       dd <- pick("district", dist); nn <- pick("national", "Rwanda") |> select(indicator, nat = v)
       rr <- D$rain$district |> filter(district_std == dist)

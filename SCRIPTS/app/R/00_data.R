@@ -15,7 +15,18 @@ D <- list(
   crop_dist  = ld("crop_district_season"),
   meta       = ld("meta"),
   model      = ld("model_adoption"),
-  model_yield = ld("model_yield"))
+  model_yield = ld("model_yield"),
+  ahs        = if (file.exists("data/ahs.rds")) ld("ahs"))
+
+# Residual "Other (specify)" crops and categories are never shown (user decision
+# 2026-10-14); SCRIPTS/07 already drops them, this guards older data files.
+is_other <- function(x) grepl("^other|specify|unclassified", x, ignore.case = TRUE)
+D$crop      <- dplyr::filter(D$crop, !is_other(crop_name), !is_other(crop_group))
+D$crop_dist <- dplyr::filter(D$crop_dist, !is_other(crop_name), !is_other(crop_group))
+D$tech$mix  <- D$tech$mix |> dplyr::filter(!is_other(category)) |>
+  dplyr::group_by(sas_year, sas_season, dimension, district_std, period) |>
+  dplyr::mutate(share = 100 * w / sum(w)) |> dplyr::ungroup()
+D$tech$cost <- dplyr::filter(D$tech$cost, !is_other(irrig_tool_level))
 YEARS     <- sort(unique(D$est$sas_year))
 CROP_GRPS <- sort(unique(na.omit(D$crop$crop_group)))
 

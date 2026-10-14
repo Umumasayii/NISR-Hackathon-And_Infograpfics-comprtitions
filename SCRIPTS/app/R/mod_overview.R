@@ -10,7 +10,8 @@ mod_overview_ui <- function(id, tr) {
             h1(tr("hero_title")), p(tr("hero_sub")),
             div(class = "hero-meta",
                 span(fontawesome::fa("database"), " ", tr("hero_m1")), span(fontawesome::fa("calendar"), " ", tr("hero_m2")),
-                span(fontawesome::fa("map"), " ", tr("hero_m3")), span(fontawesome::fa("cloud-rain"), " ", tr("hero_m4")))),
+                span(fontawesome::fa("map"), " ", tr("hero_m3")), span(fontawesome::fa("cloud-rain"), " ", tr("hero_m4")),
+                span(fontawesome::fa("people-roof"), " ", tr("hero_m5")))),
         div(class = "hero-steps",
             actionLink(ns("go_map"), tagList(fontawesome::fa("droplet"), tr("act_gap"))),
             actionLink(ns("go_evidence"), tagList(fontawesome::fa("seedling"), tr("act_payoff"))),
@@ -22,22 +23,24 @@ mod_overview_ui <- function(id, tr) {
     section_title(tr("s_numbers"), tr("s_numbers_sub")),
     uiOutput(ns("tiles")),
     layout_columns(
-      col_widths = c(8, 4),
+      col_widths = c(6, 6),
       chart_card(tr("c_trend"),
-                 tagList(radioButtons(ns("trend_ind"), NULL, inline = TRUE, width = "100%",
-                                      choices = setNames(trend_inds, tr(paste0("ind_", trend_inds)))),
-                         plotlyOutput(ns("trend"), height = "340px")),
+                 tagList(div(class = "card-tools",
+                             selectizeInput(ns("trend_ind"), NULL, width = "100%",
+                                            choices = setNames(trend_inds, tr(paste0("ind_", trend_inds))),
+                                            options = list(dropdownParent = "body"))),
+                         plotlyOutput(ns("trend"), height = "300px")),
                  ns("trend_means"), tr("src_sas_ci"), icon = "chart-line"),
-      chart_card(tr("c_inputs"), plotlyOutput(ns("inputs"), height = "400px"), ns("inputs_means"), tr("src_sas_ci"),
+      chart_card(tr("c_inputs"), plotlyOutput(ns("inputs"), height = "352px"), ns("inputs_means"), tr("src_sas_ci"),
                  icon = "flask")),
     layout_columns(
-      col_widths = c(5, 7),
-      chart_card(tr("c_province"), plotlyOutput(ns("prov"), height = "320px"), ns("prov_means"), tr("src_sas_ci"),
+      col_widths = c(4, 4, 4),
+      chart_card(tr("c_province"), plotlyOutput(ns("prov"), height = "290px"), ns("prov_means"), tr("src_sas_ci"),
                  icon = "layer-group"),
-      chart_card(tr("c_production"), plotlyOutput(ns("prod"), height = "320px"), ns("prod_means"), tr("src_sas_totals"),
-                 icon = "wheat-awn")),
-    chart_card(tr("c_season_c"), plotlyOutput(ns("seasonc"), height = "280px"), ns("seasonc_means"), tr("src_sas_ci"),
-               icon = "sun"))
+      chart_card(tr("c_production"), plotlyOutput(ns("prod"), height = "290px"), ns("prod_means"), tr("src_sas_totals"),
+                 icon = "wheat-awn"),
+      chart_card(tr("c_season_c"), plotlyOutput(ns("seasonc"), height = "290px"), ns("seasonc_means"), tr("src_sas_ci"),
+                 icon = "sun")))
 }
 
 mod_overview_server <- function(id, f, tr, goto = NULL) {
@@ -49,10 +52,7 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
     # yearly series for an indicator (n-weighted mean of the chosen seasons)
     yearly <- function(ind, ff = f(), seasons = c("A", "B")) {
       s <- if (identical(seasons, "C")) "C" else intersect(ff$seasons, seasons) %||% seasons
-      est_for(ff, ind, seasons = s) |>
-        group_by(sas_year) |> summarise(estimate = weighted.mean(estimate, n), n = sum(n),
-                                        rel = names(sort(table(reliability), decreasing = TRUE))[1], .groups = "drop") |>
-        arrange(sas_year)
+      by_year(est_for(ff, ind, seasons = s))
     }
 
     output$findings <- renderUI({
@@ -103,7 +103,7 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
                     tagList(yr(sc), tr("k_season_c_sub")), num = lst(sc), suffix = "%", decimals = 1),
           stat_tile(tr("k_maize"), paste0("+", fmt_num(ya$adjusted_pct, 0), "%"), "seedling", brand$green, NULL, TRUE, NULL,
                     tr("k_maize_sub", fmt_num(ya$adjusted_low, 0), fmt_num(ya$adjusted_high, 0), fmt_num(ya$raw_pct, 0)),
-                    num = round(ya$adjusted_pct), suffix = "%")))
+                    num = round(ya$adjusted_pct), suffix = "%", prefix = "+")))
     })
 
     trend_d <- reactive(est_for(f(), input$trend_ind %||% "irrigated"))
@@ -113,12 +113,11 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
       for (s in intersect(c("A", "B", "C"), unique(e$sas_season))) {
         d <- e |> filter(sas_season == s) |> arrange(sas_year)
         p <- p |>
-          add_ribbons(data = d, x = ~sas_year, ymin = ~ci_low, ymax = ~ci_high, fillcolor = paste0(season_cols[[s]], "22"),
-                      line = list(width = 0), hoverinfo = "skip", showlegend = FALSE) |>
           add_trace(data = d, x = ~sas_year, y = ~estimate, type = "scatter", mode = "lines+markers",
-                    name = tr(paste0("season_", tolower(s))), line = list(color = season_cols[[s]], width = 2.5),
-                    marker = list(size = 9, color = season_cols[[s]], line = list(color = "#fff", width = 2)),
-                    text = ~paste0(sas_year, sas_season, ": ", fmt_pct(estimate), " (95% CI ", fmt_pct(ci_low), "\u2013",
+                    name = tr(paste0("season_", tolower(s))),
+                    line = list(color = season_cols[[s]], width = 3, shape = "spline", smoothing = 0.5),
+                    marker = list(size = 8, color = season_cols[[s]], line = list(color = "#fff", width = 2)),
+                    text = ~paste0(sas_year, sas_season, ": <b>", fmt_pct(estimate), "</b> (95% CI ", fmt_pct(ci_low), "\u2013",
                                    fmt_pct(ci_high), ") \u00B7 n = ", fmt_num(n)),
                     hoverinfo = "text")
       }
@@ -140,20 +139,21 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
       if (!nrow(e)) return(e)
       ly <- max(e$sas_year)
       e |> filter(sas_year == ly) |> group_by(indicator) |>
-        summarise(estimate = weighted.mean(estimate, n), ci_low = weighted.mean(ci_low, n), ci_high = weighted.mean(ci_high, n),
+        summarise(estimate = weighted.mean(estimate, wsum), ci_low = weighted.mean(ci_low, wsum), ci_high = weighted.mean(ci_high, wsum),
                   n = sum(n), year = ly, .groups = "drop") |>
         mutate(label = tr(paste0("ind_", indicator))) |> arrange(estimate)
     })
     output$inputs <- renderPlotly({
       d <- inputs_d(); validate(need(nrow(d) > 0, tr("no_data")))
       plot_ly(d, y = ~factor(label, levels = label), x = ~estimate, type = "bar", orientation = "h",
-              marker = list(color = ifelse(d$indicator == "irrigated", brand$blue, "#A9C7B5")),
-              error_x = list(type = "data", symmetric = FALSE, array = ~ci_high - estimate,
-                             arrayminus = ~estimate - ci_low, color = brand$grey, thickness = 1),
-              hovertext = ~paste0("<b>", label, "</b><br>", fmt_pct(estimate), " (", fmt_pct(ci_low), "\u2013", fmt_pct(ci_high), ")<br>n = ", fmt_num(n)),
+              marker = list(color = ifelse(d$indicator == "irrigated", brand$blue, "#3E8E63"),
+                            line = list(width = 0)),
+              hovertext = ~paste0("<b>", label, "</b><br>", fmt_pct(estimate), " (95% CI ", fmt_pct(ci_low), "\u2013", fmt_pct(ci_high), ")<br>n = ", fmt_num(n)),
               text = ~fmt_pct(estimate, 0), textposition = "outside", hoverinfo = "text",
-              textfont = list(size = 11, color = "#5E6A66"), cliponaxis = FALSE) |>
-        plotly_std(x = tr("x_pct_plots"), legend = FALSE) |> layout(yaxis = list(title = ""), bargap = 0.35)
+              textfont = list(size = 12, color = brand$ink), cliponaxis = FALSE) |>
+        plotly_std(x = tr("x_pct_plots"), legend = FALSE) |>
+        layout(yaxis = list(title = "", ticksuffix = "  "), bargap = 0.4,
+               xaxis = list(range = c(0, max(d$estimate, 1) * 1.18), ticksuffix = "%"))
     })
     output$inputs_means <- renderUI({
       d <- inputs_d(); if (!nrow(d)) return(NULL)
@@ -163,9 +163,9 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
 
     prov_d <- reactive({
       D$est |> filter(level == "province", indicator == "irrigated", sas_season %in% (intersect(f()$seasons, c("A", "B")) %||% "A"),
-                      sas_year %in% f()$years) |>
+                      sas_year %in% f()$years, area %in% f()$provinces) |>
         mutate(period = if_else(sas_year >= 2023, "2023-2025", "2019-2022")) |>
-        group_by(area, period) |> summarise(estimate = weighted.mean(estimate, n), n = sum(n), .groups = "drop")
+        group_by(area, period) |> summarise(estimate = weighted.mean(estimate, wsum), n = sum(n), .groups = "drop")
     })
     output$prov <- renderPlotly({
       d <- prov_d(); validate(need(nrow(d) > 0, tr("no_data")))
@@ -195,14 +195,15 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
       d <- prod_d(); validate(need(nrow(d) > 0, tr("no_data")))
       grp <- d |> group_by(crop_group) |> summarise(t = sum(production_t)) |> arrange(desc(t)) |> pull(crop_group)
       top <- head(grp, 6)
-      d <- d |> mutate(crop_group = if_else(crop_group %in% top, crop_group, tr("other"))) |>
-        group_by(sas_year, crop_group) |> summarise(production_t = sum(production_t), .groups = "drop") |>
-        mutate(crop_group = factor(crop_group, levels = c(top, tr("other"))))
-      cols <- setNames(c(series_cols, brand$grey)[seq_along(levels(d$crop_group))], levels(d$crop_group))
+      # the six largest groups only (no "Other" bucket)
+      d <- d |> filter(crop_group %in% top) |> mutate(crop_group = factor(crop_group, levels = top))
+      cols <- setNames(series_cols[seq_along(top)], top)
       plot_ly(d, x = ~sas_year, y = ~production_t / 1000, color = ~crop_group, colors = cols, type = "bar",
               text = ~paste0("<b>", crop_group, "</b> \u00B7 ", sas_year, "<br>", fmt_num(production_t / 1000), " kt"),
               hoverinfo = "text", textposition = "none", marker = list(line = list(color = "#FFFFFF", width = 1.5))) |>
-        plotly_std(y = tr("y_kt"), dtick = 1) |> layout(barmode = "stack", bargap = 0.3)
+        plotly_std(dtick = 1) |>
+        layout(barmode = "stack", bargap = 0.3, yaxis = list(ticksuffix = " kt"),
+               legend = list(orientation = "h", y = -0.18, font = list(size = 10.5), entrywidth = 0.5, entrywidthmode = "fraction"))
     })
     output$prod_means <- renderUI({
       d <- prod_d(); if (!nrow(d)) return(NULL)
@@ -214,13 +215,12 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
     output$seasonc <- renderPlotly({
       d <- sc_d(); validate(need(nrow(d) > 0, tr("no_data")))
       plot_ly(d, x = ~sas_year, y = ~estimate, type = "bar", marker = list(color = "#B07A1C"),
-              error_y = list(type = "data", symmetric = FALSE, array = ~ci_high - estimate, arrayminus = ~estimate - ci_low,
-                             color = brand$grey, thickness = 1),
-              hovertext = ~paste0("<b>", sas_year, "C</b><br>", fmt_pct(estimate), " (", fmt_pct(ci_low), "\u2013", fmt_pct(ci_high),
+              hovertext = ~paste0("<b>", sas_year, "C</b><br>", fmt_pct(estimate), " (95% CI ", fmt_pct(ci_low), "\u2013", fmt_pct(ci_high),
                                   ")<br>n = ", fmt_num(n), " \u00B7 ", reliability),
               text = ~fmt_pct(estimate, 0), textposition = "outside", hoverinfo = "text",
-              textfont = list(color = "#5E6A66"), cliponaxis = FALSE) |>
-        plotly_std(y = tr("y_pct_plots"), legend = FALSE, dtick = 1) |> layout(bargap = 0.45)
+              textfont = list(color = brand$ink, size = 12), cliponaxis = FALSE) |>
+        plotly_std(y = tr("y_pct_plots"), legend = FALSE, dtick = 1) |>
+        layout(bargap = 0.4, yaxis = list(range = c(0, max(d$estimate, 1) * 1.2)))
     })
     output$seasonc_means <- renderUI({
       d <- sc_d(); if (!nrow(d)) return(NULL)

@@ -53,17 +53,23 @@ plotly_std <- function(p, x = NULL, y = NULL, legend = TRUE, ...) {
 }
 
 choropleth <- function(d, geojson, value, label, colorscale = seq_green, unit = "", source = "map",
-                       zmin = NULL, zmax = NULL) {
+                       zmin = NULL, zmax = NULL, selected = NULL) {
   d <- d[!is.na(d[[value]]), ]
+  # selected districts get a dark outline; the rest a white one
+  hl <- !is.null(selected) && length(selected) < 30 && length(selected) > 0
+  lw <- if (hl) ifelse(d$district %in% selected, 2.5, 0.8) else 1
+  lc <- if (hl) ifelse(d$district %in% selected, brand$ink, "#FFFFFF") else "#FFFFFF"
   plotly::plot_ly(source = source) |>
     plotly::add_trace(type = "choropleth", geojson = geojson, featureidkey = "properties.district",
                       locations = d$district, z = d[[value]], zmin = zmin, zmax = zmax,
                       colorscale = colorscale, customdata = d$district,
                       text = d$hover %||% paste0(d$district, "<br>", label, ": ", fmt_num(d[[value]], 1), unit),
-                      hoverinfo = "text", marker = list(line = list(color = "#FFFFFF", width = 1)),
-                      colorbar = list(title = list(text = label), thickness = 12, len = 0.7)) |>
+                      hoverinfo = "text", marker = list(line = list(color = lc, width = lw)),
+                      colorbar = list(title = list(text = label, side = "top"), thickness = 10, len = 0.6,
+                                      orientation = "h", x = 0.5, xanchor = "center", y = -0.02, yanchor = "top")) |>
     plotly::layout(geo = list(fitbounds = "locations", visible = FALSE, bgcolor = "rgba(0,0,0,0)"),
-                   margin = list(l = 0, r = 0, t = 0, b = 0), paper_bgcolor = "rgba(0,0,0,0)") |>
+                   margin = list(l = 0, r = 0, t = 0, b = 40), paper_bgcolor = "rgba(0,0,0,0)",
+                   font = list(family = FONT_BODY, color = brand$ink)) |>
     # base-map file served from www/ (empty: only district shapes are drawn), so
     # the map also works offline and never waits for cdn.plot.ly
     plotly::config(displaylogo = FALSE, topojsonURL = "") |>
@@ -97,7 +103,7 @@ sparkline_svg <- function(y, col = brand$green, w = 120, h = 34) {
 
 # Stat tile: icon chip, label, animated number, change pill, sparkline, footnote
 stat_tile <- function(label, value, icon_name, col = brand$green, delta = NULL, delta_good = TRUE,
-                      spark = NULL, foot = NULL, num = NULL, suffix = "", decimals = 0) {
+                      spark = NULL, foot = NULL, num = NULL, suffix = "", decimals = 0, prefix = "") {
   dl <- if (!is.null(delta) && !is.na(delta)) {
     up <- delta >= 0
     cls <- if (xor(up, delta_good)) "delta bad" else "delta good"
@@ -108,7 +114,7 @@ stat_tile <- function(label, value, icon_name, col = brand$green, delta = NULL, 
     shiny::div(class = "st-top", shiny::span(class = "st-icon", fontawesome::fa(icon_name)),
                shiny::span(class = "st-label", label)),
     shiny::div(class = "st-mid",
-      shiny::span(class = "st-value", `data-count` = num, `data-suffix` = suffix, `data-dec` = decimals, value), dl),
+      shiny::span(class = "st-value", `data-count` = num, `data-suffix` = suffix, `data-prefix` = prefix, `data-dec` = decimals, value), dl),
     if (!is.null(spark)) shiny::div(class = "st-spark", sparkline_svg(spark, col)),
     if (!is.null(foot)) shiny::div(class = "st-foot", foot))
 }
@@ -139,3 +145,24 @@ rel_badge <- function(r, tr = NULL) {
               if (is.null(tr)) r else tr(key))
 }
 p <- shiny::p
+
+# ---- multi-select dropdown filter ------------------------------------------------
+# A button that opens a checkbox list with "Select all" / "Clear" (and a search box
+# for long lists). The value is an ordinary checkboxGroupInput, so the server can
+# update it with updateCheckboxGroupInput(). An empty selection means "all".
+# Behaviour (open/close, select all, search, button text) lives in www/app.js.
+multi_pick <- function(id, label, choices, selected = choices, icon_name = "list-check",
+                       search = FALSE, tr, all_means = NULL) {
+  shiny::div(class = "mp", `data-input` = id, `data-all` = all_means %||% tr("all"),
+             `data-nsel` = tr("n_selected"), `data-total` = length(choices),
+    shiny::div(class = "mp-label", shiny::span(class = "mp-ic", fontawesome::fa(icon_name)), label),
+    shiny::tags$button(type = "button", class = "mp-btn", `aria-expanded` = "false",
+      shiny::span(class = "mp-text", tr("all")), shiny::span(class = "mp-count"),
+      shiny::span(class = "mp-chev", fontawesome::fa("chevron-down"))),
+    shiny::div(class = "mp-menu",
+      shiny::div(class = "mp-actions",
+        shiny::tags$button(type = "button", class = "mp-all", fontawesome::fa("check-double"), " ", tr("select_all")),
+        shiny::tags$button(type = "button", class = "mp-none", fontawesome::fa("xmark"), " ", tr("clear"))),
+      if (search) shiny::tags$input(type = "search", class = "mp-search", placeholder = tr("search_ph")),
+      shiny::checkboxGroupInput(id, NULL, choices = choices, selected = selected)))
+}
