@@ -10,16 +10,17 @@ mod_priority_ui <- function(id, tr) {
     div(class = "callout warn", fontawesome::fa("triangle-exclamation"), " ", strong(tr("prelim_title")), " ", tr("prelim_text")),
     layout_columns(
       col_widths = c(3, 9),
-      card(class = "chart-card", card_header(fontawesome::fa("sliders"), " ", tr("weights")),
+      card(class = "chart-card", card_header(span(class = "ch-icon", fontawesome::fa("sliders")), span(tr("weights"))),
            card_body(
              lapply(seq_along(comp_names), \(i)
                sliderInput(ns(comp_names[i]), tr(paste0("w_", comp_names[i])), 0, 1, unname(w0[i]), step = 0.05)),
              actionButton(ns("reset_w"), tr("reset_weights"), class = "btn-sm btn-outline-secondary"),
              p(class = "source mt-2", tr("weights_help")))),
       layout_columns(col_widths = c(6, 6),
-        chart_card(tr("c_priority_map"), plotlyOutput(ns("map"), height = "420px"), ns("map_means"), tr("src_priority")),
-        chart_card(tr("c_sensitivity"), plotlyOutput(ns("sens"), height = "420px"), ns("sens_means"), tr("src_sensitivity")))),
-    card(class = "chart-card", full_screen = TRUE, card_header(tr("c_priority_table")),
+        chart_card(tr("c_priority_map"), plotlyOutput(ns("map"), height = "380px"), ns("map_means"), tr("src_priority"), icon = "map"),
+        chart_card(tr("c_sensitivity"), plotlyOutput(ns("sens"), height = "380px"), ns("sens_means"), tr("src_sensitivity"),
+                   icon = "arrows-up-down"))),
+    card(class = "chart-card", full_screen = TRUE, card_header(span(class = "ch-icon", fontawesome::fa("table")), span(tr("c_priority_table"))),
          card_body(DT::DTOutput(ns("table"))), card_footer(div(class = "source", tr("src_priority")))))
 }
 
@@ -40,7 +41,8 @@ mod_priority_server <- function(id, f, tr, set_district) {
       d <- scored() |> transmute(district = district_std, value = score_user,
                                  hover = paste0("<b>", district, "</b> #", rank_user, "<br>", tr("score"), ": ", fmt_num(value, 0),
                                                 "/100<br>", tr("stability"), ": ", stability))
-      choropleth(d, D$geo, "value", tr("score"), colorscale = seq_green, source = "prio_map", zmin = 0, zmax = 100)
+      choropleth(d, D$geo, "value", tr("score"), colorscale = seq_green, source = "prio_map", zmin = 0, zmax = 100,
+                 selected = if (f()$area_level != "national") f()$districts)
     })
     observeEvent(plotly_clicked(session, "prio_map"), set_district(plotly_clicked(session, "prio_map")))
     output$map_means <- renderUI({
@@ -51,13 +53,15 @@ mod_priority_server <- function(id, f, tr, set_district) {
     })
 
     output$sens <- renderPlotly({
-      d <- scored() |> head(15) |> arrange(desc(rank_user))
+      d <- scored()
+      d <- (if (f()$area_level != "national") filter(d, district_std %in% f()$districts) else head(d, 15)) |>
+        arrange(desc(rank_user))
       ord <- d$district_std
       scol <- c("Stable" = col_irrigated, "Moderately sensitive" = "#B07A1C", "Sensitive to weights" = brand$terracotta)
       plot_ly(d, y = ~factor(district_std, levels = ord), colors = scol) |>
         add_segments(x = ~rank_p10, xend = ~rank_p90, yend = ~factor(district_std, levels = ord),
                      line = list(color = "#C9D3CD", width = 8), hoverinfo = "skip", showlegend = FALSE) |>
-        add_markers(x = ~rank_user, color = ~stability, marker = list(size = 12),
+        add_markers(x = ~rank_user, color = ~stability, marker = list(size = 12, line = list(color = "#fff", width = 1.5)),
                     text = ~paste0("<b>", district_std, "</b><br>", tr("your_rank"), ": ", rank_user, "<br>",
                                    tr("rank_range"), ": ", round(rank_p10), "\u2013", round(rank_p90), "<br>", tr("prob_top5"), ": ",
                                    fmt_pct(prob_top5_pct, 0)), hoverinfo = "text") |>
@@ -70,7 +74,7 @@ mod_priority_server <- function(id, f, tr, set_district) {
     })
 
     output$table <- DT::renderDT({
-      d <- scored() |> left_join(D$lookup |> rename(prov = province), by = c("district_std" = "district")) |>
+      d <- scored() |> filter(district_std %in% f()$districts) |> left_join(D$lookup |> rename(prov = province), by = c("district_std" = "district")) |>
         transmute(`#` = rank_user, District = district_std, Province = prov, Score = round(score_user, 1),
                   Need = round(100 * c_need), Gap = round(100 * c_gap), Scale = round(100 * c_scale),
                   Equity = round(100 * c_equity), Readiness = round(100 * c_readiness),

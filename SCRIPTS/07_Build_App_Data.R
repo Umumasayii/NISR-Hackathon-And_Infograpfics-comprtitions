@@ -13,6 +13,8 @@
 
 source(file.path(Sys.getenv("HACKATHON_ROOT", "."), "SCRIPTS", "00_Config.R"))
 t0 <- Sys.time()
+# residual "Other (specify)" crops and categories are not shown in the app
+is_other <- function(x) grepl("^other|specify", x, ignore.case = TRUE)
 
 plot_df <- read_master("master_plot")      |> add_design_vars()
 crop_df <- read_master("master_crop_plot") |> add_design_vars()
@@ -56,7 +58,7 @@ est_plot <- bind_rows(
   est_level("province", "province", "province"),
   est_level("district_std", "district", "district_std")) |>
   mutate(across(c(estimate, se, ci_low, ci_high), \(x) 100 * x)) |>
-  select(level, area, sas_year, sas_season, indicator, estimate, se, ci_low, ci_high, n, cv, reliability)
+  select(level, area, sas_year, sas_season, indicator, estimate, se, ci_low, ci_high, n, wsum, cv, reliability)
 save_app(est_plot, "est_plot")
 
 # ---- 3. TOTALS (hectares, tonnes) --------------------------------------------
@@ -71,7 +73,7 @@ save_app(bind_rows(
 # ---- 4. YIELD EVIDENCE (observed association, irrigated vs rain-fed) -----------
 message("4/9 Yield evidence")
 yd <- crop_df |> filter(yield_ok, !is.na(irrigated))
-crops_enough <- yd |> filter(irrigated == 1L) |> count(crop_name) |> filter(n >= 100) |> pull(crop_name)
+crops_enough <- yd |> filter(irrigated == 1L) |> count(crop_name) |> filter(n >= 100, !is_other(crop_name)) |> pull(crop_name)
 yd <- yd |> filter(crop_name %in% crops_enough) |>
   mutate(season_type = if_else(sas_season == "C", "Season C (dry)", "Seasons A+B (main)"),
          irrigation = if_else(irrigated == 1L, "Irrigated", "Rain-fed"))
@@ -84,8 +86,9 @@ save_app(list(pooled = yield_pooled, by_year = yield_year, ladder = ladder, crop
 
 # ---- 5. HOW FARMERS IRRIGATE (shares among irrigated plots) ---------------------
 message("5/9 Irrigation technology mix")
+# residual "Other" answers are left out; shares are of the named categories
 share_of <- function(d, var, by) d |>
-  filter(irrigated == 1L, !is.na(.data[[var]])) |>
+  filter(irrigated == 1L, !is.na(.data[[var]]), !is_other(.data[[var]])) |>
   group_by(across(all_of(c(by, var)))) |>
   summarise(w = sum(weight), n = n(), .groups = "drop_last") |>
   mutate(share = 100 * w / sum(w), n_group = sum(n)) |> ungroup() |>
@@ -101,7 +104,8 @@ src_any <- plot_df |> filter(irrigated == 1L) |>
   group_by(sas_year, sas_season, source) |>
   summarise(share = 100 * sum(weight * used) / sum(weight), n = n(), .groups = "drop") |>
   mutate(source = str_remove(source, "^src_") |> str_replace_all("_", " ") |> str_squish() |> str_to_sentence())
-cost <- plot_df |> filter(irrigated == 1L, irrig_cost_rwf > 0, plot_area_ha > 0, !is.na(irrig_tool_level)) |>
+cost <- plot_df |> filter(irrigated == 1L, irrig_cost_rwf > 0, plot_area_ha > 0, !is.na(irrig_tool_level),
+                   !is_other(irrig_tool_level)) |>
   mutate(cost_rwf_ha = irrig_cost_rwf / plot_area_ha) |>
   group_by(irrig_tool_level) |>
   summarise(p25 = quantile(cost_rwf_ha, .25), median = median(cost_rwf_ha), p75 = quantile(cost_rwf_ha, .75),
@@ -194,8 +198,26 @@ save_app(list(table = screen, default_weights = default_weights), "priority_scre
 
 # ---- 9. EXPLORER, DOWNLOADS, METADATA -----------------------------------------
 message("9/9 Explorer tables and metadata")
-save_app(read_master("master_crop_season") |> filter(n_crop_plots >= 10), "crop_season")
-save_app(read_master("master_crop_district_season") |> filter(n_crop_plots >= 10), "crop_district_season")
+save_app(read_master("master_crop_season") |> filter(n_crop_plots >= 10, !is_other(crop_name)), "crop_season")
+save_app(read_master("master_crop_district_season") |> filter(n_crop_plots >= 10, !is_other(crop_name)),
+         "crop_district_season")
+# ---- AGRICULTURAL HOUSEHOLD SURVEY (AHS) AGGREGATES -------------------------
+# Weighted indicators built by 10_AHS_Preparation.R. Only the aggregate tables are
+# copied (never the household file). Residual "Other" / "Unclassified" categories
+# are dropped and the remaining shares re-scaled to 100%.
+ahs_file <- file.path(dir_root, "DATA", "processed", "ahs", "ahs_indicators.rds")
+if (file.exists(ahs_file)) {
+  message("AHS aggregates")
+  ahs <- readRDS(ahs_file)
+  drop_other <- function(x) !grepl("^other|unclassified|specify", x, ignore.case = TRUE)
+  save_app(list(
+    indicators = ahs$indicators |> filter(is.finite(estimate)),
+    equity = ahs$equity |> filter(drop_other(group)),
+    irrigation_mix = ahs$irrigation_mix |> filter(drop_other(category)) |>
+      group_by(year, dimension) |> mutate(share = 100 * w / sum(w)) |> ungroup(),
+    built = ahs$built), "ahs")
+} else message("AHS aggregates skipped: run 10_AHS_Preparation.R first")
+
 skip <- if (file.exists(file.path(dir_master, "skip_pattern_audit.csv")))
   read_csv(file.path(dir_master, "skip_pattern_audit.csv"), show_col_types = FALSE) else tibble()
 joins <- if (file.exists(file.path(dir_master, "master_join_log.csv")))
@@ -206,10 +228,12 @@ save_app(list(
   sources = tibble(
     source = c("NISR Seasonal Agricultural Survey (SAS) 2019-2025, Seasons A/B/C",
                "CHIRPS v2 monthly rainfall by district, 1981-2025",
-               "GADM 4.1 district boundaries (level 2)"),
+               "GADM 4.1 district boundaries (level 2)",
+               "NISR Agricultural Household Survey (AHS) 2017, 2020, 2024"),
     use = c("Irrigation, inputs, production, yields, farmer characteristics",
             "Season rainfall, anomalies vs 1991-2020, dry-season frequency",
-            "District maps")),
+            "District maps",
+            "Household irrigation, inputs, services and equity (aggregates only)")),
   n_plots = nrow(plot_df), n_crop_plots = nrow(crop_df),
   skip_audit = skip, join_log = joins), "meta")
 

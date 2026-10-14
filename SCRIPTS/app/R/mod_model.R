@@ -9,16 +9,16 @@ mod_model_ui <- function(id, tr) {
     uiOutput(ns("perf")),
     layout_columns(
       col_widths = c(6, 6),
-      chart_card(tr("c_calibration"), plotlyOutput(ns("calib"), height = "340px"), ns("calib_means"), tr("src_model")),
-      chart_card(tr("c_fairness"), plotlyOutput(ns("fair"), height = "340px"), ns("fair_means"), tr("src_model"))),
+      chart_card(tr("c_calibration"), plotlyOutput(ns("calib"), height = "300px"), ns("calib_means"), tr("src_model"), icon = "bullseye"),
+      chart_card(tr("c_fairness"), plotlyOutput(ns("fair"), height = "300px"), ns("fair_means"), tr("src_model"), icon = "scale-balanced")),
     layout_columns(
       col_widths = c(5, 7),
-      chart_card(tr("c_importance"), plotlyOutput(ns("imp"), height = "380px"), ns("imp_means"), tr("src_model")),
-      chart_card(tr("c_odds"), plotlyOutput(ns("odds"), height = "380px"), ns("odds_means"), tr("src_model"))),
+      chart_card(tr("c_importance"), plotlyOutput(ns("imp"), height = "340px"), ns("imp_means"), tr("src_model"), icon = "list-ol"),
+      chart_card(tr("c_odds"), plotlyOutput(ns("odds"), height = "340px"), ns("odds_means"), tr("src_model"), icon = "arrows-left-right")),
     layout_columns(
       col_widths = c(5, 7),
       card(class = "chart-card sim-card",
-           card_header(fontawesome::fa("sliders"), " ", tr("c_simulator")),
+           card_header(span(class = "ch-icon", fontawesome::fa("sliders")), span(tr("c_simulator"))),
            card_body(
              layout_columns(col_widths = c(6, 6), fill = FALSE,
                selectInput(ns("s_district"), tr("district"), L$district, "Kirehe"),
@@ -33,7 +33,7 @@ mod_model_ui <- function(id, tr) {
                selectInput(ns("s_age"), tr("dim_age_band"), L$age_band, "35-54"),
                selectInput(ns("s_large"), tr("farm_type"), L$large_farm, "Small-scale")),
              uiOutput(ns("sim_out")))),
-      chart_card(tr("c_potential"), plotlyOutput(ns("pot"), height = "520px"), ns("pot_means"), tr("src_model"))))
+      chart_card(tr("c_potential"), plotlyOutput(ns("pot"), height = "470px"), ns("pot_means"), tr("src_model"), icon = "map")))
 }
 
 # Predict from the light glm copy (terms + xlevels + coefficients, no data)
@@ -46,7 +46,8 @@ predict_light <- function(m, newdata) {
 mod_model_server <- function(id, f, tr) {
   moduleServer(id, function(input, output, session) {
     M <- D$model
-    observeEvent(f()$district, if (nzchar(f()$district)) updateSelectInput(session, "s_district", selected = f()$district))
+    observeEvent(f()$districts, if (f()$area_level != "national" && f()$districts[1] %in% M$levels$district)
+      updateSelectInput(session, "s_district", selected = f()$districts[1]))
 
     output$perf <- renderUI({
       g <- M$performance |> filter(grepl("Logistic", model)); r <- M$performance |> filter(grepl("forest", model))
@@ -82,7 +83,7 @@ mod_model_server <- function(id, f, tr) {
               text = ~paste0(lbl, "<br>AUC ", formatC(auc, format = "f", digits = 3), "<br>", tr("calib_gap"), ": ",
                              ifelse(calibration_gap_pts > 0, "+", ""), fmt_num(calibration_gap_pts, 2), " pts<br>n = ", fmt_num(n)),
               hoverinfo = "text", textposition = "none") |>
-        plotly_std(y = "AUC", legend = FALSE) |> layout(yaxis = list(range = c(0.5, 1)), xaxis = list(title = ""))
+        plotly_std(y = "AUC", legend = FALSE) |> layout(yaxis = list(range = c(0.5, 1)), xaxis = list(title = ""), bargap = 0.35)
     })
     output$fair_means <- renderUI({
       d <- M$fairness
@@ -95,7 +96,7 @@ mod_model_server <- function(id, f, tr) {
       plot_ly(d, y = ~factor(feature, levels = feature), x = ~importance, type = "bar", orientation = "h",
               marker = list(color = col_irrigated), text = ~paste0(feature, ": ", fmt_num(importance, 0)),
               hoverinfo = "text", textposition = "none") |>
-        plotly_std(x = tr("x_importance"), legend = FALSE) |> layout(yaxis = list(title = ""))
+        plotly_std(x = tr("x_importance"), legend = FALSE) |> layout(yaxis = list(title = ""), bargap = 0.35)
     })
     output$imp_means <- renderUI(p(tr("m_imp", M$importance$feature[1], M$importance$feature[2])))
 
@@ -104,7 +105,7 @@ mod_model_server <- function(id, f, tr) {
         arrange(odds_ratio)
       plot_ly(d, y = ~factor(term, levels = term)) |>
         add_segments(x = ~or_low, xend = ~or_high, yend = ~factor(term, levels = term),
-                     line = list(color = "#9DB8A9", width = 3), hoverinfo = "skip", showlegend = FALSE) |>
+                     line = list(color = "#C5D6CC", width = 2.5), hoverinfo = "skip", showlegend = FALSE) |>
         add_markers(x = ~odds_ratio, marker = list(size = 10, color = ifelse(d$or_low > 1, col_irrigated,
                                                                          ifelse(d$or_high < 1, brand$terracotta, brand$grey))),
                     text = ~paste0(term, "<br>OR ", fmt_num(odds_ratio, 2), " (", fmt_num(or_low, 2), "\u2013", fmt_num(or_high, 2), ")"),
@@ -139,7 +140,7 @@ mod_model_server <- function(id, f, tr) {
                                                    ifelse(value > 0, "+", ""), fmt_num(value, 1), " pts"))
       lim <- max(abs(d$value))
       choropleth(d, D$geo, "value", tr("gap_pts"), colorscale = list(c(0, "#1976B9"), c(0.5, "#F2F2EE"), c(1, "#B07A1C")),
-                 source = "pot_map", zmin = -lim, zmax = lim)
+                 source = "pot_map", zmin = -lim, zmax = lim, selected = if (f()$area_level != "national") f()$districts)
     })
     output$pot_means <- renderUI({
       d <- M$potential |> arrange(desc(gap_pts))

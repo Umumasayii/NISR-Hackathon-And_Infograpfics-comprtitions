@@ -6,13 +6,17 @@ mod_how_ui <- function(id, tr) {
   tagList(
     filters_used(tr, c("years", "seasons", "area")),
     div(class = "callout soft", fontawesome::fa("circle-info"), " ", tr("how_intro")),
-    div(class = "how-dim", radioButtons(ns("dim"), NULL, inline = TRUE, choices = setNames(tech_dims, sapply(paste0("dim_", tech_dims), tr)))),
+    div(class = "toolbar", span(class = "tb-label", fontawesome::fa("layer-group"), " ", tr("show_by")),
+        selectInput(ns("dim"), NULL, width = "300px", choices = setNames(tech_dims, sapply(paste0("dim_", tech_dims), tr)))),
     layout_columns(
       col_widths = c(7, 5),
-      chart_card(tr("c_mix_trend"), plotlyOutput(ns("mix"), height = "380px"), ns("mix_means"), tr("src_tech")),
-      chart_card(tr("c_cost"), plotlyOutput(ns("cost"), height = "380px"), ns("cost_means"), tr("src_cost"))),
-    chart_card(tr("c_sources_any"), plotlyOutput(ns("src"), height = "340px"), ns("src_means"), tr("src_tech"), icon = "water"),
-    chart_card(tr("c_mix_district"), plotlyOutput(ns("dist"), height = "560px"), ns("dist_means"), tr("src_tech_district")))
+      chart_card(tr("c_mix_trend"), plotlyOutput(ns("mix"), height = "330px"), ns("mix_means"), tr("src_tech"), icon = "chart-column"),
+      chart_card(tr("c_cost"), plotlyOutput(ns("cost"), height = "330px"), ns("cost_means"), tr("src_cost"), icon = "coins")),
+    layout_columns(
+      col_widths = c(6, 6),
+      chart_card(tr("c_sources_any"), plotlyOutput(ns("src"), height = "380px"), ns("src_means"), tr("src_tech"), icon = "water"),
+      chart_card(tr("c_mix_district"), plotlyOutput(ns("dist"), height = "380px"), ns("dist_means"), tr("src_tech_district"),
+                 icon = "map-location-dot")))
 }
 
 mod_how_server <- function(id, f, tr) {
@@ -28,9 +32,9 @@ mod_how_server <- function(id, f, tr) {
       cats <- sort(unique(d$category))
       plot_ly(d, x = ~ys, y = ~share, color = ~factor(category, levels = cats), colors = cat_cols(cats), type = "bar",
               text = ~paste0(ys, " \u00B7 ", category, ": ", fmt_pct(share), "<br>", tr("irrigated_plots_n"), " ", fmt_num(n_group)),
-              hoverinfo = "text", textposition = "none", marker = list(line = list(color = brand$canvas, width = 1))) |>
+              hoverinfo = "text", textposition = "none", marker = list(line = list(color = "#FFFFFF", width = 1.5))) |>
         plotly_std(y = tr("y_share_irrigated")) |>
-        layout(barmode = "stack", xaxis = list(title = "", tickangle = -45, type = "category"), legend = list(y = -0.35))
+        layout(barmode = "stack", bargap = 0.25, xaxis = list(title = "", tickangle = -45, type = "category"), legend = list(y = -0.35))
     })
     output$mix_means <- renderUI({
       d <- mix_d() |> group_by(category) |> summarise(s = weighted.mean(share, n_group), .groups = "drop") |> arrange(desc(s))
@@ -57,7 +61,7 @@ mod_how_server <- function(id, f, tr) {
 
     # every water source used on irrigated plots (multiple answers allowed)
     src_d <- reactive(D$tech$sources_any |> filter(sas_year %in% f()$years, sas_season %in% f()$seasons) |>
-      group_by(source, sas_year) |> summarise(share = weighted.mean(share, n), n = sum(n), .groups = "drop"))
+      group_by(source, sas_year) |> summarise(share = weighted.mean(share, n), n = sum(n), .groups = "drop"))   # n = irrigated plots
     output$src <- renderPlotly({
       d <- src_d(); validate(need(nrow(d) > 0, tr("no_data")))
       cats <- d |> group_by(source) |> summarise(s = mean(share)) |> arrange(desc(s)) |> pull(source)
@@ -65,9 +69,10 @@ mod_how_server <- function(id, f, tr) {
       cl <- setNames(rep(c(series_cols, brand$grey), length.out = length(cats)), cats)
       for (c in cats) { x <- d |> filter(source == c) |> arrange(sas_year)
         p <- p |> add_trace(data = x, x = ~sas_year, y = ~share, type = "scatter", mode = "lines+markers", name = c,
-                            line = list(color = cl[[c]], width = 2.5), marker = list(color = cl[[c]], size = 8),
+                            line = list(color = cl[[c]], width = 3, shape = "spline", smoothing = 0.5),
+                            marker = list(color = cl[[c]], size = 7, line = list(color = "#fff", width = 1.5)),
                             text = ~paste0(c, " ", sas_year, ": ", fmt_pct(share), " \u00B7 n = ", fmt_num(n)), hoverinfo = "text") }
-      plotly_std(p, y = tr("y_share_irrigated"), dtick = 1)
+      plotly_std(p, y = tr("y_share_irrigated"), dtick = 1) |> layout(hovermode = "x unified")
     })
     output$src_means <- renderUI({
       d <- src_d() |> group_by(source) |> summarise(s = mean(share)) |> arrange(desc(s)); if (!nrow(d)) return(NULL)
@@ -77,7 +82,7 @@ mod_how_server <- function(id, f, tr) {
     dist_d <- reactive({
       d <- D$tech$mix |> filter(period == "2023-2025", dimension == input$dim) |>
         left_join(D$lookup, by = c("district_std" = "district"))
-      if (nzchar(f()$province)) d <- filter(d, province == f()$province)
+      d <- filter(d, district_std %in% f()$districts)
       d
     })
     output$dist <- renderPlotly({
@@ -90,7 +95,7 @@ mod_how_server <- function(id, f, tr) {
               text = ~paste0(district_std, " \u00B7 ", category, ": ", fmt_pct(share), "<br>", tr("irrigated_plots_n"), " ",
                              fmt_num(n_group)), hoverinfo = "text", textposition = "none") |>
         plotly_std(x = tr("y_share_irrigated")) |>
-        layout(barmode = "stack", yaxis = list(title = "", tickfont = list(size = 11)), legend = list(y = -0.12))
+        layout(barmode = "stack", bargap = if (n_distinct(d$district_std) < 8) 0.55 else 0.2, yaxis = list(title = "", tickfont = list(size = 10)), legend = list(y = -0.15))
     })
     output$dist_means <- renderUI({
       d <- dist_d(); if (!nrow(d)) return(NULL)

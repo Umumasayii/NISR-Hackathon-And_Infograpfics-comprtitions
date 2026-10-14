@@ -100,9 +100,9 @@
   "rw": "Subiza uko byari bimeze"
  },
  "filter_note": {
-  "en": "Each page lists the filters it uses. Crop and gender filters only apply where the table has those columns.",
-  "fr": "Chaque page indique les filtres utilisés. Les filtres culture et genre ne s'appliquent qu'aux tableaux qui contiennent ces colonnes.",
-  "rw": "Buri paji yerekana muyunguruzi ikoresha. Muyunguruzi y'igihingwa n'igitsina ikora gusa aho imbonerahamwe ibifite."
+  "en": "Every filter takes several values. Each page shows which filters it uses; maps and tables highlight your districts.",
+  "fr": "Chaque filtre accepte plusieurs valeurs. Chaque page indique ses filtres ; cartes et tableaux mettent vos districts en évidence.",
+  "rw": "Buri muyunguruzi wakira byinshi. Buri paji yerekana iyo ikoresha; amakarita n'imbonerahamwe bigaragaza uturere wahisemo."
  },
  "menu_story": {
   "en": "Story",
@@ -175,9 +175,9 @@
   "rw": "Byakozwe n'itsinda NiyoIshimwe"
  },
  "footer_sources": {
-  "en": "Data: NISR Seasonal Agricultural Survey 2019–2025, CHIRPS, GADM",
-  "fr": "Données : NISR Enquête agricole saisonnière 2019–2025, CHIRPS, GADM",
-  "rw": "Amakuru: NISR Ubushakashatsi ku buhinzi bw'ibihembwe 2019–2025, CHIRPS, GADM"
+  "en": "Data: NISR Seasonal Agricultural Survey 2019–2025, NISR Agricultural Household Survey 2017–2024, CHIRPS, GADM",
+  "fr": "Données : NISR Enquête agricole saisonnière 2019–2025, Enquête agricole auprès des ménages 2017–2024, CHIRPS, GADM",
+  "rw": "Amakuru: NISR Ubushakashatsi ku buhinzi bw'ibihembwe 2019–2025, Ubushakashatsi ku ngo z'abahinzi 2017–2024, CHIRPS, GADM"
  },
  "built": {
   "en": "Data built",
@@ -1910,9 +1910,9 @@
   "rw": "Buri ruziga ni akarere (ingano = ubuso, ibara = intara). Utuzamuka iburyo turimo kugabanya icyuho; utuguma hasi iburyo dukeneye kwitabwaho."
  },
  "c_treemap": {
-  "en": "What Rwanda grows: crop groups and crops (click to zoom)",
-  "fr": "Ce que cultive le Rwanda : groupes et cultures (cliquez pour zoomer)",
-  "rw": "Ibyo u Rwanda ruhinga (kanda wegere)"
+  "en": "What is grown in your selection: crop groups and crops (click to zoom)",
+  "fr": "Ce qui est cultivé dans votre sélection : groupes et cultures (cliquez pour zoomer)",
+  "rw": "Ibihingwa aho wahisemo (kanda wegere)"
  },
  "m_tree": {
   "en": "Box size follows the chosen measure. Click a crop group to zoom in, then use the path bar to go back.",
@@ -1945,9 +1945,9 @@
   "rw": "Imvura isanzwe %s mm · ibihembwe %s by'izuba kuva 2016"
  },
  "d_prod_sub": {
-  "en": "per year, Seasons A+B, 2023–2025",
-  "fr": "par an, saisons A+B, 2023–2025",
-  "rw": "ku mwaka, A+B, 2023–2025"
+  "en": "per year, selected years and main seasons",
+  "fr": "par an, années et saisons principales choisies",
+  "rw": "ku mwaka, imyaka n'ibihembwe byatoranyijwe"
  },
  "d_area_sub": {
   "en": "cultivated per year, Seasons A+B",
@@ -2018,6 +2018,671 @@
   "en": "%s had %s of %s main seasons at least 15%% drier than normal since 2010: %s.",
   "fr": "%s a connu %s saisons sur %s au moins 15 %% plus sèches que la normale depuis 2010 : %s.",
   "rw": "%s yagize ibihembwe %s kuri %s byumye nibura 15%% kuva 2010: %s."
+ },
+ "filters_sub": {
+  "en": "Pick one, several or all",
+  "fr": "Choisissez un, plusieurs ou tout",
+  "rw": "Hitamo kimwe, byinshi cyangwa byose"
+ },
+ "fg_when": {
+  "en": "When",
+  "fr": "Quand",
+  "rw": "Igihe"
+ },
+ "fg_where": {
+  "en": "Where",
+  "fr": "Où",
+  "rw": "Aho"
+ },
+ "fg_what": {
+  "en": "What",
+  "fr": "Quoi",
+  "rw": "Iki"
+ },
+ "n_selected": {
+  "en": "%d selected",
+  "fr": "%d sélectionnés",
+  "rw": "%d byatoranyijwe"
+ },
+ "select_all": {
+  "en": "Select all",
+  "fr": "Tout sélectionner",
+  "rw": "Hitamo byose"
+ },
+ "clear": {
+  "en": "Clear",
+  "fr": "Effacer",
+  "rw": "Siba"
+ },
+ "search_ph": {
+  "en": "Search…",
+  "fr": "Rechercher…",
+  "rw": "Shakisha…"
+ },
+ "fu_lead": {
+  "en": "This page uses:",
+  "fr": "Cette page utilise :",
+  "rw": "Uru rupapuro rukoresha:"
+ },
+ "profile_multi": {
+  "en": "%s districts selected. Click one to open its profile.",
+  "fr": "%s districts sélectionnés. Cliquez sur un district pour voir son profil.",
+  "rw": "Uturere %s twatoranyijwe. Kanda ku karere ubone umwirondoro wako."
+ },
+ "profile_pick": {
+  "en": "Values average the selected years and seasons.",
+  "fr": "Valeurs moyennes des années et saisons choisies.",
+  "rw": "Impuzandengo y'imyaka n'ibihembwe byatoranyijwe."
+ },
+ "d_period2": {
+  "en": "Tiles: average of %s, seasons %s; changes compare with Rwanda.",
+  "fr": "Tuiles : moyenne %s, saisons %s ; écarts par rapport au Rwanda.",
+  "rw": "Ibipimo: impuzandengo ya %s, ibihembwe %s; bigereranywa n'u Rwanda."
+ },
+ "c_yield_area": {
+  "en": "Irrigated vs rain-fed yield in your selection",
+  "fr": "Rendement irrigué vs pluvial dans votre sélection",
+  "rw": "Umusaruro wuhiwe n'udahiwe aho wahisemo"
+ },
+ "src_yield_area": {
+  "en": "Source: NISR SAS, crop-plot yields by district, weighted by plots; raw comparison without adjustment. Irrigated bars need at least 10 irrigated plots.",
+  "fr": "Source : NISR SAS, rendements par district ; comparaison brute sans ajustement. Au moins 10 parcelles irriguées.",
+  "rw": "Inkomoko: NISR SAS, umusaruro ku karere; igereranya ridahinduwe. Nibura imirima 10 yuhirwa."
+ },
+ "m_yarea": {
+  "en": "In %s for %s, irrigated plots out-yielded rain-fed plots in %s of %s years. This is a raw comparison, not an effect.",
+  "fr": "Pour %s à %s, les parcelles irriguées ont fait mieux %s années sur %s. Comparaison brute, pas un effet.",
+  "rw": "Kuri %s muri %s, imirima yuhiwe yarushije indi mu myaka %s kuri %s. Si ingaruka yemejwe."
+ },
+ "m_yarea_few": {
+  "en": "Too few irrigated %s plots in %s to compare yields; widen the area or years.",
+  "fr": "Trop peu de parcelles irriguées de %s à %s ; élargissez la zone ou les années.",
+  "rw": "Imirima yuhiwe ya %s muri %s ni mike; ongera akarere cyangwa imyaka."
+ },
+ "irrigated": {
+  "en": "Irrigated",
+  "fr": "Irrigué",
+  "rw": "Byuhiwe"
+ },
+ "rainfed": {
+  "en": "Rain-fed",
+  "fr": "Pluvial",
+  "rw": "Bidahiwe"
+ },
+ "show_by": {
+  "en": "Show irrigation by:",
+  "fr": "Afficher l'irrigation par :",
+  "rw": "Erekana kuhira hakurikijwe:"
+ },
+ "p_households": {
+  "en": "Households (AHS)",
+  "fr": "Ménages (AHS)",
+  "rw": "Ingo z'abahinzi (AHS)"
+ },
+ "ahs_t": {
+  "en": "What farm households say",
+  "fr": "Ce que disent les ménages agricoles",
+  "rw": "Icyo ingo z'abahinzi zivuga"
+ },
+ "ahs_sub": {
+  "en": "NISR Agricultural Household Survey 2017, 2020 and 2024: shares of farm households, not plots.",
+  "fr": "Enquête agricole auprès des ménages (NISR) 2017, 2020 et 2024 : parts des ménages agricoles, pas des parcelles.",
+  "rw": "Ubushakashatsi bwa NISR ku ngo z'abahinzi 2017, 2020 na 2024: ijanisha ry'ingo, si imirima."
+ },
+ "ahs_break": {
+  "en": "2024 used a new questionnaire on the EICV7 sub-sample. It is drawn as a separate point and is not joined to 2017–2020.",
+  "fr": "2024 utilise un nouveau questionnaire (sous-échantillon EICV7). Il est affiché à part, sans lien avec 2017–2020.",
+  "rw": "2024 yakoresheje urutonde rushya rw'ibibazo (EICV7). Igaragazwa ukwayo, ntihuzwa na 2017–2020."
+ },
+ "ahs_years_note": {
+  "en": "Years and crop filters do not apply here: the household survey has its own rounds (2017, 2020, 2024).",
+  "fr": "Les filtres années et cultures ne s'appliquent pas ici : l'enquête ménages a ses propres vagues (2017, 2020, 2024).",
+  "rw": "Muyunguruzi y'imyaka n'ibihingwa ntikora hano: ubu bushakashatsi bufite imyaka yabwo (2017, 2020, 2024)."
+ },
+ "ahs_s_findings": {
+  "en": "Household findings",
+  "fr": "Constats sur les ménages",
+  "rw": "Ibyagaragaye mu ngo"
+ },
+ "ahs_s_findings_sub": {
+  "en": "Generated from the AHS estimates for your area.",
+  "fr": "Calculés à partir des estimations AHS pour votre zone.",
+  "rw": "Byakuwe mu bigereranyo bya AHS by'agace wahisemo."
+ },
+ "ah_f1_t": {
+  "en": "%s of farm households irrigate",
+  "fr": "%s des ménages agricoles irriguent",
+  "rw": "%s by'ingo z'abahinzi zuhira"
+ },
+ "ah_f1": {
+  "en": "In %s, %s of farm households irrigated in 2024, against %s in 2017 and %s in 2020. 2024 is not strictly comparable.",
+  "fr": "À %s, %s des ménages agricoles irriguaient en 2024, contre %s en 2017 et %s en 2020. 2024 n'est pas strictement comparable.",
+  "rw": "Muri %s, %s by'ingo zuhiraga muri 2024, ugereranyije na %s muri 2017 na %s muri 2020. 2024 ntigereranywa neza."
+ },
+ "ah_f2_t": {
+  "en": "A %s point gender gap",
+  "fr": "Un écart de %s points selon le genre",
+  "rw": "Ikinyuranyo cya %s ku gitsina"
+ },
+ "ah_f2": {
+  "en": "Nationally, %s of female-headed farm households irrigate against %s of male-headed ones (2024).",
+  "fr": "Au niveau national, %s des ménages dirigés par une femme irriguent contre %s pour les hommes (2024).",
+  "rw": "Ku rwego rw'igihugu, %s by'ingo ziyobowe n'abagore zuhira, %s ku ziyobowe n'abagabo (2024)."
+ },
+ "ah_f3_t": {
+  "en": "Inputs are spreading",
+  "fr": "Les intrants progressent",
+  "rw": "Inyongeramusaruro ziriyongera"
+ },
+ "ah_f3": {
+  "en": "Improved seed reached %s and mineral fertiliser %s of farm households in 2024 (%s and %s in 2020).",
+  "fr": "Les semences améliorées atteignent %s et l'engrais minéral %s des ménages en 2024 (%s et %s en 2020).",
+  "rw": "Imbuto z'indobanure zageze kuri %s, ifumbire mvaruganda kuri %s by'ingo muri 2024 (%s na %s muri 2020)."
+ },
+ "ah_f4_t": {
+  "en": "Few support links for water",
+  "fr": "Peu de soutien pour l'eau",
+  "rw": "Inkunga nke ku mazi"
+ },
+ "ah_f4": {
+  "en": "Only %s of farm households belong to a water-user group and %s have crop insurance, while %s are in a cooperative.",
+  "fr": "Seuls %s des ménages sont dans un groupe d'usagers de l'eau et %s ont une assurance récolte ; %s sont en coopérative.",
+  "rw": "%s gusa by'ingo biri mu matsinda y'abakoresha amazi, %s bifite ubwishingizi bw'ibihingwa, %s biri muri koperative."
+ },
+ "ak_irrig": {
+  "en": "Farm households irrigating",
+  "fr": "Ménages agricoles qui irriguent",
+  "rw": "Ingo z'abahinzi zuhira"
+ },
+ "ak_seed": {
+  "en": "Use improved seed",
+  "fr": "Utilisent des semences améliorées",
+  "rw": "Bakoresha imbuto z'indobanure"
+ },
+ "ak_fert": {
+  "en": "Use mineral fertiliser",
+  "fr": "Utilisent l'engrais minéral",
+  "rw": "Bakoresha ifumbire mvaruganda"
+ },
+ "ak_ext": {
+  "en": "Reached by extension",
+  "fr": "Touchés par la vulgarisation",
+  "rw": "Bagerwaho n'ubujyanama"
+ },
+ "ak_round": {
+  "en": "AHS %s",
+  "fr": "AHS %s",
+  "rw": "AHS %s"
+ },
+ "ak_vs2020": {
+  "en": "AHS %s · %s in 2020",
+  "fr": "AHS %s · %s en 2020",
+  "rw": "AHS %s · %s muri 2020"
+ },
+ "ac_trend": {
+  "en": "Household indicator across survey rounds",
+  "fr": "Indicateur des ménages par vague",
+  "rw": "Igipimo cy'ingo mu myaka y'ubushakashatsi"
+ },
+ "ac_practices": {
+  "en": "Farm practices by survey round",
+  "fr": "Pratiques agricoles par vague",
+  "rw": "Imikorere y'ubuhinzi mu myaka"
+ },
+ "ac_enablers": {
+  "en": "Services, groups and finance (latest round)",
+  "fr": "Services, groupes et finance (dernière vague)",
+  "rw": "Serivisi, amatsinda n'imari (umwaka wa vuba)"
+ },
+ "ac_equity": {
+  "en": "Who irrigates: household groups",
+  "fr": "Qui irrigue : groupes de ménages",
+  "rw": "Abuhira: amatsinda y'ingo"
+ },
+ "ac_mix": {
+  "en": "How irrigating households water",
+  "fr": "Comment les ménages irriguent",
+  "rw": "Uko ingo zuhira"
+ },
+ "ac_map": {
+  "en": "Farm households irrigating by district",
+  "fr": "Ménages qui irriguent par district",
+  "rw": "Ingo zuhira ku karere"
+ },
+ "ac_rank": {
+  "en": "District ranking",
+  "fr": "Classement des districts",
+  "rw": "Urutonde rw'uturere"
+ },
+ "am_trend": {
+  "en": "%s: %s in 2017, %s in 2020 and %s in 2024 (new questionnaire).",
+  "fr": "%s : %s en 2017, %s en 2020 et %s en 2024 (nouveau questionnaire).",
+  "rw": "%s: %s muri 2017, %s muri 2020 na %s muri 2024 (urutonde rushya)."
+ },
+ "am_practices": {
+  "en": "%s rose the most: from %s to %s of farm households between the first and last round.",
+  "fr": "%s progresse le plus : de %s à %s des ménages entre la première et la dernière vague.",
+  "rw": "%s ni cyo cyazamutse cyane: kuva kuri %s kugera kuri %s by'ingo."
+ },
+ "am_enablers": {
+  "en": "Widest reach: %s (%s). Narrowest: %s (%s).",
+  "fr": "Plus large portée : %s (%s). Plus faible : %s (%s).",
+  "rw": "Icyageze kuri benshi: %s (%s). Icyageze kuri bake: %s (%s)."
+ },
+ "am_equity": {
+  "en": "In %s the highest rate is %s (%s), the lowest %s (%s). National figures; faded bars are unreliable.",
+  "fr": "En %s le taux le plus élevé : %s (%s), le plus bas : %s (%s). Chiffres nationaux ; barres pâles peu fiables.",
+  "rw": "Muri %s ikiri hejuru ni %s (%s), ikiri hasi ni %s (%s). Imibare y'igihugu; ibara ryoroheje = ntibyizewe."
+ },
+ "am_mix": {
+  "en": "Most common in %s: %s (%s of irrigating households, named answers only).",
+  "fr": "Le plus courant en %s : %s (%s des ménages irrigants, réponses nommées).",
+  "rw": "Ikikoreshwa cyane muri %s: %s (%s by'ingo zuhira)."
+ },
+ "am_map": {
+  "en": "Highest in %s: %s (%s); lowest: %s (%s). Click a district to select it.",
+  "fr": "Plus élevé en %s : %s (%s) ; plus bas : %s (%s). Cliquez pour sélectionner.",
+  "rw": "Hejuru muri %s: %s (%s); hasi: %s (%s). Kanda ku karere ugahitemo."
+ },
+ "src_ahs": {
+  "en": "Source: NISR AHS 2017, 2020, 2024, survey-weighted shares of farm households (95% CI in hover). 2024 is a series break.",
+  "fr": "Source : NISR AHS 2017, 2020, 2024, parts pondérées des ménages agricoles (IC 95 % au survol). 2024 = rupture de série.",
+  "rw": "Inkomoko: NISR AHS 2017, 2020, 2024, ijanisha ry'ingo ripimwe (CI 95% ku kimenyetso). 2024 ni ihinduka ry'uruhererekane."
+ },
+ "src_ahs_nat": {
+  "en": "Source: NISR AHS, national estimates only (groups are too small by district). Residual 'Other' answers are left out.",
+  "fr": "Source : NISR AHS, estimations nationales seulement. Les réponses « Autre » sont exclues.",
+  "rw": "Inkomoko: NISR AHS, imibare y'igihugu gusa. Ibisubizo 'Ibindi' ntibyashyizwemo."
+ },
+ "y_pct_hh": {
+  "en": "% of farm households",
+  "fr": "% des ménages agricoles",
+  "rw": "% y'ingo z'abahinzi"
+ },
+ "y_pct_irr_hh": {
+  "en": "% of irrigating households",
+  "fr": "% des ménages irrigants",
+  "rw": "% y'ingo zuhira"
+ },
+ "break_lbl": {
+  "en": "2024 (new questionnaire)",
+  "fr": "2024 (nouveau questionnaire)",
+  "rw": "2024 (urutonde rushya)"
+ },
+ "break_short": {
+  "en": "new questionnaire",
+  "fr": "nouveau questionnaire",
+  "rw": "urutonde rushya"
+ },
+ "round_lbl": {
+  "en": "Survey round",
+  "fr": "Vague",
+  "rw": "Umwaka w'ubushakashatsi"
+ },
+ "rb_unreliable_short": {
+  "en": "unreliable",
+  "fr": "peu fiable",
+  "rw": "ntibyizewe"
+ },
+ "eq_head_sex": {
+  "en": "Sex of household head",
+  "fr": "Sexe du chef de ménage",
+  "rw": "Igitsina cy'umukuru w'urugo"
+ },
+ "eq_head_age_band": {
+  "en": "Age of household head",
+  "fr": "Âge du chef de ménage",
+  "rw": "Imyaka y'umukuru w'urugo"
+ },
+ "eq_head_education": {
+  "en": "Education of household head",
+  "fr": "Instruction du chef de ménage",
+  "rw": "Amashuri y'umukuru w'urugo"
+ },
+ "eq_ubudehe": {
+  "en": "Ubudehe category (2020)",
+  "fr": "Catégorie Ubudehe (2020)",
+  "rw": "Icyiciro cy'ubudehe (2020)"
+ },
+ "eq_farm_size_band": {
+  "en": "Farm size",
+  "fr": "Taille de l'exploitation",
+  "rw": "Ingano y'umurima"
+ },
+ "grp_Female": {
+  "en": "Female head",
+  "fr": "Femme cheffe",
+  "rw": "Umugore"
+ },
+ "grp_Male": {
+  "en": "Male head",
+  "fr": "Homme chef",
+  "rw": "Umugabo"
+ },
+ "grp_Under 35": {
+  "en": "Under 35",
+  "fr": "Moins de 35 ans",
+  "rw": "Munsi ya 35"
+ },
+ "grp_35-54": {
+  "en": "35–54",
+  "fr": "35–54 ans",
+  "rw": "35–54"
+ },
+ "grp_55+": {
+  "en": "55+",
+  "fr": "55 ans et +",
+  "rw": "55+"
+ },
+ "grp_No formal education": {
+  "en": "No schooling",
+  "fr": "Sans instruction",
+  "rw": "Ntiyize"
+ },
+ "grp_Primary": {
+  "en": "Primary",
+  "fr": "Primaire",
+  "rw": "Abanza"
+ },
+ "grp_Secondary / vocational": {
+  "en": "Secondary / vocational",
+  "fr": "Secondaire / professionnel",
+  "rw": "Ayisumbuye / imyuga"
+ },
+ "grp_Tertiary": {
+  "en": "Tertiary",
+  "fr": "Supérieur",
+  "rw": "Kaminuza"
+ },
+ "grp_Category 1": {
+  "en": "Category 1",
+  "fr": "Catégorie 1",
+  "rw": "Icyiciro cya 1"
+ },
+ "grp_Category 2": {
+  "en": "Category 2",
+  "fr": "Catégorie 2",
+  "rw": "Icyiciro cya 2"
+ },
+ "grp_Category 3": {
+  "en": "Category 3",
+  "fr": "Catégorie 3",
+  "rw": "Icyiciro cya 3"
+ },
+ "grp_Category 4": {
+  "en": "Category 4",
+  "fr": "Catégorie 4",
+  "rw": "Icyiciro cya 4"
+ },
+ "mx_technique": {
+  "en": "Technique",
+  "fr": "Technique",
+  "rw": "Uburyo"
+ },
+ "mx_water_source": {
+  "en": "Water source",
+  "fr": "Source d'eau",
+  "rw": "Inkomoko y'amazi"
+ },
+ "mx_tool": {
+  "en": "Tool",
+  "fr": "Outil",
+  "rw": "Igikoresho"
+ },
+ "mc_Drip": {
+  "en": "Drip",
+  "fr": "Goutte-à-goutte",
+  "rw": "Gutonyanga"
+ },
+ "mc_Flood (rice)": {
+  "en": "Flood (rice)",
+  "fr": "Submersion (riz)",
+  "rw": "Kuzuza amazi (umuceri)"
+ },
+ "mc_Pivot": {
+  "en": "Pivot",
+  "fr": "Pivot",
+  "rw": "Pivot"
+ },
+ "mc_Sprinkler": {
+  "en": "Sprinkler",
+  "fr": "Aspersion",
+  "rw": "Kumisha"
+ },
+ "mc_Surface": {
+  "en": "Surface",
+  "fr": "Gravitaire",
+  "rw": "Ku butaka"
+ },
+ "mc_Traditional": {
+  "en": "Traditional",
+  "fr": "Traditionnelle",
+  "rw": "Gakondo"
+ },
+ "mc_Dam": {
+  "en": "Dam",
+  "fr": "Barrage",
+  "rw": "Urugomero"
+ },
+ "mc_Groundwater": {
+  "en": "Groundwater",
+  "fr": "Eau souterraine",
+  "rw": "Amazi yo mu butaka"
+ },
+ "mc_Lake / river / stream": {
+  "en": "Lake / river / stream",
+  "fr": "Lac / rivière",
+  "rw": "Ikiyaga / umugezi"
+ },
+ "mc_Rainwater harvesting": {
+  "en": "Rainwater harvesting",
+  "fr": "Eau de pluie",
+  "rw": "Gufata amazi y'imvura"
+ },
+ "mc_Treatment plant / tap": {
+  "en": "Tap water",
+  "fr": "Eau du robinet",
+  "rw": "Amazi ya robine"
+ },
+ "mc_Bucket / watering can": {
+  "en": "Bucket / watering can",
+  "fr": "Seau / arrosoir",
+  "rw": "Indobo / arozwari"
+ },
+ "mc_Pump / machine": {
+  "en": "Pump / machine",
+  "fr": "Pompe / machine",
+  "rw": "Pompe / imashini"
+ },
+ "mc_Tube well": {
+  "en": "Tube well",
+  "fr": "Forage",
+  "rw": "Iriba"
+ },
+ "mc_Water channels": {
+  "en": "Water channels",
+  "fr": "Canaux",
+  "rw": "Imiyoboro y'amazi"
+ },
+ "ai_irrigates": {
+  "en": "Irrigates any plot",
+  "fr": "Irrigue au moins une parcelle",
+  "rw": "Yuhira umurima"
+ },
+ "ai_irrig_modern": {
+  "en": "Modern irrigation (of irrigators)",
+  "fr": "Irrigation moderne (irrigants)",
+  "rw": "Kuhira bigezweho (abuhira)"
+ },
+ "ai_irrig_motorised": {
+  "en": "Motorised pumping (of irrigators)",
+  "fr": "Pompage motorisé (irrigants)",
+  "rw": "Pompe ya moteri (abuhira)"
+ },
+ "ai_improved_seed": {
+  "en": "Improved seed",
+  "fr": "Semences améliorées",
+  "rw": "Imbuto z'indobanure"
+ },
+ "ai_organic_fert": {
+  "en": "Organic fertiliser",
+  "fr": "Fumure organique",
+  "rw": "Ifumbire y'imborera"
+ },
+ "ai_inorganic_fert": {
+  "en": "Mineral fertiliser",
+  "fr": "Engrais minéral",
+  "rw": "Ifumbire mvaruganda"
+ },
+ "ai_pesticide": {
+  "en": "Pesticides",
+  "fr": "Pesticides",
+  "rw": "Imiti yica udukoko"
+ },
+ "ai_erosion_control": {
+  "en": "Erosion control",
+  "fr": "Lutte antiérosive",
+  "rw": "Kurwanya isuri"
+ },
+ "ai_agroforestry": {
+  "en": "Agroforestry",
+  "fr": "Agroforesterie",
+  "rw": "Amashyamba avanze n'imyaka"
+ },
+ "ai_kitchen_garden": {
+  "en": "Kitchen garden",
+  "fr": "Jardin potager",
+  "rw": "Akarima k'igikoni"
+ },
+ "ai_mechanised": {
+  "en": "Mechanisation",
+  "fr": "Mécanisation",
+  "rw": "Imashini"
+ },
+ "ai_extension_any": {
+  "en": "Extension (any)",
+  "fr": "Vulgarisation (toute)",
+  "rw": "Ubujyanama (ubwo ari bwo bwose)"
+ },
+ "ai_extension_irrigation": {
+  "en": "Extension on irrigation",
+  "fr": "Vulgarisation sur l'irrigation",
+  "rw": "Ubujyanama ku kuhira"
+ },
+ "ai_extension_water": {
+  "en": "Extension on water",
+  "fr": "Vulgarisation sur l'eau",
+  "rw": "Ubujyanama ku mazi"
+ },
+ "ai_farmer_field_school": {
+  "en": "Farmer field school",
+  "fr": "Champ-école paysan",
+  "rw": "Ishuri ry'abahinzi mu murima"
+ },
+ "ai_twigire_muhinzi": {
+  "en": "Twigire Muhinzi",
+  "fr": "Twigire Muhinzi",
+  "rw": "Twigire Muhinzi"
+ },
+ "ai_coop_member": {
+  "en": "Cooperative member",
+  "fr": "Membre d'une coopérative",
+  "rw": "Umunyamuryango wa koperative"
+ },
+ "ai_water_user_coop": {
+  "en": "Water-user group",
+  "fr": "Groupe d'usagers de l'eau",
+  "rw": "Itsinda ry'abakoresha amazi"
+ },
+ "ai_contract_farming": {
+  "en": "Contract farming",
+  "fr": "Agriculture contractuelle",
+  "rw": "Ubuhinzi bw'amasezerano"
+ },
+ "ai_crop_insurance": {
+  "en": "Crop insurance",
+  "fr": "Assurance récolte",
+  "rw": "Ubwishingizi bw'ibihingwa"
+ },
+ "ai_grant_received": {
+  "en": "Received a grant",
+  "fr": "A reçu une subvention",
+  "rw": "Yahawe inkunga"
+ },
+ "ai_girinka_cow": {
+  "en": "Girinka cow",
+  "fr": "Vache Girinka",
+  "rw": "Inka ya Girinka"
+ },
+ "ai_bank_account": {
+  "en": "Bank account",
+  "fr": "Compte bancaire",
+  "rw": "Konti ya banki"
+ },
+ "ai_savings": {
+  "en": "Has savings",
+  "fr": "A une épargne",
+  "rw": "Afite ubwizigame"
+ },
+ "ai_loan_requested": {
+  "en": "Asked for a loan",
+  "fr": "A demandé un prêt",
+  "rw": "Yasabye inguzanyo"
+ },
+ "ai_has_radio": {
+  "en": "Owns a radio",
+  "fr": "Possède une radio",
+  "rw": "Afite radiyo"
+ },
+ "ai_has_telephone": {
+  "en": "Owns a phone",
+  "fr": "Possède un téléphone",
+  "rw": "Afite telefoni"
+ },
+ "ai_has_internet": {
+  "en": "Internet access",
+  "fr": "Accès à Internet",
+  "rw": "Afite interineti"
+ },
+ "ai_land_consolidated": {
+  "en": "Land in consolidation",
+  "fr": "Terres remembrées",
+  "rw": "Guhuza ubutaka"
+ },
+ "ai_aware_fertiliser_risk": {
+  "en": "Aware of fertiliser risks",
+  "fr": "Conscient des risques des engrais",
+  "rw": "Azi ingaruka z'ifumbire"
+ },
+ "ai_aware_pesticide_risk": {
+  "en": "Aware of pesticide risks",
+  "fr": "Conscient des risques des pesticides",
+  "rw": "Azi ingaruka z'imiti"
+ },
+ "th_services": {
+  "en": "Advice and training",
+  "fr": "Conseil et formation",
+  "rw": "Ubujyanama n'amahugurwa"
+ },
+ "th_groups": {
+  "en": "Groups and markets",
+  "fr": "Groupes et marchés",
+  "rw": "Amatsinda n'amasoko"
+ },
+ "th_finance": {
+  "en": "Finance and support",
+  "fr": "Finance et appuis",
+  "rw": "Imari n'inkunga"
+ },
+ "th_info": {
+  "en": "Information",
+  "fr": "Information",
+  "rw": "Amakuru"
+ },
+ "hero_m5": {
+  "en": "Household survey 2017–2024",
+  "fr": "Enquête ménages 2017–2024",
+  "rw": "Ubushakashatsi ku ngo 2017–2024"
  },
  "_meta": {
   "en": "French and Kinyarwanda are AI-assisted drafts pending native-speaker review."

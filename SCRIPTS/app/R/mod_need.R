@@ -6,13 +6,15 @@ mod_need_ui <- function(id, tr) {
     div(class = "callout", fontawesome::fa("triangle-exclamation"), " ", tr("need_caveat")),
     layout_columns(
       col_widths = c(7, 5),
-      chart_card(tr("c_quadrant"), plotlyOutput(ns("quad"), height = "460px"), ns("quad_means"), tr("src_need"), icon = "crosshairs"),
+      chart_card(tr("c_quadrant"), plotlyOutput(ns("quad"), height = "380px"), ns("quad_means"), tr("src_need"), icon = "crosshairs"),
       chart_card(tr("c_anomaly_map"),
-                 tagList(selectInput(ns("ys"), NULL, choices = NULL, width = "100%"),
-                         plotlyOutput(ns("amap"), height = "400px")),
+                 tagList(div(class = "card-tools", selectInput(ns("ys"), NULL, choices = NULL, width = "100%")),
+                         plotlyOutput(ns("amap"), height = "328px")),
                  ns("amap_means"), tr("src_chirps"), icon = "temperature-half")),
-    chart_card(tr("c_bubble"), plotlyOutput(ns("bubble"), height = "520px"), ns("bubble_means"), tr("src_need"), icon = "circle-play"),
-    chart_card(tr("c_rain_trend"), plotlyOutput(ns("rtrend"), height = "340px"), ns("rtrend_means"), tr("src_chirps"), icon = "cloud-rain"))
+    layout_columns(
+      col_widths = c(7, 5),
+      chart_card(tr("c_bubble"), plotlyOutput(ns("bubble"), height = "400px"), ns("bubble_means"), tr("src_need"), icon = "circle-play"),
+      chart_card(tr("c_rain_trend"), plotlyOutput(ns("rtrend"), height = "400px"), ns("rtrend_means"), tr("src_chirps"), icon = "cloud-rain")))
 }
 
 mod_need_server <- function(id, f, tr, set_district) {
@@ -21,8 +23,7 @@ mod_need_server <- function(id, f, tr, set_district) {
 
     # ---- quadrant
     output$quad <- renderPlotly({
-      d <- nd |> mutate(sel = district_std == f()$district |
-                          (nzchar(f()$province) & !nzchar(f()$district) & province == f()$province))
+      d <- nd |> mutate(sel = f()$area_level != "national" & district_std %in% f()$districts)
       qkey <- function(q) paste0("q_", gsub("[^a-z]", "", tolower(q)))
       qlev <- c("High need, low adoption", "High need, higher adoption", "Lower need, low adoption", "Lower need, higher adoption")
       qcols <- setNames(c(brand$terracotta, "#0F7044", "#B07A1C", "#1976B9"), tr(qkey(qlev)))
@@ -32,8 +33,6 @@ mod_need_server <- function(id, f, tr, set_district) {
               customdata = ~district_std, color = ~quad_lab, colors = qcols,
               text = ~ifelse(quadrant == "High need, low adoption" | sel, district_std, ""), textposition = "top center", textfont = list(size = 10, color = brand$ink),
               marker = list(size = ~ifelse(sel, 16, 11), line = list(color = ~ifelse(sel, brand$ink, "#FFFFFF"), width = 1.5)),
-              error_y = list(type = "data", symmetric = FALSE, array = ~adoption_high - adoption_pct,
-                             arrayminus = ~adoption_pct - pmax(adoption_low, 0), color = "#C9CFCB", thickness = 1),
               hovertext = ~paste0("<b>", district_std, "</b> (", province, ")<br>", tr("need_score"), ": ",
                                   fmt_num(need_score, 0), "/100<br>", tr("ind_irrigated"), ": ", fmt_pct(adoption_pct),
                                   " (", fmt_pct(adoption_low), "\u2013", fmt_pct(adoption_high), ")<br>",
@@ -58,8 +57,9 @@ mod_need_server <- function(id, f, tr, set_district) {
 
     # ---- animated bubbles: each district's irrigation (A+B) per year vs its need score
     output$bubble <- renderPlotly({
-      d <- D$est |> filter(level == "district", indicator == "irrigated", sas_season %in% c("A", "B"), sas_year %in% f()$years) |>
-        group_by(district_std = area, sas_year) |> summarise(adoption = weighted.mean(estimate, n), n = sum(n), .groups = "drop") |>
+      d <- D$est |> filter(level == "district", indicator == "irrigated", sas_season %in% c("A", "B"), sas_year %in% f()$years,
+                             area %in% f()$districts) |>
+        group_by(district_std = area, sas_year) |> summarise(adoption = weighted.mean(estimate, wsum), n = sum(n), .groups = "drop") |>
         left_join(nd |> select(district_std, need_score, province), by = "district_std") |>
         left_join(D$totals |> filter(level == "district", sas_season %in% c("A", "B")) |>
                     group_by(district_std = area, sas_year) |> summarise(ha = sum(cultivated_area_ha, na.rm = TRUE), .groups = "drop"),
@@ -101,7 +101,7 @@ mod_need_server <- function(id, f, tr, set_district) {
       d <- amap_d(); validate(need(nrow(d) > 0, tr("no_data")))
       lim <- max(abs(d$value), 30, na.rm = TRUE)
       choropleth(d, D$geo, "value", tr("anomaly_pct"), colorscale = div_rain, source = "anom_click",
-                 zmin = -lim, zmax = lim)
+                 zmin = -lim, zmax = lim, selected = if (f()$area_level != "national") f()$districts)
     })
     observeEvent(plotly_clicked(session, "anom_click"), set_district(plotly_clicked(session, "anom_click")))
     output$amap_means <- renderUI({
@@ -115,8 +115,7 @@ mod_need_server <- function(id, f, tr, set_district) {
     rtrend_d <- reactive({
       r <- D$rain$rain |> left_join(D$lookup, by = c("district_std" = "district")) |>
         filter(sas_season %in% f()$seasons, sas_year >= 2000)
-      r <- switch(f()$area_level, district = filter(r, district_std == f()$district),
-                  province = filter(r, province == f()$province), national = r)
+      r <- filter(r, district_std %in% f()$districts)
       r |> group_by(sas_year, sas_season) |>
         summarise(rain_mm = mean(rain_mm), normal = mean(rain_normal_mm), .groups = "drop")
     })
@@ -130,10 +129,10 @@ mod_need_server <- function(id, f, tr, set_district) {
                    marker = list(color = ifelse(x$sas_year %in% f()$years, season_cols[[s]], paste0(season_cols[[s]], "55"))),
                    text = ~paste0(sas_year, s, ": ", fmt_num(rain_mm), " mm<br>", tr("normal"), " ", fmt_num(normal), " mm"),
                    hoverinfo = "text", textposition = "none") |>
-          add_lines(data = x, x = ~sas_year, y = ~normal, line = list(color = season_cols[[s]], dash = "dash", width = 1.5),
+          add_lines(data = x, x = ~sas_year, y = ~normal, line = list(color = season_cols[[s]], dash = "dash", width = 1.5, shape = "spline"),
                     name = paste(tr("normal"), s), hoverinfo = "skip", showlegend = FALSE)
       }
-      plotly_std(p, y = tr("y_rain_mm")) |> layout(barmode = "group")
+      plotly_std(p, y = tr("y_rain_mm")) |> layout(barmode = "group", bargap = 0.25)
     })
     output$rtrend_means <- renderUI({
       d <- rtrend_d() |> filter(sas_year %in% f()$years)
