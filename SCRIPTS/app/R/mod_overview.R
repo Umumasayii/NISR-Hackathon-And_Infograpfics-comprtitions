@@ -18,6 +18,8 @@ mod_overview_ui <- function(id, tr) {
             actionLink(ns("go_priority"), tagList(fontawesome::fa("map-location-dot"), tr("act_action")))),
         div(class = "hero-hills")),
     filters_used(tr, c("years", "seasons", "area")),
+    section_title(tr("nst_t"), tr("nst_sub")),
+    uiOutput(ns("nst")),
     section_title(tr("s_findings"), tr("s_findings_sub")),
     uiOutput(ns("findings")),
     section_title(tr("s_numbers"), tr("s_numbers_sub")),
@@ -63,12 +65,39 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
       ya <- D$model_yield$table |> filter(adjusted_low > 0) |> arrange(desc(adjusted_pct))
       if (nrow(ab) < 2) return(NULL)
       div(class = "insight-grid",
-        insight("droplet", tr("f1_t", fmt_pct(tail(ab$estimate, 1))),
+        insight("droplet", tr("f1_t", in100(tail(ab$estimate, 1), tr)),
                 tr("f1", f()$area, tail(ab$sas_year, 1), fmt_pct(ab$estimate[1]), ab$sas_year[1]), brand$blue),
         insight("seedling", tr("f2_t", nrow(ya)), tr("f2", paste(head(ya$crop_name, 4), collapse = ", ")), brand$green),
         insight("venus-mars", tr("f3_t"), tr("f3", fmt_pct(eq$estimate[eq$group == "Female"]), fmt_pct(eq$estimate[eq$group == "Male"]),
                 fmt_pct(cs$estimate[cs$group == "In consolidated site"])), "#B07A1C"),
         insight("ranking-star", tr("f4_t"), tr("f4", paste(top$district_std, collapse = ", ")), brand$terracotta))
+    })
+
+    # NST2 2024-2029 farming goals next to what the surveys show for the selection
+    nst_crops <- c("Maize", "Bush bean", "Climbing bean", "Small red bean", "Irish potato", "Paddy rice",
+                   "Cassava", "Wheat", "Cooking banana", "Dessert banana", "Banana for beer")
+    output$nst <- renderUI({
+      v <- function(ind, yr) if (is.null(D$ahs)) NA else ahs_val(ahs_for(f(), ind), ind, yr)
+      pc <- crops_for(modifyList(f(), list(seasons = intersect(f()$seasons, c("A", "B")) %||% c("A", "B"),
+                                           crops = character(), crop_groups = character()))) |>
+        filter(crop_name %in% nst_crops) |> group_by(sas_year) |>
+        summarise(t = sum(production_t, na.rm = TRUE) / 1000, .groups = "drop") |> arrange(sas_year)
+      d2 <- if (nrow(pc) >= 2) {
+        ch <- 100 * (tail(pc$t, 1) / pc$t[1] - 1)
+        tr("nst_d2", fmt_num(pc$t[1]), pc$sas_year[1], fmt_num(tail(pc$t, 1)), tail(pc$sas_year, 1),
+           if (abs(ch) < 0.5) tr("no_change") else paste0(if (ch > 0) "+" else "", fmt_num(ch), "%"))
+      } else tr("no_data")
+      goal <- function(icon, g, now, col) div(class = "goal-card", style = paste0("--accent:", col),
+        div(class = "goal-top", span(class = "goal-icon", fontawesome::fa(icon)), span(class = "goal-tag", tr("nst_goal"))),
+        div(class = "goal-text", g),
+        div(class = "goal-now", span(class = "goal-now-lbl", tr("nst_now")), span(now)))
+      tagList(
+        div(class = "goal-grid",
+          goal("droplet", tr("nst_g1"), tr("nst_d1", in100(v("irrigates", 2024), tr)), brand$blue),
+          goal("wheat-awn", tr("nst_g2"), d2, "#B07A1C"),
+          goal("seedling", tr("nst_g3"), tr("nst_d3", in100(v("improved_seed", 2024), tr), in100(v("improved_seed", 2020), tr)), brand$green),
+          goal("hand-holding-dollar", tr("nst_g4"), tr("nst_d4", in100(v("crop_insurance", 2024), tr)), brand$terracotta)),
+        div(class = "goal-src", fontawesome::fa("circle-info"), " ", tr("nst_src")))
     })
 
     output$tiles <- renderUI({
