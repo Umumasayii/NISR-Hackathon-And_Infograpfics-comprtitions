@@ -875,9 +875,9 @@
   "rw": "Inkomoko y'amazi"
  },
  "c_mix_trend": {
-  "en": "Mix by season",
-  "fr": "Répartition par saison",
-  "rw": "Imiterere ku gihembwe"
+  "en": "Mix by year (selected seasons)",
+  "fr": "Répartition par année (saisons choisies)",
+  "rw": "Imiterere ku mwaka (ibihembwe byatoranyijwe)"
  },
  "c_cost": {
   "en": "Reported irrigation cost per hectare",
@@ -945,9 +945,9 @@
   "rw": "%s ni bwo buhendutse kuri ha (%sk RWF); igihenze cyane ni %sk RWF."
  },
  "m_mix_district": {
-  "en": "Districts are sorted by the first category.",
-  "fr": "Districts triés selon la première catégorie.",
-  "rw": "Uturere dukurikije icyiciro cya mbere."
+  "en": "Shows up to 8 of your selected districts, or the 8 with the most irrigated plots, largest first.",
+  "fr": "Jusqu'à 8 de vos districts sélectionnés, ou les 8 ayant le plus de parcelles irriguées, du plus grand au plus petit.",
+  "rw": "Uturere 8 wahisemo, cyangwa 8 dufite imirima myinshi yuhirwa, uhereye ku tunini."
  },
  "m_thin": {
   "en": " %s districts have fewer than 30 irrigated plots.",

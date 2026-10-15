@@ -126,7 +126,7 @@ mod_explorer_server <- function(id, f, tr) {
                             marker = list(color = season_cols[[s]], size = 8, line = list(color = "#fff", width = 2)),
                             text = paste0(x$sas_year, s, ": ", fmt_num(x[[m]], 1)), hoverinfo = "text")
       }
-      plotly_std(p, y = tr(paste0("ms_", m)), dtick = 1) |> layout(hovermode = "x unified")
+      plotly_std(p, y = tr(paste0("ms_", m)), dtick = 1) |> layout(hovermode = "x unified") |> simple_lines()
     })
     output$trend_means <- renderUI({
       m <- input$measure; d <- trend_d() |> filter(!is.na(.data[[m]]), sas_season %in% c("A", "B")) |> arrange(sas_year)

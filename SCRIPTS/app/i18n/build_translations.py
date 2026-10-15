@@ -253,7 +253,7 @@ T = {
 "dim_irrig_tool_level": ("Technology ladder", "Échelle technologique", "Urwego rw'ikoranabuhanga"),
 "dim_irrig_technique": ("Technique", "Technique", "Uburyo"),
 "dim_irrig_source": ("Water source", "Source d'eau", "Inkomoko y'amazi"),
-"c_mix_trend": ("Mix by season", "Répartition par saison", "Imiterere ku gihembwe"),
+"c_mix_trend": ("Mix by year (selected seasons)", "Répartition par année (saisons choisies)", "Imiterere ku mwaka (ibihembwe byatoranyijwe)"),
 "c_cost": ("Reported irrigation cost per hectare", "Coût déclaré de l'irrigation par hectare", "Igiciro cyo kuhira kuri hegitari"),
 "c_mix_district": ("Mix by district, 2023–2025", "Répartition par district, 2023–2025", "Imiterere ku karere, 2023–2025"),
 "src_tech": ("Source: NISR SAS. 2022 and 2025A–B tool codes were relabelled (they carried water-source labels).",
@@ -276,7 +276,7 @@ T = {
 "m_cost": ("%s is the cheapest per hectare (median %sk RWF); the most expensive median is %sk RWF.",
            "%s est le moins cher par hectare (médiane %sk RWF) ; la médiane la plus élevée est %sk RWF.",
            "%s ni bwo buhendutse kuri ha (%sk RWF); igihenze cyane ni %sk RWF."),
-"m_mix_district": ("Districts are sorted by the first category.", "Districts triés selon la première catégorie.", "Uturere dukurikije icyiciro cya mbere."),
+"m_mix_district": ("Shows up to 8 of your selected districts, or the 8 with the most irrigated plots, largest first.", "Jusqu'à 8 de vos districts sélectionnés, ou les 8 ayant le plus de parcelles irriguées, du plus grand au plus petit.", "Uturere 8 wahisemo, cyangwa 8 dufite imirima myinshi yuhirwa, uhereye ku tunini."),
 "m_thin": (" %s districts have fewer than 30 irrigated plots.", " %s districts ont moins de 30 parcelles irriguées.", " Uturere %s dufite imirima yuhirwa itageze kuri 30."),
 # ---- who
 "c_equity": ("Irrigation by group, 2023–2025 A+B", "Irrigation par groupe, 2023–2025 A+B", "Kuhira ku itsinda, 2023–2025 A+B"),

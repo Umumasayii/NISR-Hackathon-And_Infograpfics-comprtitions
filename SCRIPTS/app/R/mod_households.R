@@ -121,15 +121,13 @@ mod_households_server <- function(id, f, tr, set_district) {
       top <- max(d$estimate, 1) * 1.25
       p <- plot_ly()
       if (nrow(old)) p <- p |>
-        add_trace(data = old, x = ~year, y = ~estimate, type = "scatter", mode = "lines+markers+text", name = "2017–2020",
+        add_trace(data = old, x = ~year, y = ~estimate, type = "scatter", mode = "lines+markers", name = "2017–2020",
                   line = list(color = col_irrigated, width = 3, shape = "spline", smoothing = 0.5),
                   marker = list(size = 11, color = col_irrigated, line = list(color = "#fff", width = 2)),
-                  text = ~fmt_pct(estimate), textposition = "top center", textfont = list(size = 12, color = brand$ink),
                   hovertext = hover_ci(old), hoverinfo = "text")
       if (nrow(new)) p <- p |>
-        add_trace(data = new, x = ~year, y = ~estimate, type = "scatter", mode = "markers+text", name = tr("break_lbl"),
-                  marker = list(size = 15, symbol = "diamond", color = ahs_year_cols[["2024"]], line = list(color = "#fff", width = 2)),
-                  text = ~fmt_pct(estimate), textposition = "top center", textfont = list(size = 12, color = brand$ink),
+        add_trace(data = new, x = ~year, y = ~estimate, type = "scatter", mode = "markers", name = tr("break_lbl"),
+                  marker = list(size = 11, symbol = "diamond", color = ahs_year_cols[["2024"]], line = list(color = "#fff", width = 2)),
                   hovertext = hover_ci(new), hoverinfo = "text")
       plotly_std(p, y = if (d$population[1] == "Irrigating households") tr("y_pct_irr_hh") else tr("y_pct_hh")) |>
         layout(xaxis = list(tickvals = ahs_years, ticktext = c("2017", "2020", "2024*"), range = c(2016, 2025)),
@@ -137,7 +135,8 @@ mod_households_server <- function(id, f, tr, set_district) {
                shapes = list(list(type = "line", x0 = 2022.2, x1 = 2022.2, y0 = 0, y1 = 1, yref = "paper",
                                   line = list(color = brand$grey, width = 1.5, dash = "dot"))),
                annotations = list(list(x = 2022.2, y = 1, yref = "paper", text = tr("break_short"), showarrow = FALSE,
-                                       xanchor = "left", yanchor = "top", xshift = 4, font = list(size = 11, color = "#5E6A66"))))
+                                       xanchor = "left", yanchor = "top", xshift = 4, font = list(size = 11, color = "#5E6A66")))) |>
+        simple_lines()
     })
     output$trend_means <- renderUI({
       d <- trend_d(); if (!nrow(d)) return(NULL)
@@ -237,16 +236,15 @@ mod_households_server <- function(id, f, tr, set_district) {
       p <- plot_ly()
       for (cc in cats) {
         x <- d |> filter(category == cc)
-        p <- p |> add_trace(data = x, y = factor(yr_lab(x$year), levels = rev(ys)), x = ~share, type = "bar", orientation = "h",
+        p <- p |> add_trace(data = x, x = factor(yr_lab(x$year), levels = ys), y = ~share, type = "bar",
                             name = lab("mc_", cc), marker = list(color = cols[[cc]], line = list(color = "#fff", width = 1.5)),
                             hovertext = paste0("<b>", lab("mc_", cc), "</b> · ", yr_lab(x$year), "<br>", fmt_pct(x$share),
                                                " · n = ", fmt_num(x$n)), hoverinfo = "text",
-                            text = ifelse(x$share >= 9, fmt_pct(x$share, 0), ""), textposition = "inside", insidetextanchor = "middle",
-                            textfont = list(color = "#fff", size = 11))
+                            textposition = "none")
       }
-      plotly_std(p, x = tr("y_pct_irr_hh")) |>
-        layout(barmode = "stack", bargap = 0.35, xaxis = list(range = c(0, 100), ticksuffix = "%"),
-               yaxis = list(title = ""), legend = list(y = -0.2, font = list(size = 10.5)))
+      plotly_std(p, y = tr("y_pct_irr_hh")) |>
+        layout(barmode = "group", bargap = 0.3, xaxis = list(title = "", type = "category"),
+               yaxis = list(ticksuffix = "%"), legend = list(y = -0.12, font = list(size = 10.5)))
     })
     output$mix_means <- renderUI({
       d <- mix_d() |> filter(year == max(year)) |> arrange(desc(share)); if (!nrow(d)) return(NULL)
