@@ -188,3 +188,9 @@ simple_lines <- function(p) {
   b$x$layout$margin$r <- 10
   b
 }
+
+# ---- simple numbers for everyone: 27.1 -> "27 in every 100"
+in100 <- function(x, tr) {
+  if (is.null(x) || !length(x) || is.na(x[1])) return("–")
+  if (x[1] < 1) tr("lt1in100") else tr("in100", formatC(round(x[1]), format = "d", big.mark = ","))
+}

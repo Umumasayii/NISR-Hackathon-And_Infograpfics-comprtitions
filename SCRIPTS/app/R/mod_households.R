@@ -85,7 +85,7 @@ mod_households_server <- function(id, f, tr, set_district) {
       fem <- eq$estimate[eq$group == "Female"]; mal <- eq$estimate[eq$group == "Male"]
       latest <- function(ind) { x <- d |> filter(indicator == ind) |> arrange(desc(year)); if (nrow(x)) x$estimate[1] else NA }
       div(class = "insight-grid",
-        insight("droplet", tr("ah_f1_t", fmt_pct(v("irrigates", 2024), 0)),
+        insight("droplet", tr("ah_f1_t", in100(v("irrigates", 2024), tr)),
                 tr("ah_f1", f()$area, fmt_pct(v("irrigates", 2024)), fmt_pct(v("irrigates", 2017)), fmt_pct(v("irrigates", 2020))),
                 brand$blue),
         insight("venus-mars", tr("ah_f2_t", fmt_num(mal - fem, 0)), tr("ah_f2", fmt_pct(fem), fmt_pct(mal)), "#B07A1C"),

@@ -274,3 +274,19 @@ table.dataTable thead th { font-weight:700; background:#F4F7F3; }
 .stat-tile .st-value { font-size:1.75rem; color: var(--accent); }
 .stat-tile .st-spark { display:none; }
 .stat-tile .st-foot { font-size:.8rem; color:#4A5753; text-align:center; }
+
+/* ---- v0.6 NST2 goals strip */
+.goal-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap:.9rem; }
+.goal-card { background:#fff; border:1px solid #E3E8E4; border-radius:1rem; padding:1rem 1.05rem; box-shadow:0 2px 10px rgba(16,40,28,.08);
+  display:flex; flex-direction:column; gap:.55rem; transition: transform .2s, box-shadow .2s; }
+.goal-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hi); }
+.goal-top { display:flex; align-items:center; gap:.55rem; }
+.goal-icon { width:40px; height:40px; border-radius:50%; border:1.5px solid #D5DDD8; display:grid; place-items:center; }
+.goal-icon svg { fill: var(--accent) !important; height:1.05em; }
+.goal-tag { font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color: var(--accent); }
+.goal-text { font-weight:700; font-size:.98rem; line-height:1.35; color: var(--ink); }
+.goal-now { margin-top:auto; background: color-mix(in srgb, var(--accent) 7%, white); border-radius:.7rem; padding:.55rem .7rem;
+  font-size:.88rem; line-height:1.4; color:#33413D; }
+.goal-now-lbl { display:block; font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color: var(--accent); margin-bottom:.15rem; }
+.goal-src { font-size:.76rem; color: var(--muted); margin:.5rem 0 .3rem; }
+.goal-src svg { fill: var(--muted) !important; }
