@@ -120,7 +120,7 @@ mod_evidence_server <- function(id, f, tr) {
                             text = ~paste0(g, " ", sas_year, ": ", fmt_num(estimate), " kg/ha<br>n = ", fmt_num(n),
                                            " \u00B7 ", reliability), hoverinfo = "text")
       }
-      plotly_std(p, y = tr("y_yield"), dtick = 1) |> layout(hovermode = "x unified")
+      plotly_std(p, y = tr("y_yield"), dtick = 1) |> layout(hovermode = "x unified") |> simple_lines()
     })
     output$byyear_means <- renderUI({
       d <- D$yield$by_year |> filter(crop_name == input$crop) |>

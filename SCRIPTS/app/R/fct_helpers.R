@@ -166,3 +166,25 @@ multi_pick <- function(id, label, choices, selected = choices, icon_name = "list
       if (search) shiny::tags$input(type = "search", class = "mp-search", placeholder = tr("search_ph")),
       shiny::checkboxGroupInput(id, NULL, choices = choices, selected = selected)))
 }
+
+# ---- simple trend lines (NISR style): thin lines, one marker shape per series,
+# legend on the right. Applied after plotly_std() to every line chart.
+simple_lines <- function(p) {
+  b <- plotly::plotly_build(p)
+  syms <- c("circle", "diamond", "square", "triangle-up", "cross", "star")
+  k <- 0
+  for (i in seq_along(b$x$data)) {
+    t <- b$x$data[[i]]
+    if (identical(t$type, "scatter") && grepl("lines", t$mode %||% "")) {
+      k <- k + 1
+      t$marker$symbol <- syms[(k - 1) %% length(syms) + 1]; t$marker$size <- 7; t$marker$line <- list(width = 0)
+      t$line$width <- 2.2
+      b$x$data[[i]] <- t
+    }
+  }
+  b$x$layout$legend <- list(orientation = "v", x = 1.02, xanchor = "left", y = 0.5, yanchor = "middle",
+                            font = list(size = 11.5), bgcolor = "rgba(0,0,0,0)")
+  b$x$layout$showlegend <- TRUE
+  b$x$layout$margin$r <- 10
+  b
+}

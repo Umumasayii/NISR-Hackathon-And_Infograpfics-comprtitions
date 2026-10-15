@@ -24,17 +24,21 @@ mod_how_server <- function(id, f, tr) {
     cat_cols <- function(cats) setNames(rep(c(series_cols, brand$grey, "#7FA88F", "#C2A06A"), length.out = length(cats)), cats)
 
     mix_d <- reactive({
+      # the selected seasons pooled into one share per year (weighted plot counts)
       D$tech$mix |> filter(is.na(period), dimension == input$dim, sas_year %in% f()$years, sas_season %in% f()$seasons) |>
-        mutate(ys = paste0(sas_year, sas_season))
+        group_by(sas_year, category) |> summarise(w = sum(w), n = sum(n), .groups = "drop_last") |>
+        mutate(share = 100 * w / sum(w), n_group = sum(n)) |> ungroup() |> mutate(ys = as.character(sas_year))
     })
     output$mix <- renderPlotly({
       d <- mix_d(); validate(need(nrow(d) > 0, tr("no_data")))
       cats <- sort(unique(d$category))
       plot_ly(d, x = ~ys, y = ~share, color = ~factor(category, levels = cats), colors = cat_cols(cats), type = "bar",
               text = ~paste0(ys, " \u00B7 ", category, ": ", fmt_pct(share), "<br>", tr("irrigated_plots_n"), " ", fmt_num(n_group)),
-              hoverinfo = "text", textposition = "none", marker = list(line = list(color = "#FFFFFF", width = 1.5))) |>
+              hoverinfo = "text", textposition = "none") |>
         plotly_std(y = tr("y_share_irrigated")) |>
-        layout(barmode = "stack", bargap = 0.25, xaxis = list(title = "", tickangle = -45, type = "category"), legend = list(y = -0.35))
+        layout(barmode = "group", bargap = 0.22, xaxis = list(title = "", tickangle = -45, type = "category"),
+               yaxis = list(ticksuffix = "%"),
+               legend = list(orientation = "v", x = 1.02, xanchor = "left", y = 0.5, yanchor = "middle", font = list(size = 11)))
     })
     output$mix_means <- renderUI({
       d <- mix_d() |> group_by(category) |> summarise(s = weighted.mean(share, n_group), .groups = "drop") |> arrange(desc(s))
@@ -72,7 +76,7 @@ mod_how_server <- function(id, f, tr) {
                             line = list(color = cl[[c]], width = 3, shape = "spline", smoothing = 0.5),
                             marker = list(color = cl[[c]], size = 7, line = list(color = "#fff", width = 1.5)),
                             text = ~paste0(c, " ", sas_year, ": ", fmt_pct(share), " \u00B7 n = ", fmt_num(n)), hoverinfo = "text") }
-      plotly_std(p, y = tr("y_share_irrigated"), dtick = 1) |> layout(hovermode = "x unified")
+      plotly_std(p, y = tr("y_share_irrigated"), dtick = 1) |> layout(hovermode = "x unified") |> simple_lines()
     })
     output$src_means <- renderUI({
       d <- src_d() |> group_by(source) |> summarise(s = mean(share)) |> arrange(desc(s)); if (!nrow(d)) return(NULL)
@@ -83,19 +87,22 @@ mod_how_server <- function(id, f, tr) {
       d <- D$tech$mix |> filter(period == "2023-2025", dimension == input$dim) |>
         left_join(D$lookup, by = c("district_std" = "district"))
       d <- filter(d, district_std %in% f()$districts)
-      d
+      # clustered bars stay readable for up to 8 districts: the selected ones, or
+      # else the 8 with the most irrigated plots
+      keep <- d |> distinct(district_std, n_group) |> arrange(desc(n_group)) |> head(8) |> pull(district_std)
+      filter(d, district_std %in% keep)
     })
     output$dist <- renderPlotly({
       d <- dist_d(); validate(need(nrow(d) > 0, tr("no_data")))
-      cats <- sort(unique(d$category)); top <- cats[1]
-      ord <- d |> filter(category == top) |> arrange(share) |> pull(district_std)
-      ord <- c(setdiff(unique(d$district_std), ord), ord)
-      plot_ly(d, y = ~factor(district_std, levels = ord), x = ~share, color = ~factor(category, levels = cats),
-              colors = cat_cols(cats), type = "bar", orientation = "h",
+      cats <- sort(unique(d$category))
+      ord <- d |> distinct(district_std, n_group) |> arrange(desc(n_group)) |> pull(district_std)
+      plot_ly(d, x = ~factor(district_std, levels = ord), y = ~share, color = ~factor(category, levels = cats),
+              colors = cat_cols(cats), type = "bar",
               text = ~paste0(district_std, " \u00B7 ", category, ": ", fmt_pct(share), "<br>", tr("irrigated_plots_n"), " ",
                              fmt_num(n_group)), hoverinfo = "text", textposition = "none") |>
-        plotly_std(x = tr("y_share_irrigated")) |>
-        layout(barmode = "stack", bargap = if (n_distinct(d$district_std) < 8) 0.55 else 0.2, yaxis = list(title = "", tickfont = list(size = 10)), legend = list(y = -0.15))
+        plotly_std(y = tr("y_share_irrigated")) |>
+        layout(barmode = "group", bargap = 0.22, xaxis = list(title = "", tickangle = -30), yaxis = list(ticksuffix = "%"),
+               legend = list(y = -0.25, font = list(size = 10.5)))
     })
     output$dist_means <- renderUI({
       d <- dist_d(); if (!nrow(d)) return(NULL)

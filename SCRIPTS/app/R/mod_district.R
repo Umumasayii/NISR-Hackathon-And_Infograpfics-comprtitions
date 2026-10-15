@@ -87,7 +87,7 @@ mod_district_server <- function(id, f, tr, set_district) {
                                         shape = "spline", smoothing = 0.5),
                             marker = list(size = if (w == dist()) 9 else 6, color = cols[[w]]),
                             text = ~paste0(who, " ", sas_year, ": ", fmt_pct(e), " \u00B7 n = ", fmt_num(n)), hoverinfo = "text") }
-      plotly_std(p, y = tr("y_pct_plots_ab"), dtick = 1) |> layout(hovermode = "x unified")
+      plotly_std(p, y = tr("y_pct_plots_ab"), dtick = 1) |> layout(hovermode = "x unified") |> simple_lines()
     })
     output$trend_means <- renderUI({
       d <- trend_d() |> filter(who == dist()) |> arrange(sas_year); if (nrow(d) < 2) return(NULL)

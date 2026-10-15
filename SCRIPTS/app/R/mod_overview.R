@@ -121,7 +121,7 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
                                    fmt_pct(ci_high), ") \u00B7 n = ", fmt_num(n)),
                     hoverinfo = "text")
       }
-      plotly_std(p, y = tr(paste0("ind_", input$trend_ind %||% "irrigated")), dtick = 1) |> layout(hovermode = "x unified")
+      plotly_std(p, y = tr(paste0("ind_", input$trend_ind %||% "irrigated")), dtick = 1) |> layout(hovermode = "x unified") |> simple_lines()
     })
     output$trend_means <- renderUI({
       e <- trend_d() |> filter(sas_season != "C") |> arrange(sas_year)
@@ -194,15 +194,15 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
     output$prod <- renderPlotly({
       d <- prod_d(); validate(need(nrow(d) > 0, tr("no_data")))
       grp <- d |> group_by(crop_group) |> summarise(t = sum(production_t)) |> arrange(desc(t)) |> pull(crop_group)
-      top <- head(grp, 6)
-      # the six largest groups only (no "Other" bucket)
+      top <- head(grp, 4)
+      # the four largest groups only, as clustered bars (no "Other" bucket)
       d <- d |> filter(crop_group %in% top) |> mutate(crop_group = factor(crop_group, levels = top))
       cols <- setNames(series_cols[seq_along(top)], top)
       plot_ly(d, x = ~sas_year, y = ~production_t / 1000, color = ~crop_group, colors = cols, type = "bar",
               text = ~paste0("<b>", crop_group, "</b> \u00B7 ", sas_year, "<br>", fmt_num(production_t / 1000), " kt"),
-              hoverinfo = "text", textposition = "none", marker = list(line = list(color = "#FFFFFF", width = 1.5))) |>
+              hoverinfo = "text", textposition = "none") |>
         plotly_std(dtick = 1) |>
-        layout(barmode = "stack", bargap = 0.3, yaxis = list(ticksuffix = " kt"),
+        layout(barmode = "group", bargap = 0.22, yaxis = list(ticksuffix = " kt"),
                legend = list(orientation = "h", y = -0.18, font = list(size = 10.5), entrywidth = 0.5, entrywidthmode = "fraction"))
     })
     output$prod_means <- renderUI({

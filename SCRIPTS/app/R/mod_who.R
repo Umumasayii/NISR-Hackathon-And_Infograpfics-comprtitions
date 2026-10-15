@@ -53,7 +53,7 @@ mod_who_server <- function(id, f, tr) {
                     text = ~paste0(tr(tolower(g)), " ", sas_year, ": ", fmt_pct(estimate), "<br>n = ", fmt_num(n)),
                     hoverinfo = "text")
       }
-      plotly_std(p, y = tr("y_pct_plots_ab"), dtick = 1) |> layout(hovermode = "x unified")
+      plotly_std(p, y = tr("y_pct_plots_ab"), dtick = 1) |> layout(hovermode = "x unified") |> simple_lines()
     })
     output$gtrend_means <- renderUI({
       d <- gt() |> select(sas_year, group, estimate) |> tidyr::pivot_wider(names_from = group, values_from = estimate)
