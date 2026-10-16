@@ -13,8 +13,9 @@ seq_amber <- list(c(0, "#FBF3E4"), c(0.5, "#D9A44A"), c(1, "#7A5210"))
 div_rain  <- list(c(0, "#8C5A2B"), c(0.5, "#ECEDE8"), c(1, "#1976B9"))   # dry - normal - wet
 rel_cols  <- c("Good" = "#0F7044", "Use with caution" = "#B07A1C", "Unreliable" = "#B65F47")
 
-FONT_BODY <- "'Plus Jakarta Sans', 'Segoe UI', sans-serif"
-FONT_HEAD <- "'Sora', 'Segoe UI', sans-serif"
+# the device's own interface font: Segoe UI on Windows, San Francisco on Mac, Roboto on Android
+FONT_BODY <- "'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
+FONT_HEAD <- FONT_BODY
 
 `%||%` <- function(a, b) if (is.null(a) || length(a) == 0 || identical(a, "")) b else a
 
@@ -143,6 +144,11 @@ rel_badge <- function(r, tr = NULL) {
   key <- c("Good" = "rb_good", "Use with caution" = "rb_caution", "Unreliable" = "rb_unreliable")[[r]]
   shiny::span(class = "rel-badge", style = paste0("border-color:", rel_cols[[r]], ";color:", rel_cols[[r]]),
               if (is.null(tr)) r else tr(key))
+}
+# plain-text label (for hovers and downloads)
+rel_label <- function(r, tr) {
+  key <- c("Good" = "rb_good", "Use with caution" = "rb_caution", "Unreliable" = "rb_unreliable")
+  vapply(as.character(r), \(x) if (is.na(x) || !x %in% names(key)) "\u2013" else tr(key[[x]]), "", USE.NAMES = FALSE)
 }
 p <- shiny::p
 

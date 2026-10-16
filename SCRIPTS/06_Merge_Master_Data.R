@@ -213,7 +213,7 @@ key_sets <- list(c("segment_id", "plot_number"),
                  c("district_std", "segment_number", "plot_number"),
                  c("segment_id", "farmer_id"),
                  c("district_std", "segment_number", "farmer_id"))
-max_dup_share <- 0.25   # a key with <= 25% duplicate rows is used after keeping the first row
+max_dup_share <- 0.25   # a key with more duplicate rows than this is not used (no join = unknown)
 join_log <- list()
 
 choose_key <- function(left, right, season, what) {
@@ -226,22 +226,49 @@ choose_key <- function(left, right, season, what) {
     if (m < 0.5) next
     join_log[[length(join_log) + 1]] <<- tibble(join = what, season = season,
                                                 key = paste(k, collapse = "+"), match_rate = round(m, 3),
-                                                dup_rows_dropped_pct = round(100 * dup, 1))
+                                                dup_rows_pct = round(100 * dup, 1))
     return(k)
   }
   join_log[[length(join_log) + 1]] <<- tibble(join = what, season = season, key = "none", match_rate = 0,
-                                              dup_rows_dropped_pct = NA_real_)
+                                              dup_rows_pct = NA_real_)
   NULL
+}
+# Duplicate rows on the join key are COMBINED, not dropped. For each field:
+#   all non-missing values agree -> that value;
+#   0/1 flags that disagree      -> 1 if any row says yes (any_yes);
+#   other values that disagree   -> missing (unknown), and counted as a conflict.
+# The number of keys and fields in conflict goes to the join log.
+collapse_dups <- function(r, k) {
+  r <- group_by(r, across(all_of(c(k, "ys"))))
+  if (!any(duplicated(select(ungroup(r), all_of(c(k, "ys")))))) return(list(d = ungroup(r), keys = 0L, conflicts = 0L))
+  r <- mutate(r, .n_dup = n())
+  single <- filter(r, .n_dup == 1) |> ungroup() |> select(-.n_dup)
+  multi  <- filter(r, .n_dup > 1) |> select(-.n_dup)
+  vars <- setdiff(names(multi), c(k, "ys"))
+  agree <- function(x) { u <- unique(x[!is.na(x)]); length(u) <= 1 }
+  conflicts <- multi |> summarise(across(all_of(vars), \(x) !agree(x)), .groups = "drop")
+  n_conf <- sum(as.matrix(conflicts[vars]))
+  merged <- multi |> summarise(across(all_of(vars), \(x) {
+      u <- unique(x[!is.na(x)])
+      if (length(u) == 0) x[1] else if (length(u) == 1) u[1] else
+        if (is.integer(x) && all(u %in% 0:1)) 1L else x[NA_integer_][1]
+    }), .groups = "drop")
+  list(d = bind_rows(single, merged), keys = nrow(merged), conflicts = as.integer(n_conf))
 }
 season_join <- function(left, right, what) {
   map_dfr(unique(left$ys), \(s) {
     l <- filter(left, ys == s); r <- filter(right, ys == s) |> select(-any_of(c("sas_year", "sas_season")))
     if (!nrow(r)) return(l)
     k <- choose_key(l, r, s, what)
-    if (is.null(k)) return(l)
-    r <- select(r, all_of(k), ys, setdiff(names(r), c(names(l), "ys"))) |>
-      distinct(across(all_of(c(k, "ys"))), .keep_all = TRUE)   # duplicate plot rows: keep first
-    left_join(l, r, by = c(k, "ys"))
+    if (is.null(k)) return(l)          # no usable key: the added fields stay missing (unknown), never "No"
+    r <- select(r, all_of(k), ys, setdiff(names(r), c(names(l), "ys")))
+    cd <- collapse_dups(r, k)
+    i <- length(join_log)
+    join_log[[i]] <<- mutate(join_log[[i]], dup_keys_combined = cd$keys, field_conflicts = cd$conflicts)
+    out <- left_join(l, cd$d, by = c(k, "ys"))
+    # expected cardinality: many-to-one. A join must never add rows.
+    if (nrow(out) != nrow(l)) stop("Join '", what, "' in ", s, " added rows (", nrow(l), " -> ", nrow(out), ")")
+    out
   })
 }
 
@@ -346,6 +373,17 @@ master_plot <- ap_std |>
   mutate(plot_area_ha = coalesce(plot_area_ha, plot_area_ha_cs)) |>
   select(-plot_area_ha_cs)
 
+# One province per district, taken from the seasons where it is filled in.
+# (2021B has province missing on 13% of rows and 2021C on all rows; grouping by
+# a half-missing province split each district in two and doubled 2021B totals.)
+district_province <- master_plot |> filter(!is.na(province), !is.na(district_std)) |>
+  count(district_std, province) |>
+  group_by(district_std) |> slice_max(n, n = 1, with_ties = FALSE) |> ungroup() |>
+  select(district_std, province)
+if (anyDuplicated(district_province$district_std)) stop("District -> province lookup is not unique")
+master_plot <- master_plot |> select(-province) |>
+  left_join(district_province, by = "district_std") |> relocate(province, .after = ys)
+
 # ---- 5. CROP x PLOT TABLE (crop production) ----------------------------------
 message("Building crop x plot table")
 cp_std <- cp |>
@@ -431,7 +469,10 @@ master_crop_plot <- cp_std |>
     # sold quantity is asked per crop (all plots) in some years: cap at this plot's harvest
     sold_share = if_else(harvest_kg > 0, pmin(sold_kg / harvest_kg, 1), NA_real_),
     sold_kg_plot = harvest_kg * sold_share,
-    modern_inputs_n = rowSums(cbind(irrigated, improved_seed, inorganic_fert, mechanised) == 1L, na.rm = TRUE),
+    # complementary inputs (irrigation is NOT counted: it is what we compare).
+    # Missing when any of the three is unknown, so unknown never counts as "not used".
+    modern_inputs_n = if_else(is.na(improved_seed) | is.na(inorganic_fert) | is.na(mechanised), NA_integer_,
+                              as.integer((improved_seed == 1L) + (inorganic_fert == 1L) + (mechanised == 1L))),
     age_band = cut(age_years, c(-Inf, 34, 54, Inf), labels = c("<35", "35-54", "55+"))
   ) |>
   # Sales value: reported price, else the median reported price for the same crop,
@@ -457,9 +498,24 @@ ga <- master_crop_plot |> filter(!is.na(gender)) |>
   select(ys, segment_id, plot_number, gender_c = gender, age_c = age_years)
 master_plot <- master_plot |>
   left_join(ga, by = c("ys", "segment_id", "plot_number")) |>
-  mutate(gender = coalesce(gender, gender_c), age_years = coalesce(age_years, age_c),
-         modern_inputs_n = rowSums(cbind(irrigated, inorganic_fert, mechanised) == 1L, na.rm = TRUE)) |>
+  mutate(gender = coalesce(gender, gender_c), age_years = coalesce(age_years, age_c)) |>
   select(-gender_c, -age_c)
+
+# ---- 5b. FARMER TABLE (one row per farmer x season, 2020+) ---------------------
+# The farmer question "did you irrigate ANY plot this season?" is repeated on every
+# plot row, so a plot-weighted average counts farmers with many plots several times.
+# Here each farmer counts once. The SAS file has no separate farmer weight, so the
+# farmer weight is the average of the farmer's plot weights (documented choice).
+master_farmer <- master_plot |>
+  filter(!is.na(farmer_id)) |>
+  group_by(sas_year, sas_season, ys, province, district_std, stratum, segment_id, segment_number, farmer_id) |>
+  summarise(weight = mean(weight, na.rm = TRUE), n_plots = n(),
+            irrig_gate = any_yes(irrig_any_farmer), irrig_plot_any = any_yes(irrigated),
+            gender = first(na.omit(gender)), farmer_type = first(na.omit(farmer_type)), .groups = "drop") |>
+  mutate(weight = if_else(is.finite(weight), weight, NA_real_),
+         irrig_farmer = case_when(irrig_gate == 1L | irrig_plot_any == 1L ~ 1L,
+                                  irrig_gate == 0L ~ 0L, TRUE ~ NA_integer_)) |>
+  select(-irrig_gate, -irrig_plot_any)
 
 # ---- 6. RAINFALL BY DISTRICT AND SAS SEASON ----------------------------------
 message("Building rainfall by district and season")
@@ -485,9 +541,9 @@ plot_measures <- function(d) summarise(d,
   n_plots = n(),
   cultivated_area_ha   = wsum(plot_area_ha, weight),
   irrigated_plot_pct   = 100 * wmean(irrigated, weight),
+  # area of plots REPORTING irrigation (whole plot area, not hectares actually watered)
   irrigated_area_ha    = wsum(plot_area_ha * irrigated, weight),
   irrigated_area_pct   = 100 * irrigated_area_ha / cultivated_area_ha,
-  farmers_irrig_pct    = 100 * wmean(irrig_any_farmer, weight),     # plot-weighted proxy
   modern_irrig_pct     = 100 * wmean(irrig_modern[irrigated %in% 1L], weight[irrigated %in% 1L]),
   irrig_cost_rwf_ha    = wmean((irrig_cost_rwf / plot_area_ha)[irrigated %in% 1L & plot_area_ha > 0],
                                weight[irrigated %in% 1L & plot_area_ha > 0]),
@@ -506,9 +562,16 @@ plot_measures <- function(d) summarise(d,
   irrig_male_pct     = 100 * wmean(irrigated[gender %in% "Male"], weight[gender %in% "Male"]),
   .groups = "drop")
 
+farmer_measures <- function(d) summarise(d,
+  n_farmers = n(),
+  farmers_irrig_pct = 100 * wmean(irrig_farmer, weight),        # one record per farmer
+  .groups = "drop")
+
 # NB: inside summarise() a new column masks the old one, so yields come first
 crop_measures <- function(d) summarise(d,
   n_crop_plots   = n(),
+  # coverage: share of harvested crop plots with a usable crop area (and so a yield)
+  area_coverage_pct = 100 * mean(!is.na(crop_area_ha[harvest_kg > 0 & !is.na(harvest_kg)])),
   yield_kg_ha    = wsum(harvest_kg[yield_ok], weight[yield_ok]) / wsum(crop_area_ha[yield_ok], weight[yield_ok]),
   yield_irrigated_kg_ha = { k <- yield_ok & irrigated %in% 1L; wsum(harvest_kg[k], weight[k]) / wsum(crop_area_ha[k], weight[k]) },
   yield_rainfed_kg_ha   = { k <- yield_ok & irrigated %in% 0L; wsum(harvest_kg[k], weight[k]) / wsum(crop_area_ha[k], weight[k]) },
@@ -519,23 +582,51 @@ crop_measures <- function(d) summarise(d,
   sold_t         = wsum(sold_kg_plot, weight) / 1000,
   sold_share_pct = 100 * sold_t / production_t,
   price_rwf_kg   = wmean(price_rwf_kg[sold_kg > 0], weight[sold_kg > 0]),
-  sales_value_mrwf = wsum(sales_value_rwf, weight) / 1e6,
+  sales_value_mrwf = wsum(sales_value_rwf, weight) / 1e6,          # GROSS sales value, not income
+  sales_value_imputed_pct = 100 * wsum(sales_value_rwf[price_imputed %in% TRUE], weight[price_imputed %in% TRUE]) /
+                            wsum(sales_value_rwf, weight),
   improved_seed_pct = 100 * wmean(improved_seed, weight),
   .groups = "drop")
 
 finite <- \(d) mutate(d, across(where(is.numeric), \(x) if_else(is.finite(x), x, NA_real_)))
 
-master_national_season <- full_join(
-  master_plot |> group_by(sas_year, sas_season) |> plot_measures(),
-  master_crop_plot |> group_by(sas_year, sas_season) |> crop_measures(),
-  by = c("sas_year", "sas_season")) |> finite()
-
-master_district_season <- full_join(
-  master_plot |> group_by(province, district_std, sas_year, sas_season) |> plot_measures(),
-  master_crop_plot |> group_by(district_std, sas_year, sas_season) |> crop_measures(),
-  by = c("district_std", "sas_year", "sas_season")) |>
-  left_join(master_rain, by = c("district_std", "sas_year", "sas_season")) |>
+agg_at <- function(by) master_plot |> group_by(across(all_of(by))) |> plot_measures() |>
+  full_join(master_farmer |> group_by(across(all_of(by))) |> farmer_measures(), by = by) |>
+  full_join(master_crop_plot |> group_by(across(all_of(by))) |> crop_measures(), by = by) |>
   finite()
+master_national_season <- agg_at(c("sas_year", "sas_season"))
+# every measure at the SAME grain (district x year x season); province added after
+master_district_season <- agg_at(c("district_std", "sas_year", "sas_season")) |>
+  filter(!is.na(district_std)) |>
+  left_join(district_province, by = "district_std") |> relocate(province) |>
+  left_join(master_rain, by = c("district_std", "sas_year", "sas_season"))
+
+# Checks before saving: one row per district-season, and district totals add up
+# to the national totals (within 0.5%).
+dups <- count(master_district_season, district_std, sas_year, sas_season) |> filter(n > 1)
+if (nrow(dups)) stop("master_district_season has duplicate district-season rows: ", nrow(dups))
+add_cols <- c("cultivated_area_ha", "irrigated_area_ha", "production_t", "crop_area_ha", "sold_t", "sales_value_mrwf")
+reconcile <- master_district_season |>
+  group_by(sas_year, sas_season) |> summarise(across(all_of(add_cols), \(x) sum(x, na.rm = TRUE)), .groups = "drop") |>
+  pivot_longer(all_of(add_cols), names_to = "measure", values_to = "districts_sum") |>
+  left_join(master_national_season |> select(sas_year, sas_season, all_of(add_cols)) |>
+              pivot_longer(all_of(add_cols), names_to = "measure", values_to = "national"),
+            by = c("sas_year", "sas_season", "measure")) |>
+  mutate(ratio = districts_sum / national, ok = is.na(national) | abs(ratio - 1) <= 0.005)
+if (!all(reconcile$ok)) {
+  print(filter(reconcile, !ok))
+  stop("District totals do not add up to national totals (see above)")
+}
+
+# Seasons where crop areas are too incomplete for yields (2024B: 46%, 2024C: 7%).
+# Yields, yield gaps and the yield model leave these seasons out.
+min_area_coverage <- 80
+season_quality <- master_national_season |>
+  transmute(sas_year, sas_season, area_coverage_pct = round(area_coverage_pct, 1),
+            yield_usable = area_coverage_pct >= min_area_coverage)
+master_crop_plot <- master_crop_plot |>
+  left_join(season_quality |> select(sas_year, sas_season, season_yield_usable = yield_usable),
+            by = c("sas_year", "sas_season"))
 
 master_crop_season <- master_crop_plot |>
   group_by(crop_group, crop_name, sas_year, sas_season) |> crop_measures() |> finite()
@@ -549,7 +640,10 @@ dict <- tribble(
   "district_std / province", "District (30) and province", "", "agri_prac / crop_prod",
   "weight", "Plot expansion weight (crop_prod; else agri_prac same plot)", "", "harmonised",
   "plot_area_ha", "Plot area", "ha", "agri_prac",
-  "irrig_any_farmer", "Farmer irrigated any plot this season (2020+)", "0/1", "agri_prac",
+  "irrig_any_farmer", "Farmer irrigated any plot this season (2020+), repeated on each plot row", "0/1", "agri_prac",
+  "irrig_farmer (master_farmer)", "Farmer irrigated any plot this season; ONE row per farmer; weight = mean of the farmer's plot weights", "0/1", "derived",
+  "farmers_irrig_pct", "Share of farmers irrigating any plot, one record per farmer (not plot-weighted)", "%", "aggregate",
+  "irrigated_area_ha / irrigated_area_pct", "Area of plots REPORTING irrigation (whole plot area x irrigated flag); not hectares actually watered and not comparable with programme irrigation-area targets", "ha, %", "aggregate",
   "irrigated", "Plot irrigated this season; NA->0 when farmer irrigated no plot (skip pattern)", "0/1", "agri_prac",
   "irrig_technique", "Drip, Sprinkler, Pivot, Flood (rice), Surface, Traditional", "", "agri_prac",
   "irrig_source", "Main water source (first answer)", "", "agri_prac",
@@ -567,13 +661,15 @@ dict <- tribble(
   "yield_kg_ha / yield_ok", "harvest_kg / crop_area_ha; yield_ok = FALSE outside the 1st-99th pct per crop-season", "kg/ha", "derived",
   "sold_kg / sold_kg_plot / price_rwf_kg / sales_value_rwf", "Quantity sold as reported, capped at plot harvest; price (codes 999/9999/99999 and 0 removed); gross sales value using the reported price or, if missing, the crop-season-district median price (price_imputed flag); not net income", "kg, RWF", "crop_prod",
   "improved_seed", "Improved seed used for this crop", "0/1", "crop_prod",
-  "modern_inputs_n", "Count of irrigation + improved seed + inorganic fertiliser + mechanisation", "0-4", "derived",
+  "modern_inputs_n", "Count of complementary inputs: improved seed + inorganic fertiliser + mechanisation (irrigation NOT counted); missing when any of the three is unknown", "0-3", "derived",
+  "area_coverage_pct / season_yield_usable", "Share of harvested crop plots with a crop area; seasons below 80% (2024B, 2024C) are left out of yields", "%", "aggregate",
+  "sales_value_imputed_pct", "Share of gross sales value that uses an imputed (median) price", "%", "aggregate",
   "gender / age_years / age_band", "Farmer gender and age", "", "crop_prod / agri_prac",
   "rain_mm / rain_normal_mm / rain_anomaly_pct / rain_std_anomaly / dry_season_flag",
   "CHIRPS season total, 1991-2020 normal, anomaly, z-score, z < -1", "mm, %", "CHIRPS",
   "*_pct (aggregates)", "Survey-weighted share", "%", "aggregate",
   "production_t / sold_t / sales_value_mrwf", "Weighted totals (plot weights as expansion factors)", "t, million RWF", "aggregate",
-  "yield_irrigated_kg_ha / yield_rainfed_kg_ha / yield_premium_pct", "Ratio-of-sums yield by irrigation status (raw, not causal)", "kg/ha, %", "aggregate")
+  "yield_irrigated_kg_ha / yield_rainfed_kg_ha / yield_premium_pct", "Ratio-of-sums yield by irrigation status (raw, not causal); not usable in seasons with low area coverage", "kg/ha, %", "aggregate")
 
 coverage <- function(d, name) d |>
   mutate(ys = paste0(sas_year, sas_season)) |>
@@ -582,20 +678,23 @@ coverage <- function(d, name) d |>
   pivot_longer(-ys, names_to = "column", values_to = "pct_non_missing") |>
   pivot_wider(names_from = ys, values_from = pct_non_missing) |>
   mutate(table = name, .before = 1)
-cov <- bind_rows(coverage(master_plot, "master_plot"), coverage(master_crop_plot, "master_crop_plot"))
+cov <- bind_rows(coverage(master_plot, "master_plot"), coverage(master_crop_plot, "master_crop_plot"),
+                 coverage(master_farmer, "master_farmer"))
 
 # ---- 9. SAVE -----------------------------------------------------------------
-out <- list(master_crop_plot = master_crop_plot, master_plot = master_plot,
+out <- list(master_crop_plot = master_crop_plot, master_plot = master_plot, master_farmer = master_farmer,
             master_national_season = master_national_season,
             master_district_season = master_district_season,
             master_crop_season = master_crop_season,
             master_crop_district_season = master_crop_district_season,
             master_rain_district_season = master_rain)
 iwalk(out, \(d, n) saveRDS(d, file.path(dir_master, paste0(n, ".rds"))))
-if (write_csv_copies) iwalk(out[!names(out) %in% c("master_crop_plot", "master_plot")],
+if (write_csv_copies) iwalk(out[!names(out) %in% c("master_crop_plot", "master_plot", "master_farmer")],
                             \(d, n) write_csv(d, file.path(dir_master, paste0(n, ".csv")), na = ""))
 write_csv(dict, file.path(dir_master, "master_dictionary.csv"))
 write_csv(cov, file.path(dir_master, "master_coverage.csv"), na = "")
+write_csv(season_quality, file.path(dir_master, "season_quality.csv"), na = "")
+write_csv(reconcile, file.path(dir_master, "district_national_reconciliation.csv"), na = "")
 skip_audit <- bind_rows(skip_audit)
 write_csv(skip_audit, file.path(dir_master, "skip_pattern_audit.csv"), na = "")
 join_log <- bind_rows(join_log)
@@ -629,6 +728,8 @@ print(skip_audit |> group_by(variable) |>
         summarise(seasons_confirmed = sum(skip_confirmed), seasons = n(),
                   blanks_set_to_no = sum(blanks_set_to_no)), n = 20)
 cat("\n== Join match rates (lowest 5) ==\n"); print(arrange(join_log, match_rate) |> head(5))
+cat("\n== Seasons left out of yields (crop area coverage < ", min_area_coverage, "%) ==\n", sep = "")
+print(filter(season_quality, !yield_usable))
 cat("\n== National irrigation and production, by season ==\n")
 print(master_national_season |>
         transmute(sas_year, sas_season, irrigated_plot_pct = round(irrigated_plot_pct, 1),

@@ -38,7 +38,10 @@ md <- plot_df |>
     inorganic_fert = fct_na(if_else(inorganic_fert == 1L, "Yes", "No")),
     organic_fert = fct_na(if_else(organic_fert == 1L, "Yes", "No")),
     age_band = fct_na(cut(age_years, c(-Inf, 34, 54, Inf), labels = c("Under 35", "35-54", "55+"))),
-    large_farm = factor(if_else(str_detect(str_to_lower(coalesce(farmer_type, "")), "large"), "Large-scale", "Small-scale")),
+    # missing farmer type stays "Unknown" (it was counted as small-scale before)
+    large_farm = factor(case_when(is.na(farmer_type) ~ "Unknown",
+                                  str_detect(str_to_lower(farmer_type), "large") ~ "Large-scale",
+                                  TRUE ~ "Small-scale")),
     district = factor(district_std))
 
 train <- md |> filter(sas_year <= 2023)
@@ -94,7 +97,9 @@ importance <- tibble(feature = names(rf_fit$variable.importance),
                      importance = as.numeric(rf_fit$variable.importance)) |>
   arrange(desc(importance)) |> mutate(importance = 100 * importance / max(importance))
 
-# Hidden potential: districts where predicted adoption exceeds observed (test years)
+# Prediction gap: districts where the model predicts more irrigated plots than were
+# observed in the test years. A screening signal for follow-up, not a measure of
+# what a programme would achieve.
 potential <- test |>
   group_by(district_std) |>
   summarise(observed_pct = 100 * weighted.mean(irrigated, weight),
@@ -114,32 +119,50 @@ save_app(list(performance = perf, calibration = calibration, fairness = fairness
 print(perf)
 
 # ---- B. ADJUSTED YIELD ASSOCIATION --------------------------------------------
+# Observational, adjusted associations, NOT the effect of irrigation.
+# Seasons with incomplete crop areas (season_quality.csv: 2024B, 2024C) are left out.
+# Unknown fertiliser / seed answers stay "Unknown" (a separate category), and a
+# complete-case fit (only plots where all three are known) is kept as a sensitivity check.
 message("B. Adjusted yield association by crop")
 crop_df <- read_master("master_crop_plot") |> add_design_vars() |>
-  filter(yield_ok, sas_season %in% main_seasons, !is.na(irrigated))
-crops <- crop_df |> filter(irrigated == 1L) |> count(crop_name) |> filter(n >= 150) |> pull(crop_name)
+  mutate(eligible = yield_ok & season_yield_usable %in% TRUE & sas_season %in% main_seasons & !is.na(irrigated))
+crops <- crop_df |> filter(eligible, irrigated == 1L) |> count(crop_name) |> filter(n >= 150) |> pull(crop_name)
+yn_unknown <- function(x) factor(case_when(x == 1L ~ "Yes", x == 0L ~ "No", TRUE ~ "Unknown"), levels = c("No", "Yes", "Unknown"))
 
 fit_crop <- function(cn) {
-  d <- crop_df |> filter(crop_name == cn) |>
-    mutate(log_yield = log(yield_kg_ha), log_area = log(crop_area_ha),
-           inorganic = coalesce(inorganic_fert, 0L), organic = coalesce(organic_fert, 0L),
-           seed = coalesce(improved_seed, 0L), ys = paste0(sas_year, sas_season))
-  des <- survey::svydesign(ids = ~psu, strata = ~strat, weights = ~weight, data = d, nest = TRUE)
+  d <- crop_df |>
+    mutate(in_crop = eligible & crop_name == cn,
+           log_yield = if_else(in_crop, log(yield_kg_ha), NA_real_), log_area = log(crop_area_ha),
+           inorganic = yn_unknown(inorganic_fert), organic = yn_unknown(organic_fert),
+           seed = yn_unknown(improved_seed), ys = paste0(sas_year, sas_season),
+           complete = in_crop & !is.na(inorganic_fert) & !is.na(organic_fert) & !is.na(improved_seed))
+  # the crop is a domain of the full design (subset() keeps every segment)
+  des_all <- survey::svydesign(ids = ~psu, strata = ~strat, weights = ~weight,
+                               data = d |> filter(sas_season %in% main_seasons, season_yield_usable %in% TRUE), nest = TRUE)
+  des <- subset(des_all, in_crop)
   f <- survey::svyglm(log_yield ~ irrigated + inorganic + organic + seed + log_area + district_std + ys, design = des)
-  b <- coef(f)["irrigated"]; se <- survey::SE(f)["irrigated"]
-  raw <- d |> group_by(irrigated) |> summarise(y = sum(weight * harvest_kg) / sum(weight * crop_area_ha))
+  b <- coef(f)["irrigated"]; se <- survey::SE(f)["irrigated"]; dfr <- survey::degf(des); tq <- qt(0.975, dfr)
+  fc <- tryCatch(survey::svyglm(log_yield ~ irrigated + inorganic + organic + seed + log_area + district_std + ys,
+                                design = subset(des_all, complete)), error = \(e) NULL)
+  bc <- if (is.null(fc)) NA_real_ else coef(fc)["irrigated"]
+  dd <- filter(d, in_crop)
+  raw <- dd |> group_by(irrigated) |> summarise(y = sum(weight * harvest_kg) / sum(weight * crop_area_ha))
   tibble(crop_name = cn,
          raw_pct = 100 * (raw$y[raw$irrigated == 1] / raw$y[raw$irrigated == 0] - 1),
          adjusted_pct = 100 * (exp(b) - 1),
-         adjusted_low = 100 * (exp(b - 1.96 * se) - 1),
-         adjusted_high = 100 * (exp(b + 1.96 * se) - 1),
-         n = nrow(d), n_irrigated = sum(d$irrigated == 1L))
+         adjusted_low = 100 * (exp(b - tq * se) - 1),
+         adjusted_high = 100 * (exp(b + tq * se) - 1),
+         complete_case_pct = 100 * (exp(bc) - 1),           # sensitivity: only plots with all inputs known
+         inputs_known_pct = round(100 * mean(dd$complete), 1),
+         n = nrow(dd), n_irrigated = sum(dd$irrigated == 1L), n_psu = n_distinct(dd$psu))
 }
 yield_adj <- map_dfr(crops, \(cn) tryCatch(fit_crop(cn), error = \(e) { message("  skipped ", cn, ": ", conditionMessage(e)); NULL })) |>
   mutate(direction = case_when(adjusted_low > 0 ~ "Higher on irrigated plots",
                                adjusted_high < 0 ~ "Lower on irrigated plots",
                                TRUE ~ "No clear difference"))
 save_app(list(table = yield_adj,
-              controls = "inorganic & organic fertiliser, improved seed, crop area, district, year-season"),
+              controls = "inorganic & organic fertiliser, improved seed (unknown kept as its own group), crop area, district, year-season",
+              excluded_seasons = read_csv(file.path(dir_master, "season_quality.csv"), show_col_types = FALSE) |>
+                filter(!yield_usable) |> transmute(season = paste0(sas_year, sas_season), area_coverage_pct)),
          "model_yield")
 print(yield_adj |> mutate(across(where(is.numeric), \(x) round(x, 1))), n = 30)
