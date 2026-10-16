@@ -16,17 +16,19 @@ mod_methods_ui <- function(id, tr) {
                       tags$li(strong(tr("persona_planner")), " ", tr("persona_planner_txt")),
                       tags$li(strong(tr("persona_research")), " ", tr("persona_research_txt"))),
               h5(tr("team")), p(tr("footer_by"))),
-          div(h5(tr("sources")), tableOutput(ns("sources")),
+          div(h5(tr("sources")), uiOutput(ns("sources")),
               h5(tr("reliability")), uiOutput(ns("rel_legend"))))),
       nav_panel(tr("t_pipeline"), icon = fontawesome::fa("diagram-project"),
         tags$ol(class = "pipeline",
           lapply(1:7, \(i) tags$li(strong(tr(paste0("pipe_", i, "_t"))), " ", tr(paste0("pipe_", i)))))),
       nav_panel(tr("t_traps"), icon = fontawesome::fa("triangle-exclamation"),
-        tags$ul(class = "traps", lapply(1:7, \(i) tags$li(tr(paste0("trap_", i))))),
+        tags$ul(class = "traps", lapply(1:9, \(i) tags$li(tr(paste0("trap_", i))))),
+        h5(class = "mt-4", tr("cov_title")), p(class = "muted", tr("cov_help")), uiOutput(ns("coverage")),
         h5(tr("skip_audit")), p(class = "muted", tr("skip_audit_help")), DT::DTOutput(ns("skip")),
         h5(class = "mt-4", tr("join_log")), p(class = "muted", tr("join_log_help")), DT::DTOutput(ns("joins"))),
       nav_panel(tr("t_kpi"), icon = fontawesome::fa("ruler"),
-        p(tr("kpi_rule")), tableOutput(ns("kpi_defs"))),
+        p(tr("kpi_rule")), uiOutput(ns("kpi_defs")),
+        h5(class = "mt-4", tr("bench_title")), p(class = "muted", tr("bench_note")), uiOutput(ns("bench"))),
       nav_panel(tr("t_ai"), icon = fontawesome::fa("robot"),
         p(tr("ai_text")), tags$ul(lapply(1:4, \(i) tags$li(tr(paste0("ai_", i)))))),
       nav_panel(tr("t_downloads"), icon = fontawesome::fa("download"),
@@ -37,7 +39,11 @@ mod_methods_ui <- function(id, tr) {
 
 mod_methods_server <- function(id, f, tr) {
   moduleServer(id, function(input, output, session) {
-    output$sources <- renderTable(D$meta$sources |> setNames(c(tr("source"), tr("used_for"))), striped = TRUE, width = "100%")
+    # plain HTML tables: renderTable() drops accented letters (é, è) in some locales
+    html_table <- function(d) tags$table(class = "table table-sm table-striped profile-table",
+      tags$thead(tags$tr(lapply(names(d), tags$th))),
+      tags$tbody(lapply(seq_len(nrow(d)), \(i) tags$tr(lapply(d[i, , drop = TRUE], \(v) tags$td(as.character(v)))))))
+    output$sources <- renderUI(html_table(D$meta$sources |> setNames(c(tr("source"), tr("used_for")))))
     output$rel_legend <- renderUI(tagList(
       p(rel_badge("Good", tr), " ", tr("rel_good")), p(rel_badge("Use with caution", tr), " ", tr("rel_caution")),
       p(rel_badge("Unreliable", tr), " ", tr("rel_unreliable"))))
@@ -47,11 +53,26 @@ mod_methods_server <- function(id, f, tr) {
       rownames = FALSE, class = "compact stripe", options = list(pageLength = 8, scrollX = TRUE, dom = "ftip")))
     output$joins <- DT::renderDT(DT::datatable(D$meta$join_log, rownames = FALSE, class = "compact stripe",
                                                options = list(pageLength = 8, scrollX = TRUE, dom = "ftip")))
-    output$kpi_defs <- renderTable({
-      k <- c("irrigated", "irrig_modern", "irrigated_area_ha", "yield", "adjusted", "need", "priority")
-      data.frame(KPI = sapply(paste0("kd_", k, "_n"), tr), Definition = sapply(paste0("kd_", k), tr)) |>
-        setNames(c("KPI", tr("definition")))
-    }, striped = TRUE, width = "100%")
+    output$kpi_defs <- renderUI({
+      k <- c("irrigated", "irrig_any_farmer", "irrig_modern", "irrigated_area_ha", "yield", "adjusted", "sales", "need", "priority")
+      html_table(data.frame(KPI = sapply(paste0("kd_", k, "_n"), tr), Definition = sapply(paste0("kd_", k), tr)) |>
+        setNames(c("KPI", tr("definition"))))
+    })
+    output$coverage <- renderUI({
+      q <- D$meta$season_quality; if (is.null(q)) return(NULL)
+      html_table(q |> transmute(s = paste0(sas_year, sas_season), p = paste0(round(area_coverage_pct), "%"),
+                                x = if_else(yield_usable, "\u2713", tr("yield_excluded", paste0(sas_year, sas_season)))) |>
+                   setNames(c(tr("season"), "%", "")))
+    })
+    output$bench <- renderUI({
+      b <- D$meta$benchmarks; if (is.null(b)) return(NULL)
+      tags$table(class = "table table-sm profile-table",
+        tags$tbody(lapply(seq_len(nrow(b)), \(i) tags$tr(
+          tags$td(tr(paste0("bench_", b$key[i]))),
+          tags$td(strong(if (b$unit[i] == "ha") paste(fmt_num(b$value[i]), "ha") else fmt_pct(b$value[i]))),
+          tags$td(b$period[i]),
+          tags$td(tags$a(href = b$url[i], target = "_blank", b$source[i]))))))
+    })
     for (x in names(downloads)) local({
       nm <- x
       output[[paste0("dl_", nm)]] <- downloadHandler(

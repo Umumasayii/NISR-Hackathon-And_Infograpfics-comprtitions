@@ -160,9 +160,9 @@
   "rw": "Icyitegererezo cy'ikoreshwa"
  },
  "p_priority": {
-  "en": "Priority screening",
-  "fr": "Présélection des priorités",
-  "rw": "Isuzuma ry'ibyihutirwa"
+  "en": "Shortlist for field checks",
+  "fr": "Liste à vérifier sur le terrain",
+  "rw": "Urutonde rw'aho gusura"
  },
  "p_methods": {
   "en": "Methods",
@@ -215,29 +215,29 @@
   "rw": "Igitsina"
  },
  "hero_title": {
-  "en": "Where can irrigation lift Rwanda's harvests next?",
-  "fr": "Où l'irrigation peut-elle augmenter les récoltes du Rwanda ?",
-  "rw": "Ni hehe kuhira byazamura umusaruro w'u Rwanda?"
+  "en": "Which districts should be checked first for small-scale irrigation?",
+  "fr": "Quels districts vérifier en premier pour la petite irrigation ?",
+  "rw": "Ni ibihe turere byasuzumwa mbere ku kuhira imyaka mu buryo buto?"
  },
  "hero_sub": {
-  "en": "Seven years of NISR farm surveys and 45 years of rainfall, turned into simple answers: who waters their crops, what changes when they do, and where help is needed most to reach Rwanda's NST2 goals.",
-  "fr": "Sept ans d'enquêtes agricoles du NISR et 45 ans de pluies, en réponses simples : qui irrigue, ce qui change quand on irrigue, et où l'aide compte le plus pour atteindre les objectifs de la NST2.",
-  "rw": "Imyaka irindwi y'ubushakashatsi bwa NISR ku buhinzi n'imyaka 45 y'imvura, mu bisubizo byoroshye: ni nde wuhira, ibihinduka iyo yuhiye, n'aho ubufasha bukenewe cyane ngo intego za NST2 zigerweho."
+  "en": "For district planners: NISR farm surveys and 45 years of rainfall show where rain fails most, how many farmers water their crops and how harvests compare. The result is a shortlist for field checks, with what is still unknown.",
+  "fr": "Pour les planificateurs de district : les enquêtes agricoles du NISR et 45 ans de pluies montrent où la pluie manque le plus, combien d'agriculteurs irriguent et comment les récoltes se comparent. Le résultat est une liste courte à vérifier sur le terrain, avec ce qui reste inconnu.",
+  "rw": "Ku bategura igenamigambi ry'uturere: ubushakashatsi bwa NISR ku buhinzi n'imyaka 45 y'imvura byerekana aho imvura ibura cyane, umubare w'abahinzi buhira n'uko umusaruro ugereranywa. Igisubizo ni urutonde rugufi rw'aho gusura, hamwe n'ibitaramenyekana."
  },
  "act_gap": {
-  "en": "See the adoption gap",
-  "fr": "Voir l'écart d'adoption",
-  "rw": "Reba icyuho mu kuhira"
+  "en": "1 · Need: dry spells and who irrigates",
+  "fr": "1 · Besoin : sécheresses et qui irrigue",
+  "rw": "1 · Ibikenewe: amapfa n'abuhira"
  },
  "act_payoff": {
-  "en": "Check the yield evidence",
-  "fr": "Vérifier les preuves de rendement",
-  "rw": "Suzuma ibimenyetso by'umusaruro"
+  "en": "2 · Evidence: how harvests compare",
+  "fr": "2 · Preuves : comparer les récoltes",
+  "rw": "2 · Ibimenyetso: uko umusaruro ugereranywa"
  },
  "act_action": {
-  "en": "Screen priority districts",
-  "fr": "Présélectionner les districts",
-  "rw": "Hitamo uturere tw'ibanze"
+  "en": "3 · Shortlist for field checks",
+  "fr": "3 · Liste à vérifier sur le terrain",
+  "rw": "3 · Urutonde rw'aho gusura"
  },
  "c_trend": {
   "en": "Share of plots irrigated, by season",
@@ -275,9 +275,9 @@
   "rw": "%s, %s (byari %s muri %s)"
  },
  "k_area": {
-  "en": "Irrigated area",
-  "fr": "Superficie irriguée",
-  "rw": "Ubuso bwuhirwa"
+  "en": "Area of plots that report irrigation",
+  "fr": "Surface des parcelles déclarées irriguées",
+  "rw": "Ubuso bw'imirima ivuga ko yuhiwe"
  },
  "k_area_sub": {
   "en": "%s · %s of cultivated land",
@@ -295,14 +295,14 @@
   "rw": "Igipimo cy'imirima yuhirwa ikoresha pompe, imashini cyangwa imiyoboro, %s (n = %s)"
  },
  "k_maize": {
-  "en": "Maize: extra harvest when irrigated",
-  "fr": "Maïs : récolte en plus avec irrigation",
-  "rw": "Ibigori: umusaruro wiyongera iyo byuhiwe"
+  "en": "Maize: harvest gap, irrigated vs not",
+  "fr": "Maïs : écart de récolte, irrigué ou non",
+  "rw": "Ibigori: ikinyuranyo cy'umusaruro, byuhiwe n'ibituhiwe"
  },
  "k_maize_sub": {
-  "en": "Compared with similar farms (likely between %s%% and %s%%). Simple gap: %s%%.",
-  "fr": "Par rapport à des exploitations semblables (probablement entre %s %% et %s %%). Écart simple : %s %%.",
-  "rw": "Ugereranyije n'imirima isa (hagati ya %s%% na %s%%). Ikinyuranyo cyoroshye: %s%%."
+  "en": "In a fair comparison of similar farms (likely between %s%% and %s%%). Simple gap: %s%%. A link, not proof that water caused it.",
+  "fr": "Comparaison équitable de fermes semblables (probablement entre %s%% et %s%%). Écart simple : %s%%. Un lien, pas une preuve que l'eau en est la cause.",
+  "rw": "Mu igereranya ritabogamye ry'imirima isa (hagati ya %s%% na %s%%). Ikinyuranyo cyoroshye: %s%%. Ni isano, si gihamya ko amazi ari yo yabiteye."
  },
  "y_pct_plots": {
   "en": "% of plots irrigated",
@@ -420,9 +420,9 @@
   "rw": "Ubuhinzi buvanze n'amashyamba"
  },
  "ind_irrigated_area_ha": {
-  "en": "Irrigated area (ha)",
-  "fr": "Superficie irriguée (ha)",
-  "rw": "Ubuso bwuhirwa (ha)"
+  "en": "Area of plots reporting irrigation (ha)",
+  "fr": "Surface des parcelles déclarées irriguées (ha)",
+  "rw": "Ubuso bw'imirima ivuga ko yuhiwe (ha)"
  },
  "ind_production_t": {
   "en": "Production (t)",
@@ -760,24 +760,24 @@
   "rw": "Umusaruro kuri hegitari buri mwaka"
  },
  "c_ladder": {
-  "en": "Harvest by number of modern inputs",
-  "fr": "Récolte selon le nombre d'intrants modernes",
-  "rw": "Umusaruro ukurikije inyongeramusaruro zigezweho"
+  "en": "Harvest by number of other inputs used",
+  "fr": "Récolte selon le nombre d'autres intrants",
+  "rw": "Umusaruro ukurikije umubare w'izindi nyongeramusaruro"
  },
  "src_model_yield": {
-  "en": "Fair comparison: irrigated and non-irrigated plots with similar inputs, size, district and season. NISR survey 2019–2025.",
-  "fr": "Comparaison équitable : parcelles irriguées et non irriguées aux intrants, taille, district et saison semblables. Enquête NISR 2019–2025.",
-  "rw": "Igereranya riboneye: imirima yuhiwe n'ituhiwe ifite inyongeramusaruro, ingano, akarere n'igihembwe bisa. NISR 2019–2025."
+  "en": "Fair comparison: irrigated and non-irrigated plots with similar inputs, size, district and season. NISR survey 2019–2025 (2024B and 2024C left out). Unknown answers are kept as their own group. A link, not proof of cause.",
+  "fr": "Comparaison équitable : parcelles irriguées et non irriguées aux intrants, taille, district et saison semblables. Enquête NISR 2019–2025 (2024B et 2024C exclues). Les réponses inconnues forment leur propre groupe. Un lien, pas une preuve de cause.",
+  "rw": "Igereranya ritabogamye: imirima yuhiwe n'ituhiwe ifite inyongeramusaruro, ingano, akarere n'igihembwe bisa. Ubushakashatsi bwa NISR 2019–2025 (2024B na 2024C ntibirimo). Ibisubizo bitazwi bigira itsinda ryabyo. Ni isano, si gihamya y'impamvu."
  },
  "src_yield": {
-  "en": "Source: NISR Seasonal Agricultural Survey. Harvest divided by area; extreme values removed.",
-  "fr": "Source : Enquête agricole saisonnière du NISR. Récolte divisée par la surface ; valeurs extrêmes retirées.",
-  "rw": "Inkomoko: NISR. Umusaruro ugabanyijwe n'ubuso; imibare ikabije yakuweho."
+  "en": "Source: NISR Seasonal Agricultural Survey. Harvest divided by area; extreme values removed. 2024B and 2024C are left out: crop areas were recorded for too few plots.",
+  "fr": "Source : Enquête agricole saisonnière du NISR. Récolte divisée par la surface ; valeurs extrêmes retirées. 2024B et 2024C sont exclues : surfaces connues pour trop peu de parcelles.",
+  "rw": "Inkomoko: Ubushakashatsi bwa NISR bw'ibihembwe by'ubuhinzi. Umusaruro ugabanyijwe n'ubuso; imibare ikabije yavanywemo. 2024B na 2024C ntibirimo: ubuso bwanditswe ku mirima mike cyane."
  },
  "src_ladder": {
-  "en": "Modern inputs counted: irrigation, improved seed, chemical fertiliser, machines (0 to 4). Pale bars rest on few plots.",
-  "fr": "Intrants comptés : irrigation, semences améliorées, engrais chimique, machines (0 à 4). Barres pâles : peu de parcelles.",
-  "rw": "Ibibarwa: kuhira, imbuto z'indobanure, ifumbire mvaruganda, imashini (0 kugeza 4). Imirongo yoroheje: imirima mike."
+  "en": "Inputs counted: improved seed, chemical fertiliser, machines (0 to 3). Irrigation is not counted. Plots where any of the three is unknown are left out. Pale bars rest on few plots.",
+  "fr": "Intrants comptés : semences améliorées, engrais chimique, machines (0 à 3). L'irrigation n'est pas comptée. Les parcelles où l'un des trois est inconnu sont exclues. Les barres pâles reposent sur peu de parcelles.",
+  "rw": "Inyongeramusaruro zibarwa: imbuto z'indobanure, ifumbire mvaruganda, imashini (0 kugeza 3). Kuhira ntikubarwa. Imirima itazwi kimwe muri ibi itavanywemo. Inkingi zijimye gake zishingiye ku mirima mike."
  },
  "raw_diff": {
   "en": "Simple gap",
@@ -805,9 +805,9 @@
   "rw": "Umusaruro (kg/ha)"
  },
  "x_modern_inputs": {
-  "en": "Number of modern inputs on the plot",
-  "fr": "Nombre d'intrants modernes",
-  "rw": "Umubare w'inyongeramusaruro"
+  "en": "Number of inputs used (seed, fertiliser, machines)",
+  "fr": "Nombre d'intrants (semences, engrais, machines)",
+  "rw": "Umubare w'inyongeramusaruro (imbuto, ifumbire, imashini)"
  },
  "inputs": {
   "en": "inputs",
@@ -840,9 +840,9 @@
   "rw": "Kuri %s, imirima yuhiwe itanga kg %s/ha, ituhiwe kg %s/ha, ariko itandukaniro rishobora kuba impanuka."
  },
  "m_dumb_diff": {
-  "en": "For %s, irrigated plots give %s kg/ha against %s kg/ha without irrigation, and the difference is real.",
-  "fr": "Pour %s, %s kg/ha avec irrigation contre %s kg/ha sans, et l'écart est réel.",
-  "rw": "Kuri %s, imirima yuhiwe itanga kg %s/ha, ituhiwe kg %s/ha, kandi itandukaniro ni ukuri."
+  "en": "For %s, irrigated plots give %s kg/ha against %s kg/ha without irrigation. The gap is too big to be chance, but it does not prove that water caused it.",
+  "fr": "Pour %s, les parcelles irriguées donnent %s kg/ha contre %s kg/ha sans irrigation. L'écart est trop grand pour être dû au hasard, mais ne prouve pas que l'eau en est la cause.",
+  "rw": "Ku %s, imirima yuhiwe itanga kg %s/ha naho ituhiwe kg %s/ha. Ikinyuranyo ni kinini ku buryo kitaba impanuka, ariko ntikigaragaza ko amazi ari yo yabiteye."
  },
  "m_byyear": {
   "en": "Irrigated plots gave more harvest in %s of %s years for %s.",
@@ -850,9 +850,9 @@
   "rw": "Imirima yuhiwe yatanze umusaruro mwinshi mu myaka %s kuri %s kuri %s."
  },
  "m_ladder": {
-  "en": "For %s, harvest goes from %s kg/ha with no modern input to %s kg/ha with %s inputs.",
-  "fr": "Pour %s, la récolte passe de %s kg/ha sans intrant moderne à %s kg/ha avec %s intrants.",
-  "rw": "Kuri %s, umusaruro uva kuri kg %s/ha nta nyongeramusaruro, ukagera kuri kg %s/ha hamwe na %s."
+  "en": "For %s, harvest goes from %s kg/ha with none of these inputs to %s kg/ha with %s of them.",
+  "fr": "Pour %s, la récolte passe de %s kg/ha sans ces intrants à %s kg/ha avec %s d'entre eux.",
+  "rw": "Ku %s, umusaruro uva kuri kg %s/ha nta nyongeramusaruro n'imwe ukagera kuri kg %s/ha ukoresheje %s muri zo."
  },
  "how_intro": {
   "en": "These charts look only at plots that are irrigated. Choose what to see:",
@@ -1090,9 +1090,9 @@
   "rw": "Gerageza: amahirwe yo kuhira umurima"
  },
  "c_potential": {
-  "en": "Districts irrigating less than expected",
-  "fr": "Districts qui irriguent moins que prévu",
-  "rw": "Uturere twuhira munsi y'ibiteganyijwe"
+  "en": "Prediction gap: fewer irrigated plots than the model expects",
+  "fr": "Écart de prédiction : moins de parcelles irriguées que prévu par le modèle",
+  "rw": "Ikinyuranyo n'icyo icyitegererezo giteganya: imirima yuhiwe mike kuruta uko byari byitezwe"
  },
  "src_model": {
   "en": "Source: NISR SAS 2020–2025 A+B, weighted logistic regression and random forest (ranger).",
@@ -1195,9 +1195,9 @@
   "rw": "Hamwe no guhuza ubutaka n'ifumbire: %s."
  },
  "sim_caveat": {
-  "en": "A what-if game for exploring. It shows patterns in the data, not what a policy would achieve.",
-  "fr": "Un jeu « et si » pour explorer. Il montre des tendances, pas l'effet d'une politique.",
-  "rw": "Umukino wo kugerageza. Werekana imiterere y'imibare, si icyo politiki yageraho."
+  "en": "A what-if game for exploring the model. It shows patterns in the data, not what a policy would achieve: changing fertiliser or land consolidation here does not mean farmers would start irrigating.",
+  "fr": "Un jeu « et si » pour explorer le modèle. Il montre des tendances dans les données, pas l'effet d'une politique : changer l'engrais ou le remembrement ici ne veut pas dire que les agriculteurs se mettraient à irriguer.",
+  "rw": "Umukino wa 'byagenda bite' wo gusuzuma icyitegererezo. Werekana imiterere y'imibare, si icyo politiki yageraho: guhindura ifumbire cyangwa guhuza ubutaka hano ntibivuze ko abahinzi batangira kuhira."
  },
  "gap": {
   "en": "Gap",
@@ -1210,19 +1210,19 @@
   "rw": "Amanota"
  },
  "m_potential": {
-  "en": "Orange districts irrigate less than similar farms elsewhere: %s first. Blue districts already do better than expected.",
-  "fr": "Les districts orange irriguent moins que des exploitations semblables ailleurs : d'abord %s. Les bleus font mieux que prévu.",
-  "rw": "Uturere tw'icunga twuhira munsi y'imirima isa ahandi: mbere %s. Uturere tw'ubururu turenze ibiteganyijwe."
+  "en": "Orange districts have fewer irrigated plots than the model expects for similar farms: %s first. It is a gap to look into, not a promise of what irrigation would do.",
+  "fr": "Les districts en orange ont moins de parcelles irriguées que prévu pour des fermes semblables : %s d'abord. C'est un écart à examiner, pas une promesse de ce que l'irrigation apporterait.",
+  "rw": "Uturere tw'ibara rya orange dufite imirima yuhiwe mike kuruta uko byari byitezwe ku mirima isa: %s mbere. Ni ikinyuranyo cyo gusuzuma, si isezerano ry'icyo kuhira byazana."
  },
  "prelim_title": {
-  "en": "Preliminary screening.",
-  "fr": "Présélection préliminaire.",
-  "rw": "Isuzuma ry'ibanze."
+  "en": "A shortlist for field checks.",
+  "fr": "Une liste à vérifier sur le terrain.",
+  "rw": "Urutonde rugufi rw'aho gusura."
  },
  "prelim_text": {
-  "en": "This list ranks districts to look at first. You can change the weights. It does not decide who gets money.",
-  "fr": "Cette liste classe les districts à examiner en premier. Vous pouvez changer les poids. Elle ne décide pas des financements.",
-  "rw": "Uru rutonde rugaragaza uturere two kwitaho mbere. Ushobora guhindura uburemere. Ntirufata icyemezo cy'amafaranga."
+  "en": "It shows which districts to visit first for a feasibility check. Water sources, schemes and costs are not in the data yet, so this is not an investment ranking. You can change the weights.",
+  "fr": "Elle montre les districts à visiter en premier pour une étude de faisabilité. Les sources d'eau, les périmètres et les coûts ne sont pas encore dans les données : ce n'est donc pas un classement d'investissement. Vous pouvez changer les poids.",
+  "rw": "Rwerekana uturere two gusura mbere hagamijwe gusuzuma niba kuhira bishoboka. Amasoko y'amazi, imishinga yo kuhira n'ibiciro ntibiri mu mibare, bityo si urutonde rw'ishoramari. Ushobora guhindura uburemere."
  },
  "weights": {
   "en": "Weights",
@@ -1250,9 +1250,9 @@
   "rw": "Ikinyuranyo cy'igitsina"
  },
  "w_c_readiness": {
-  "en": "Input readiness",
-  "fr": "Préparation (intrants)",
-  "rw": "Kwitegura (inyongeramusaruro)"
+  "en": "Current input use (proxy)",
+  "fr": "Usage actuel d'intrants (indicateur indirect)",
+  "rw": "Ikoreshwa ry'inyongeramusaruro ubu (igipimo kigereranya)"
  },
  "reset_weights": {
   "en": "Default weights",
@@ -1380,9 +1380,9 @@
   "rw": "SmartIrrigate Rwanda"
  },
  "about_text": {
-  "en": "A dashboard in English, Kinyarwanda and French for the NISR 2026 Big Data Hackathon. It turns two NISR farm surveys into simple facts about irrigation, linked to Rwanda's NST2 goals for 2029.",
-  "fr": "Un tableau de bord en anglais, kinyarwanda et français pour le Hackathon Big Data 2026 du NISR. Il transforme deux enquêtes agricoles du NISR en faits simples sur l'irrigation, liés aux objectifs NST2 pour 2029.",
-  "rw": "Urubuga mu Cyongereza, Ikinyarwanda n'Igifaransa rwa NISR Big Data Hackathon 2026. Ruhindura ubushakashatsi bubiri bwa NISR mu makuru yoroshye ku kuhira, ajyanye n'intego za NST2 za 2029."
+  "en": "A dashboard in English, Kinyarwanda and French for the NISR 2026 Big Data Hackathon. It turns two NISR farm surveys into simple facts about irrigation, harvests and the support farmers need.",
+  "fr": "Un tableau de bord en anglais, kinyarwanda et français pour le Hackathon Big Data 2026 du NISR. Il transforme deux enquêtes agricoles du NISR en faits simples sur l'irrigation, les récoltes et l'appui dont les agriculteurs ont besoin.",
+  "rw": "Urubuga mu Cyongereza, Ikinyarwanda n'Igifaransa rwa NISR Big Data Hackathon 2026. Ruhindura ubushakashatsi bubiri bwa NISR mu makuru yoroshye ku kuhira, umusaruro n'ubufasha abahinzi bakeneye."
  },
  "personas": {
   "en": "Who it is for",
@@ -1405,9 +1405,9 @@
   "rw": "Abategura (uturere, MINAGRI):"
  },
  "persona_planner_txt": {
-  "en": "find gaps and screen priorities.",
-  "fr": "repérer les écarts et présélectionner.",
-  "rw": "kubona ibyuho no guhitamo iby'ibanze."
+  "en": "build a shortlist of districts to check in the field, and see what is still unknown.",
+  "fr": "établir une liste de districts à vérifier sur le terrain et voir ce qui reste inconnu.",
+  "rw": "gukora urutonde rw'uturere two gusura no kureba ibitaramenyekana."
  },
  "persona_research": {
   "en": "Researchers and judges:",
@@ -1460,19 +1460,19 @@
   "rw": "Ntibyizewe"
  },
  "rel_good": {
-  "en": "n ≥ 50 and coefficient of variation ≤ 20%",
-  "fr": "n ≥ 50 et CV ≤ 20 %",
-  "rw": "n ≥ 50 na CV ≤ 20%"
+  "en": "n ≥ 50, at least 12 survey segments and coefficient of variation ≤ 20%",
+  "fr": "n ≥ 50, au moins 12 segments d'enquête et coefficient de variation ≤ 20 %",
+  "rw": "n ≥ 50, nibura ibice 12 by'ubushakashatsi kandi CV ≤ 20%"
  },
  "rel_caution": {
-  "en": "CV between 20% and 35%, or n 30–49",
-  "fr": "CV entre 20 et 35 %, ou n 30–49",
-  "rw": "CV hagati ya 20% na 35%"
+  "en": "CV between 20% and 35%, or n 30–49, or fewer than 12 segments",
+  "fr": "CV entre 20 % et 35 %, ou n 30–49, ou moins de 12 segments",
+  "rw": "CV hagati ya 20% na 35%, cyangwa n 30–49, cyangwa ibice biri munsi ya 12"
  },
  "rel_unreliable": {
-  "en": "CV above 35% or n below 30: do not use alone",
-  "fr": "CV > 35 % ou n < 30 : à ne pas utiliser seul",
-  "rw": "CV > 35% cyangwa n < 30"
+  "en": "CV above 35%, n below 30 or fewer than 5 segments: do not use alone",
+  "fr": "CV au-dessus de 35 %, n sous 30 ou moins de 5 segments : à ne pas utiliser seul",
+  "rw": "CV irenze 35%, n iri munsi ya 30 cyangwa ibice biri munsi ya 5: ntibikoreshwe byonyine"
  },
  "pipe_1_t": {
   "en": "Import.",
@@ -1575,9 +1575,9 @@
   "rw": "Umusaruro ukabije wakuweho."
  },
  "trap_7": {
-  "en": "2024B–C crop areas are sparse, so yields there are weak.",
-  "fr": "Superficies 2024B–C rares.",
-  "rw": "Ubuso bwa 2024B–C ni buke."
+  "en": "2024B and 2024C crop areas were recorded for only 46% and 7% of plots, so these seasons are left out of every yield result.",
+  "fr": "Les surfaces de culture de 2024B et 2024C ne sont connues que pour 46 % et 7 % des parcelles : ces saisons sont exclues de tous les rendements.",
+  "rw": "Ubuso bw'ibihingwa bwa 2024B na 2024C bwanditswe ku mirima 46% na 7% gusa, bityo ibi bihembwe ntibikoreshwa mu musaruro kuri hegitari."
  },
  "skip_audit": {
   "en": "Skip-pattern audit",
@@ -1625,14 +1625,14 @@
   "rw": "Pompe, imashini cyangwa imiyoboro ÷ imirima yuhirwa."
  },
  "kd_irrigated_area_ha_n": {
-  "en": "Irrigated area",
-  "fr": "Superficie irriguée",
-  "rw": "Ubuso bwuhirwa"
+  "en": "Area of plots that report irrigation",
+  "fr": "Surface des parcelles déclarées irriguées",
+  "rw": "Ubuso bw'imirima ivuga ko yuhiwe"
  },
  "kd_irrigated_area_ha": {
-  "en": "Sum of weight × plot area for irrigated plots, hectares.",
-  "fr": "Somme poids × superficie, ha.",
-  "rw": "Igiteranyo cy'ubuso, ha."
+  "en": "Sum of weight × whole plot area for plots that report irrigation, in hectares. It is not the area actually watered, and not the same definition as official irrigation-area figures.",
+  "fr": "Somme poids × surface entière des parcelles déclarées irriguées, en hectares. Ce n'est pas la surface réellement arrosée, ni la même définition que les chiffres officiels de surface irriguée.",
+  "rw": "Igiteranyo cy'uburemere × ubuso bwose bw'imirima ivuga ko yuhiwe, muri hegitari. Si ubuso bwuhiwe koko, kandi si kimwe n'imibare yemewe y'ubuso bwuhirwa."
  },
  "kd_yield_n": {
   "en": "Yield",
@@ -1670,9 +1670,9 @@
   "rw": "Amanota y'isuzuma"
  },
  "kd_priority": {
-  "en": "Weighted mean of five 0–1 components × 100; preliminary.",
-  "fr": "Moyenne pondérée de cinq composantes × 100 ; préliminaire.",
-  "rw": "Impuzandengo y'ibigize bitanu × 100."
+  "en": "Weighted mean of five 0–1 components × 100. A screening aid for field checks, not an investment decision.",
+  "fr": "Moyenne pondérée de cinq composantes 0–1 × 100. Une aide au tri pour les visites de terrain, pas une décision d'investissement.",
+  "rw": "Impuzandengo y'ibice bitanu 0–1 × 100. Ni igikoresho cyo guhitamo aho gusura, si icyemezo cy'ishoramari."
  },
  "ai_text": {
   "en": "This project used AI assistance (Claude by Anthropic) and discloses it as the hackathon requires:",
@@ -1795,14 +1795,14 @@
   "rw": "%s, %s (ibihembwe A na B). Byari %s gusa muri %s: kuhira biriyongera, ariko buhoro."
  },
  "f2_t": {
-  "en": "Irrigated fields give more harvest for %s crops",
-  "fr": "Les champs irrigués donnent plus pour %s cultures",
-  "rw": "Imirima yuhiwe itanga umusaruro mwinshi ku bihingwa %s"
+  "en": "Irrigated fields go with bigger harvests for %s crops",
+  "fr": "Les champs irrigués vont avec de meilleures récoltes pour %s cultures",
+  "rw": "Imirima yuhiwe ijyana n'umusaruro mwinshi ku bihingwa %s"
  },
  "f2": {
-  "en": "Even when we compare similar farms, irrigated plots give clearly more harvest for %s.",
-  "fr": "Même en comparant des exploitations semblables, les parcelles irriguées produisent nettement plus pour %s.",
-  "rw": "N'iyo tugereranyije imirima isa, iyuhiwe itanga umusaruro mwinshi kuri %s."
+  "en": "Even when we compare similar farms, irrigated plots show clearly bigger harvests for %s. It is a link seen in the survey, not proof that water alone caused it.",
+  "fr": "Même en comparant des fermes semblables, les parcelles irriguées ont des récoltes nettement plus grandes pour %s. C'est un lien observé dans l'enquête, pas la preuve que l'eau seule en est la cause.",
+  "rw": "No mu kugereranya imirima isa, imirima yuhiwe ifite umusaruro mwinshi ku %s. Ni isano igaragara mu bushakashatsi, si gihamya ko amazi yonyine ari yo yabiteye."
  },
  "f3_t": {
   "en": "Women and small farms are falling behind",
@@ -1830,9 +1830,9 @@
   "rw": "akamenyetso: impinduka kuva %s"
  },
  "k_area_sub2": {
-  "en": "%s of cultivated land (A+B)",
-  "fr": "%s des terres cultivées (A+B)",
-  "rw": "%s by'ubutaka buhingwa (A+B)"
+  "en": "%s of cultivated land; average per main season. Whole plot area, not hectares actually watered.",
+  "fr": "%s des terres cultivées ; moyenne par saison principale. Surface entière des parcelles, pas les hectares réellement arrosés.",
+  "rw": "%s by'ubutaka buhingwa; impuzandengo ku gihembwe kinini. Ubuso bwose bw'umurima, si hegitari zuhiwe koko."
  },
  "k_modern_sub2": {
   "en": "of irrigated plots use pumps, pivots or channels",
@@ -1840,9 +1840,9 @@
   "rw": "by'imirima yuhirwa ikoresha pompe, imashini cyangwa imiyoboro"
  },
  "k_any_sub": {
-  "en": "of farmers water at least one plot",
-  "fr": "des agriculteurs irriguent au moins une parcelle",
-  "rw": "by'abahinzi buhira nibura umurima umwe"
+  "en": "of farmers water at least one plot (each farmer counted once)",
+  "fr": "des agriculteurs arrosent au moins une parcelle (chaque agriculteur compté une fois)",
+  "rw": "by'abahinzi buhira nibura umurima umwe (buri muhinzi abarwa rimwe)"
  },
  "k_fert_sub": {
   "en": "of plots get chemical fertiliser",
@@ -2684,70 +2684,180 @@
   "fr": "Enquête ménages 2017–2024",
   "rw": "Ubushakashatsi ku ngo 2017–2024"
  },
- "nst_t": {
-  "en": "Rwanda's farming goals for 2029 (NST2)",
-  "fr": "Objectifs agricoles du Rwanda pour 2029 (NST2)",
-  "rw": "Intego z'ubuhinzi z'u Rwanda muri 2029 (NST2)"
+ "f5_t": {
+  "en": "Main food crops: harvest %s since %s",
+  "fr": "Cultures vivrières : récolte %s depuis %s",
+  "rw": "Ibihingwa by'ibanze: umusaruro %s kuva %s"
  },
- "nst_sub": {
-  "en": "What the government plans, and what the survey data show today.",
-  "fr": "Ce que prévoit le gouvernement, et ce que montrent les données aujourd'hui.",
-  "rw": "Ibyo Leta iteganya, n'ibyo imibare igaragaza uyu munsi."
+ "f5": {
+  "en": "Maize, beans, potatoes, rice, cassava, wheat and bananas gave %s thousand tonnes in %s and %s thousand tonnes in %s (seasons A and B).",
+  "fr": "Maïs, haricots, pommes de terre, riz, manioc, blé et bananes : %s milliers de tonnes en %s et %s milliers de tonnes en %s (saisons A et B).",
+  "rw": "Ibigori, ibishyimbo, ibirayi, umuceri, imyumbati, ingano n'ibitoki byatanze toni ibihumbi %s muri %s na toni ibihumbi %s muri %s (A na B)."
  },
- "nst_goal": {
-  "en": "NST2 goal",
-  "fr": "Objectif NST2",
-  "rw": "Intego ya NST2"
+ "f6_t": {
+  "en": "Better seed is spreading, insurance is not",
+  "fr": "Les semences améliorées progressent, pas l'assurance",
+  "rw": "Imbuto z'indobanure ziriyongera, ubwishingizi ntibwiyongera"
  },
- "nst_now": {
-  "en": "What the data show",
-  "fr": "Ce que montrent les données",
-  "rw": "Icyo imibare yerekana"
+ "f6": {
+  "en": "%s farm households used improved seed in 2024 (%s in 2020), but only %s had crop insurance.",
+  "fr": "%s ménages agricoles utilisaient des semences améliorées en 2024 (%s en 2020), mais seulement %s avaient une assurance récolte.",
+  "rw": "Ingo %s z'abahinzi zakoresheje imbuto z'indobanure muri 2024 (%s muri 2020), ariko %s gusa ni zo zari zifite ubwishingizi."
  },
- "nst_g1": {
-  "en": "Water more land: from 71,000 ha to over 130,000 ha of irrigated land.",
-  "fr": "Irriguer plus de terres : de 71 000 ha à plus de 130 000 ha.",
-  "rw": "Kuhira ubuso bunini: kuva kuri hegitari 71,000 kugera kuri hegitari zisaga 130,000."
+ "k_any_bench": {
+  "en": "Official NISR figure, Season A 2026: %s of farmers.",
+  "fr": "Chiffre officiel du NISR, saison A 2026 : %s des agriculteurs.",
+  "rw": "Imibare yemewe ya NISR, igihembwe A 2026: %s by'abahinzi."
  },
- "nst_d1": {
-  "en": "%s farm households watered some of their land in 2024.",
-  "fr": "%s ménages agricoles irriguaient une partie de leurs terres en 2024.",
-  "rw": "Ingo %s z'abahinzi zuhiraga igice cy'ubutaka bwazo muri 2024."
+ "kd_irrig_any_farmer_n": {
+  "en": "Farmers irrigating any plot",
+  "fr": "Agriculteurs irriguant au moins une parcelle",
+  "rw": "Abahinzi buhira nibura umurima umwe"
  },
- "nst_g2": {
-  "en": "Grow 50% more maize, beans, potatoes, rice, cassava, wheat and bananas.",
-  "fr": "Produire 50 % de plus de maïs, haricots, pommes de terre, riz, manioc, blé et bananes.",
-  "rw": "Kongera 50% by'umusaruro w'ibigori, ibishyimbo, ibirayi, umuceri, imyumbati, ingano n'ibitoki."
+ "kd_irrig_any_farmer": {
+  "en": "Weighted share of farmers who irrigated at least one plot, from 2020. Each farmer is one record; the weight is the average of the farmer's plot weights.",
+  "fr": "Part pondérée des agriculteurs ayant irrigué au moins une parcelle, depuis 2020. Chaque agriculteur compte une fois ; son poids est la moyenne des poids de ses parcelles.",
+  "rw": "Igipimo cy'abahinzi buhiye nibura umurima umwe, kuva 2020. Buri muhinzi abarwa rimwe; uburemere bwe ni impuzandengo y'uburemere bw'imirima ye."
  },
- "nst_d2": {
-  "en": "These crops gave %s thousand tonnes in %s and %s thousand tonnes in %s (%s).",
-  "fr": "Ces cultures ont donné %s milliers de tonnes en %s et %s milliers de tonnes en %s (%s).",
-  "rw": "Ibi bihingwa byatanze toni ibihumbi %s muri %s na toni ibihumbi %s muri %s (%s)."
+ "kd_sales_n": {
+  "en": "Gross sales value",
+  "fr": "Valeur brute des ventes",
+  "rw": "Agaciro k'ibyagurishijwe (mbumbe)"
  },
- "nst_g3": {
-  "en": "Get improved seed and fertiliser to every farmer, on time.",
-  "fr": "Fournir à temps semences améliorées et engrais à chaque agriculteur.",
-  "rw": "Kugeza ku gihe imbuto z'indobanure n'ifumbire kuri buri muhinzi."
+ "kd_sales": {
+  "en": "Quantity sold × price. When no price was given, the median price for the crop, season and district is used. Not income or profit: costs are not taken off.",
+  "fr": "Quantité vendue × prix. Sans prix déclaré, on prend le prix médian de la culture, de la saison et du district. Ce n'est ni un revenu ni un bénéfice : les coûts ne sont pas déduits.",
+  "rw": "Ingano yagurishijwe × igiciro. Iyo nta giciro cyatanzwe, hakoreshwa igiciro cyo hagati cy'igihingwa, igihembwe n'akarere. Si inyungu: ibyatanzwe ntibikurwamo."
  },
- "nst_d3": {
-  "en": "%s farm households used improved seed in 2024 (%s in 2020).",
-  "fr": "%s ménages agricoles utilisaient des semences améliorées en 2024 (%s en 2020).",
-  "rw": "Ingo %s z'abahinzi zakoresheje imbuto z'indobanure muri 2024 (%s muri 2020)."
+ "named_only": {
+  "en": "Shares of named answers only. %s of the answers were 'other' or not stated and are not shown.",
+  "fr": "Parts des réponses nommées seulement. %s des réponses étaient « autre » ou non précisées et ne sont pas affichées.",
+  "rw": "Ibipimo by'ibisubizo byavuzwe gusa. %s by'ibisubizo byari 'ikindi' cyangwa bitavuzwe kandi ntibigaragazwa."
  },
- "nst_g4": {
-  "en": "More farm loans (from 6% to 10% of bank lending) and insurance for crops and animals.",
-  "fr": "Plus de crédit agricole (de 6 % à 10 % des prêts) et une assurance pour cultures et animaux.",
-  "rw": "Inguzanyo nyinshi z'ubuhinzi (kuva kuri 6% kugera kuri 10%) n'ubwishingizi bw'ibihingwa n'amatungo."
+ "feas_title": {
+  "en": "Still unknown: check these in the field",
+  "fr": "Encore inconnu : à vérifier sur le terrain",
+  "rw": "Bitaramenyekana: bisuzumwe aho biri"
  },
- "nst_d4": {
-  "en": "Only %s farm households had crop insurance in 2024.",
-  "fr": "Seuls %s ménages agricoles avaient une assurance récolte en 2024.",
-  "rw": "Ingo %s gusa z'abahinzi zari zifite ubwishingizi bw'ibihingwa muri 2024."
+ "feas_intro": {
+  "en": "The shortlist uses rain, irrigation and farm data only. Before any investment, collect these for each district:",
+  "fr": "La liste utilise seulement les pluies, l'irrigation et les données agricoles. Avant tout investissement, il faut réunir pour chaque district :",
+  "rw": "Urutonde rukoresha imvura, kuhira n'imibare y'ubuhinzi gusa. Mbere y'ishoramari, ibi bigomba gukusanywa kuri buri karere:"
  },
- "nst_src": {
-  "en": "Goals: NST2 2024–2029, Government of Rwanda. Data: NISR farm surveys for the place you picked. The surveys count plots and households, not hectares, so they track progress but do not measure the hectare target directly.",
-  "fr": "Objectifs : NST2 2024–2029, Gouvernement du Rwanda. Données : enquêtes agricoles du NISR pour la zone choisie. Elles comptent parcelles et ménages, pas les hectares de l'objectif.",
-  "rw": "Intego: NST2 2024–2029, Guverinoma y'u Rwanda. Imibare: ubushakashatsi bwa NISR aho wahisemo. Bubara imirima n'ingo, si hegitari z'intego."
+ "feas_water_availability": {
+  "en": "Water available in each season, and how much the sources can give",
+  "fr": "Eau disponible par saison et capacité des sources",
+  "rw": "Amazi aboneka buri gihembwe n'ubushobozi bw'amasoko"
+ },
+ "feas_scheme_status": {
+  "en": "Existing irrigation schemes: where they are and if they work",
+  "fr": "Périmètres irrigués existants : où ils sont et s'ils fonctionnent",
+  "rw": "Imishinga yo kuhira ihari: aho iri n'uko ikora"
+ },
+ "feas_net_irrigable_area": {
+  "en": "Land that can really be irrigated",
+  "fr": "Terres réellement irrigables",
+  "rw": "Ubutaka bushobora kuhirwa koko"
+ },
+ "feas_distance_infrastructure": {
+  "en": "Distance to roads, power and water works",
+  "fr": "Distance aux routes, à l'électricité et aux ouvrages d'eau",
+  "rw": "Intera igera ku mihanda, amashanyarazi n'ibikorwa by'amazi"
+ },
+ "feas_water_user_associations": {
+  "en": "Water user associations",
+  "fr": "Associations d'usagers de l'eau",
+  "rw": "Amashyirahamwe y'abakoresha amazi"
+ },
+ "feas_environment_permits": {
+  "en": "Environment rules and permits",
+  "fr": "Règles environnementales et permis",
+  "rw": "Amategeko y'ibidukikije n'impushya"
+ },
+ "feas_unit_costs": {
+  "en": "Costs: equipment, installation, energy, upkeep, subsidies",
+  "fr": "Coûts : équipement, installation, énergie, entretien, subventions",
+  "rw": "Ibiciro: ibikoresho, kubishyiraho, ingufu, kubifata neza, inkunga"
+ },
+ "feas_market_access": {
+  "en": "Crop margins, buyers and transport",
+  "fr": "Marges des cultures, acheteurs et transport",
+  "rw": "Inyungu ku bihingwa, abaguzi n'ubwikorezi"
+ },
+ "why_listed": {
+  "en": "Why listed",
+  "fr": "Pourquoi listé",
+  "rw": "Impamvu rwashyizwe ku rutonde"
+ },
+ "dl_shortlist": {
+  "en": "Download shortlist (CSV)",
+  "fr": "Télécharger la liste (CSV)",
+  "rw": "Kuramo urutonde (CSV)"
+ },
+ "m_unrel_districts": {
+  "en": "Irrigation figures are not reliable for %s: check them in the field before deciding.",
+  "fr": "Les chiffres d'irrigation ne sont pas fiables pour %s : à vérifier sur le terrain avant de décider.",
+  "rw": "Imibare yo kuhira ntiyizewe kuri %s: isuzumwe aho biri mbere yo gufata icyemezo."
+ },
+ "bench_title": {
+  "en": "Official figures for comparison",
+  "fr": "Chiffres officiels pour comparaison",
+  "rw": "Imibare yemewe yo kugereranya"
+ },
+ "bench_note": {
+  "en": "These figures use other definitions and periods than the survey numbers in this app (for example, programme hectares versus plots that report irrigation). They are shown side by side, not mixed.",
+  "fr": "Ces chiffres utilisent d'autres définitions et périodes que les chiffres d'enquête de l'application (par exemple, hectares de programme contre parcelles déclarées irriguées). Ils sont montrés à côté, sans être mélangés.",
+  "rw": "Iyi mibare ikoresha ibisobanuro n'ibihe bitandukanye n'imibare y'ubushakashatsi iri muri iyi porogaramu (urugero: hegitari z'imishinga n'imirima ivuga ko yuhiwe). Igaragazwa iruhande, ntivangwa."
+ },
+ "bench_nisr_2026a_farmers": {
+  "en": "Farmers who irrigated (NISR SAS)",
+  "fr": "Agriculteurs ayant irrigué (EAS NISR)",
+  "rw": "Abahinzi buhiye (NISR SAS)"
+ },
+ "bench_nst2_base": {
+  "en": "Irrigated land, baseline",
+  "fr": "Terres irriguées, référence",
+  "rw": "Ubutaka bwuhirwa, fatizo"
+ },
+ "bench_nst2_2027": {
+  "en": "Irrigated land, target",
+  "fr": "Terres irriguées, cible",
+  "rw": "Ubutaka bwuhirwa, intego"
+ },
+ "bench_nst2_2029": {
+  "en": "Irrigated land, target",
+  "fr": "Terres irriguées, cible",
+  "rw": "Ubutaka bwuhirwa, intego"
+ },
+ "bench_minagri_2025": {
+  "en": "Land under irrigation (MINAGRI)",
+  "fr": "Terres sous irrigation (MINAGRI)",
+  "rw": "Ubutaka bwuhirwa (MINAGRI)"
+ },
+ "cov_title": {
+  "en": "Data coverage by season",
+  "fr": "Couverture des données par saison",
+  "rw": "Uko imibare yuzuye buri gihembwe"
+ },
+ "cov_help": {
+  "en": "Share of harvested crop plots with a crop area. Seasons below 80% are left out of yields.",
+  "fr": "Part des parcelles récoltées avec une surface de culture. Les saisons sous 80 % sont exclues des rendements.",
+  "rw": "Igipimo cy'imirima yasaruwe ifite ubuso bwanditswe. Ibihembwe biri munsi ya 80% ntibikoreshwa mu musaruro kuri hegitari."
+ },
+ "trap_8": {
+  "en": "2021B and 2021C have the province missing on many rows. The province now comes from a fixed district list, and district totals are checked against national totals before saving.",
+  "fr": "En 2021B et 2021C, la province manque sur beaucoup de lignes. Elle vient maintenant d'une liste fixe des districts, et les totaux des districts sont comparés aux totaux nationaux avant l'enregistrement.",
+  "rw": "Muri 2021B na 2021C intara ibura ku mirongo myinshi. Ubu ikurwa ku rutonde ruhamye rw'uturere, kandi ibiteranyo by'uturere bigereranywa n'iby'igihugu mbere yo kubika."
+ },
+ "trap_9": {
+  "en": "When a join finds duplicate rows, they are combined: yes if any row says yes, and values that disagree become unknown. A failed join stays unknown, never 'No'.",
+  "fr": "Quand une jointure trouve des lignes en double, elles sont combinées : oui si une ligne dit oui, et les valeurs contradictoires deviennent inconnues. Une jointure échouée reste inconnue, jamais « Non ».",
+  "rw": "Iyo guhuza imbonerahamwe bibonye imirongo isubiramo, irahurizwa: yego niba umwe uvuga yego, kandi indangagaciro zivuguruzanya zihinduka zitazwi. Guhuza binaniranye bisigara bitazwi, ntibiba 'Oya'."
+ },
+ "yield_excluded": {
+  "en": "Not shown for %s: crop areas were recorded for too few plots.",
+  "fr": "Non affiché pour %s : surfaces connues pour trop peu de parcelles.",
+  "rw": "Ntibigaragazwa kuri %s: ubuso bwanditswe ku mirima mike cyane."
  },
  "in100": {
   "en": "%s in every 100",

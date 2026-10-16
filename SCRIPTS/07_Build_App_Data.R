@@ -6,9 +6,10 @@
 #         DATA/processed/selection/irr_districts.rds (GADM level 2)
 # OUTPUT: SCRIPTS/app/data/*.rds   (aggregates only - no microdata leave R)
 #
-# Every estimate carries: estimate, 95% CI, unweighted n, CV and a reliability
-# label (Good / Use with caution / Unreliable), so each chart can state its
-# sample and quality (Section 13).
+# Every estimate carries: estimate, 95% CI, unweighted n, number of segments
+# (n_psu), CV and a reliability label (Good / Use with caution / Unreliable), so
+# each chart can state its sample and quality (Section 13). Districts and other
+# groups are estimated as domains of the full season design (see 00_Config.R).
 # ============================================================================
 
 source(file.path(Sys.getenv("HACKATHON_ROOT", "."), "SCRIPTS", "00_Config.R"))
@@ -18,6 +19,8 @@ is_other <- function(x) grepl("^other|specify", x, ignore.case = TRUE)
 
 plot_df <- read_master("master_plot")      |> add_design_vars()
 crop_df <- read_master("master_crop_plot") |> add_design_vars()
+farmer_df <- read_master("master_farmer") |> add_design_vars()
+season_quality <- read_csv(file.path(dir_master, "season_quality.csv"), show_col_types = FALSE)
 rain    <- read_master("master_rain_district_season")
 dist_season <- read_master("master_district_season")
 nat_season  <- read_master("master_national_season")
@@ -42,15 +45,18 @@ save_app(district_lookup, "district_lookup")
 
 # ---- 2. PLOT INDICATORS WITH CIs (national, province, district) ----------------
 message("2/9 Plot indicators with survey CIs (takes a minute)")
-plot_indicators <- c("irrigated", "irrig_any_farmer", "inorganic_fert", "organic_fert", "pesticide",
+plot_indicators <- c("irrigated", "inorganic_fert", "organic_fert", "pesticide",
                      "mechanised", "anti_erosion", "land_consolidated", "agroforestry")
-modern_df <- plot_df |> filter(irrigated == 1L)
+# modern tools: a domain of irrigated plots (other plots set to missing, design kept)
+modern_df <- plot_df |> mutate(irrig_modern = if_else(irrigated %in% 1L, irrig_modern, NA_integer_))
 
 est_level <- function(by_extra, level_name, area_col) {
   base <- c("sas_year", "sas_season", by_extra)
   bind_rows(
     map_dfr(plot_indicators, \(v) survey_mean_by(plot_df, v, base)),
-    survey_mean_by(modern_df, "irrig_modern", base)) |>
+    survey_mean_by(modern_df, "irrig_modern", base),
+    # farmers irrigating any plot: ONE record per farmer (master_farmer), 2020+
+    survey_mean_by(farmer_df, "irrig_farmer", base) |> mutate(indicator = "irrig_any_farmer")) |>
     mutate(level = level_name, area = if (is.null(area_col)) "Rwanda" else .data[[area_col]])
 }
 est_plot <- bind_rows(
@@ -58,13 +64,16 @@ est_plot <- bind_rows(
   est_level("province", "province", "province"),
   est_level("district_std", "district", "district_std")) |>
   mutate(across(c(estimate, se, ci_low, ci_high), \(x) 100 * x)) |>
-  select(level, area, sas_year, sas_season, indicator, estimate, se, ci_low, ci_high, n, wsum, cv, reliability)
+  select(level, area, sas_year, sas_season, indicator, estimate, se, ci_low, ci_high, n, n_psu, wsum, cv, reliability)
 save_app(est_plot, "est_plot")
 
 # ---- 3. TOTALS (hectares, tonnes) --------------------------------------------
 message("3/9 Totals")
+# irrigated_area_ha = area of plots REPORTING irrigation (not hectares watered);
+# area_coverage_pct says how complete crop areas are (2024B/C are not).
 totals_cols <- c("cultivated_area_ha", "irrigated_area_ha", "irrigated_area_pct", "production_t",
-                 "crop_area_ha", "sold_t", "sold_share_pct", "sales_value_mrwf", "n_plots")
+                 "crop_area_ha", "area_coverage_pct", "sold_t", "sold_share_pct", "sales_value_mrwf",
+                 "sales_value_imputed_pct", "n_plots", "n_farmers")
 save_app(bind_rows(
   nat_season |> mutate(level = "national", area = "Rwanda", province = NA_character_),
   dist_season |> mutate(level = "district", area = district_std)) |>
@@ -72,17 +81,37 @@ save_app(bind_rows(
 
 # ---- 4. YIELD EVIDENCE (observed association, irrigated vs rain-fed) -----------
 message("4/9 Yield evidence")
-yd <- crop_df |> filter(yield_ok, !is.na(irrigated))
-crops_enough <- yd |> filter(irrigated == 1L) |> count(crop_name) |> filter(n >= 100, !is_other(crop_name)) |> pull(crop_name)
-yd <- yd |> filter(crop_name %in% crops_enough) |>
-  mutate(season_type = if_else(sas_season == "C", "Season C (dry)", "Seasons A+B (main)"),
+# Only seasons where crop areas are complete enough (season_quality.csv: 2024B and
+# 2024C are left out). Ineligible rows are set to missing, not dropped, so each
+# crop is a domain of the full design.
+usable <- season_quality |> filter(yield_usable) |> transmute(ys = paste0(sas_year, sas_season)) |> pull(ys)
+crop_df <- crop_df |> mutate(ys = paste0(sas_year, sas_season),
+                             yield_eligible = yield_ok & ys %in% usable & !is.na(irrigated))
+crops_enough <- crop_df |> filter(yield_eligible, irrigated == 1L) |> count(crop_name) |>
+  filter(n >= 100, !is_other(crop_name)) |> pull(crop_name)
+yd <- crop_df |>
+  mutate(harvest_y = if_else(yield_eligible & crop_name %in% crops_enough, harvest_kg, NA_real_),
+         season_type = if_else(sas_season == "C", "Season C (dry)", "Seasons A+B (main)"),
          irrigation = if_else(irrigated == 1L, "Irrigated", "Rain-fed"))
-yield_pooled <- survey_ratio_by(yd, "harvest_kg", "crop_area_ha", c("crop_group", "crop_name", "season_type", "irrigation"))
-yield_year   <- survey_ratio_by(yd |> filter(season_type == "Seasons A+B (main)"),
-                                "harvest_kg", "crop_area_ha", c("crop_name", "sas_year", "irrigation"))
-ladder <- crop_df |> filter(yield_ok, sas_season %in% main_seasons, crop_name %in% crops_enough) |>
-  survey_ratio_by("harvest_kg", "crop_area_ha", c("crop_name", "modern_inputs_n"))
-save_app(list(pooled = yield_pooled, by_year = yield_year, ladder = ladder, crops = sort(crops_enough)), "yield_evidence")
+yield_pooled <- survey_ratio_by(yd, "harvest_y", "crop_area_ha", c("crop_group", "crop_name", "season_type", "irrigation")) |>
+  filter(crop_name %in% crops_enough)
+# by year (A+B together): a year missing one of its main seasons is left out,
+# otherwise 2024 would quietly be "Season A only" next to full years
+years_ab_ok <- season_quality |> filter(sas_season %in% main_seasons) |> group_by(sas_year) |>
+  summarise(ok = all(yield_usable) & n() == 2, .groups = "drop") |> filter(ok) |> pull(sas_year)
+yield_year   <- survey_ratio_by(yd |> filter(season_type == "Seasons A+B (main)", sas_year %in% years_ab_ok),
+                                "harvest_y", "crop_area_ha", c("sas_year", "crop_name", "irrigation")) |>
+  filter(crop_name %in% crops_enough)
+# complementary inputs ladder (seed, fertiliser, machines; irrigation not counted);
+# plots with any of the three unknown are left out
+ladder <- yd |> filter(sas_season %in% main_seasons) |>
+  survey_ratio_by("harvest_y", "crop_area_ha", c("crop_name", "modern_inputs_n")) |>
+  filter(crop_name %in% crops_enough)
+ladder_observed <- yd |> filter(!is.na(harvest_y), sas_season %in% main_seasons) |>
+  group_by(crop_name) |> summarise(observed_pct = round(100 * mean(!is.na(modern_inputs_n)), 1), .groups = "drop")
+save_app(list(pooled = yield_pooled, by_year = yield_year, ladder = ladder, ladder_observed = ladder_observed,
+              crops = sort(crops_enough), season_quality = season_quality,
+              excluded = season_quality |> filter(!yield_usable)), "yield_evidence")
 
 # ---- 5. HOW FARMERS IRRIGATE (shares among irrigated plots) ---------------------
 message("5/9 Irrigation technology mix")
@@ -93,6 +122,12 @@ share_of <- function(d, var, by) d |>
   summarise(w = sum(weight), n = n(), .groups = "drop_last") |>
   mutate(share = 100 * w / sum(w), n_group = sum(n)) |> ungroup() |>
   rename(category = all_of(var)) |> mutate(dimension = var)
+# how many answers were "other / unspecified" (not shown; the chart notes it)
+other_share <- map_dfr(c("irrig_tool_level", "irrig_technique", "irrig_source"), \(v) plot_df |>
+  filter(irrigated == 1L, !is.na(.data[[v]])) |>
+  group_by(sas_year) |>
+  summarise(other_pct = 100 * sum(weight[is_other(.data[[v]])]) / sum(weight), .groups = "drop") |>
+  mutate(dimension = v))
 tech <- bind_rows(
   map_dfr(c("irrig_tool_level", "irrig_technique", "irrig_source"), \(v) share_of(plot_df, v, c("sas_year", "sas_season"))),
   map_dfr(c("irrig_tool_level", "irrig_technique", "irrig_source"), \(v)
@@ -110,7 +145,7 @@ cost <- plot_df |> filter(irrigated == 1L, irrig_cost_rwf > 0, plot_area_ha > 0,
   group_by(irrig_tool_level) |>
   summarise(p25 = quantile(cost_rwf_ha, .25), median = median(cost_rwf_ha), p75 = quantile(cost_rwf_ha, .75),
             n = n(), .groups = "drop")
-save_app(list(mix = tech, sources_any = src_any, cost = cost), "irrigation_tech")
+save_app(list(mix = tech, sources_any = src_any, cost = cost, other_share = other_share), "irrigation_tech")
 
 # ---- 6. RAINFALL AND NEED -----------------------------------------------------
 message("6/9 Rainfall and need")
@@ -147,19 +182,23 @@ eq_df <- plot_df |>
          consolidated = if_else(land_consolidated == 1L, "In consolidated site", "Not consolidated"))
 equity <- bind_rows(
   map_dfr(c("gender", "age_band", "plot_size", "erosion", "consolidated"), \(g)
-    eq_df |> filter(sas_year %in% recent_years, !is.na(.data[[g]])) |>
+    eq_df |> filter(sas_year %in% recent_years) |>
       mutate(group = as.character(.data[[g]])) |>
       survey_mean_by("irrigated", "group") |> mutate(dimension = g, period = "2023-2025")),
-  eq_df |> filter(!is.na(gender)) |> mutate(group = gender) |>
+  eq_df |> mutate(group = gender) |>
     survey_mean_by("irrigated", c("sas_year", "group")) |> mutate(dimension = "gender_trend")) |>
   mutate(across(c(estimate, se, ci_low, ci_high), \(x) 100 * x))
-gender_district <- eq_df |> filter(sas_year %in% recent_years, !is.na(gender)) |>
+gender_district <- eq_df |> filter(sas_year %in% recent_years) |>
   survey_mean_by("irrigated", c("district_std", "gender")) |>
   mutate(across(c(estimate, ci_low, ci_high), \(x) 100 * x))
 save_app(list(equity = equity, gender_district = gender_district), "equity")
 
 # ---- 8. PRIORITY SCREENING (preliminary, adjustable weights) ------------------
 message("8/9 Priority screening + weight sensitivity")
+# A SHORTLIST for field feasibility checks, not an investment ranking: water
+# availability, scheme status, distance to infrastructure and costs are not in
+# the data yet (listed in feasibility_missing). "c_readiness" is only a proxy for
+# current input use (inorganic fertiliser), not irrigation feasibility.
 recent_tot <- dist_season |> filter(sas_year %in% recent_years, sas_season %in% main_seasons) |>
   group_by(district_std) |>
   summarise(cultivated_area_ha = mean(cultivated_area_ha, na.rm = TRUE),
@@ -177,7 +216,7 @@ screen <- need |>
          c_gap      = 1 - minmax(adoption_pct),
          c_scale    = minmax(cultivated_area_ha),
          c_equity   = minmax(pmax(coalesce(if_else(gender_gap_ok, gender_gap_pts, 0), 0), 0)),
-         c_readiness = minmax(inorganic_fert_pct))
+         c_readiness = minmax(inorganic_fert_pct))   # current input use (proxy)
 default_weights <- c(c_need = 0.30, c_gap = 0.30, c_scale = 0.20, c_equity = 0.10, c_readiness = 0.10)
 score_with <- function(s, w) as.numeric(as.matrix(s[names(w)]) %*% (w / sum(w))) * 100
 screen$score <- score_with(screen, default_weights)
@@ -194,7 +233,13 @@ screen <- screen |>
          stability = case_when(rank_p90 - rank_p10 <= 4 ~ "Stable",
                                rank_p90 - rank_p10 <= 10 ~ "Moderately sensitive",
                                TRUE ~ "Sensitive to weights"))
-save_app(list(table = screen, default_weights = default_weights), "priority_screening")
+comp_cols <- names(default_weights)
+contrib <- sweep(as.matrix(screen[comp_cols]), 2, default_weights / sum(default_weights), `*`)
+screen$reasons <- apply(contrib, 1, \(r) paste(comp_cols[order(-r)][1:2], collapse = ","))
+feasibility_missing <- c("water_availability", "scheme_status", "net_irrigable_area", "distance_infrastructure",
+                         "water_user_associations", "environment_permits", "unit_costs", "market_access")
+save_app(list(table = screen, default_weights = default_weights,
+              feasibility_missing = feasibility_missing), "priority_screening")
 
 # ---- 9. EXPLORER, DOWNLOADS, METADATA -----------------------------------------
 message("9/9 Explorer tables and metadata")
@@ -234,7 +279,20 @@ save_app(list(
             "Season rainfall, anomalies vs 1991-2020, dry-season frequency",
             "District maps",
             "Household irrigation, inputs, services and equity (aggregates only)")),
-  n_plots = nrow(plot_df), n_crop_plots = nrow(crop_df),
+  n_plots = nrow(plot_df), n_crop_plots = nrow(crop_df), n_farmers = nrow(farmer_df),
+  season_quality = season_quality,
+  # official figures shown as separate benchmarks (definitions differ from ours)
+  benchmarks = tibble(
+    key = c("nisr_2026a_farmers", "nst2_base", "nst2_2027", "nst2_2029", "minagri_2025"),
+    value = c(14.4, 71549, 99260, 132171, 74375),
+    unit = c("% of farmers", "ha", "ha", "ha", "ha"),
+    period = c("Season A 2026", "2023/24", "2026/27", "2028/29", "FY 2024/25"),
+    source = c("NISR Seasonal Agricultural Survey, Season A 2026 (released 28 April 2026)",
+               "NST2 2024-2029 (baseline)", "NST2 2024-2029 (target)", "NST2 2024-2029 (target)",
+               "MINAGRI Annual Report 2024-2025"),
+    url = c("https://statistics.gov.rw/statistical-publications/agriculture-environment/seasonal-agricultural-survey-season-2026",
+            rep("https://www.minecofin.gov.rw/fileadmin/user_upload/Minecofin/Publications/STRATEGIES/NST_2/NST2_2024-2029_Abridged.pdf", 3),
+            "https://www.minagri.gov.rw/fileadmin/user_upload/Minagri/Publications/Annual_Reports/Annual_report_2024-2025_Final.pdf")),
   skip_audit = skip, join_log = joins), "meta")
 
 message(sprintf("Done in %.1f min. Files in %s:", as.numeric(difftime(Sys.time(), t0, units = "mins")), dir_app_data))

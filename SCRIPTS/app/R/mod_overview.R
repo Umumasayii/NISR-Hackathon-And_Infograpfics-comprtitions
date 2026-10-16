@@ -18,12 +18,10 @@ mod_overview_ui <- function(id, tr) {
             actionLink(ns("go_priority"), tagList(fontawesome::fa("map-location-dot"), tr("act_action")))),
         div(class = "hero-hills")),
     filters_used(tr, c("years", "seasons", "area")),
-    section_title(tr("nst_t"), tr("nst_sub")),
-    uiOutput(ns("nst")),
-    section_title(tr("s_findings"), tr("s_findings_sub")),
-    uiOutput(ns("findings")),
     section_title(tr("s_numbers"), tr("s_numbers_sub")),
     uiOutput(ns("tiles")),
+    section_title(tr("s_findings"), tr("s_findings_sub")),
+    uiOutput(ns("findings")),
     layout_columns(
       col_widths = c(6, 6),
       chart_card(tr("c_trend"),
@@ -70,43 +68,42 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
         insight("seedling", tr("f2_t", nrow(ya)), tr("f2", paste(head(ya$crop_name, 4), collapse = ", ")), brand$green),
         insight("venus-mars", tr("f3_t"), tr("f3", fmt_pct(eq$estimate[eq$group == "Female"]), fmt_pct(eq$estimate[eq$group == "Male"]),
                 fmt_pct(cs$estimate[cs$group == "In consolidated site"])), "#B07A1C"),
-        insight("ranking-star", tr("f4_t"), tr("f4", paste(top$district_std, collapse = ", ")), brand$terracotta))
+        insight("ranking-star", tr("f4_t"), tr("f4", paste(top$district_std, collapse = ", ")), brand$terracotta),
+        staple_insight(),
+        insight("hand-holding-dollar", tr("f6_t"),
+                tr("f6", in100(hv("improved_seed", 2024), tr), in100(hv("improved_seed", 2020), tr),
+                   in100(hv("crop_insurance", 2024), tr)), "#6A4C93"))
     })
-
-    # NST2 2024-2029 farming goals next to what the surveys show for the selection
-    nst_crops <- c("Maize", "Bush bean", "Climbing bean", "Small red bean", "Irish potato", "Paddy rice",
-                   "Cassava", "Wheat", "Cooking banana", "Dessert banana", "Banana for beer")
-    output$nst <- renderUI({
-      v <- function(ind, yr) if (is.null(D$ahs)) NA else ahs_val(ahs_for(f(), ind), ind, yr)
+    # main food crops (maize, beans, Irish potato, rice, cassava, wheat, banana): harvest change in the selection
+    staple_crops <- c("Maize", "Bush bean", "Climbing bean", "Small red bean", "Irish potato", "Paddy rice",
+                      "Cassava", "Wheat", "Cooking banana", "Dessert banana", "Banana for beer")
+    hv <- function(ind, yr) if (is.null(D$ahs)) NA else ahs_val(ahs_for(f(), ind), ind, yr)
+    staple_insight <- function() {
       pc <- crops_for(modifyList(f(), list(seasons = intersect(f()$seasons, c("A", "B")) %||% c("A", "B"),
                                            crops = character(), crop_groups = character()))) |>
-        filter(crop_name %in% nst_crops) |> group_by(sas_year) |>
+        filter(crop_name %in% staple_crops) |> group_by(sas_year) |>
         summarise(t = sum(production_t, na.rm = TRUE) / 1000, .groups = "drop") |> arrange(sas_year)
-      d2 <- if (nrow(pc) >= 2) {
-        ch <- 100 * (tail(pc$t, 1) / pc$t[1] - 1)
-        tr("nst_d2", fmt_num(pc$t[1]), pc$sas_year[1], fmt_num(tail(pc$t, 1)), tail(pc$sas_year, 1),
-           if (abs(ch) < 0.5) tr("no_change") else paste0(if (ch > 0) "+" else "", fmt_num(ch), "%"))
-      } else tr("no_data")
-      goal <- function(icon, g, now, col) div(class = "goal-card", style = paste0("--accent:", col),
-        div(class = "goal-top", span(class = "goal-icon", fontawesome::fa(icon)), span(class = "goal-tag", tr("nst_goal"))),
-        div(class = "goal-text", g),
-        div(class = "goal-now", span(class = "goal-now-lbl", tr("nst_now")), span(now)))
-      tagList(
-        div(class = "goal-grid",
-          goal("droplet", tr("nst_g1"), tr("nst_d1", in100(v("irrigates", 2024), tr)), brand$blue),
-          goal("wheat-awn", tr("nst_g2"), d2, "#B07A1C"),
-          goal("seedling", tr("nst_g3"), tr("nst_d3", in100(v("improved_seed", 2024), tr), in100(v("improved_seed", 2020), tr)), brand$green),
-          goal("hand-holding-dollar", tr("nst_g4"), tr("nst_d4", in100(v("crop_insurance", 2024), tr)), brand$terracotta)),
-        div(class = "goal-src", fontawesome::fa("circle-info"), " ", tr("nst_src")))
-    })
+      if (nrow(pc) < 2) return(NULL)
+      ch <- 100 * (tail(pc$t, 1) / pc$t[1] - 1)
+      insight("wheat-awn", tr("f5_t", paste0(if (ch >= 0) "+" else "", fmt_num(ch), "%"), pc$sas_year[1]),
+              tr("f5", fmt_num(pc$t[1]), pc$sas_year[1], fmt_num(tail(pc$t, 1)), tail(pc$sas_year, 1)), "#00897B")
+    }
 
+    bench_line <- function() {
+      b <- D$meta$benchmarks
+      if (is.null(b) || f()$area_level != "national") return(NULL)
+      v <- b$value[b$key == "nisr_2026a_farmers"]
+      if (!length(v)) NULL else div(class = "st-bench", tr("k_any_bench", fmt_pct(v)))
+    }
     output$tiles <- renderUI({
       irr <- yearly("irrigated"); mod <- yearly("irrig_modern"); anyf <- yearly("irrig_any_farmer")
       fert <- yearly("inorganic_fert")
       sc <- yearly("irrigated", seasons = "C")
       tot <- totals_for(f()) |> filter(sas_season != "C") |> group_by(sas_year) |>
-        summarise(ha = sum(irrigated_area_ha, na.rm = TRUE), t = sum(production_t, na.rm = TRUE),
-                  cult = sum(cultivated_area_ha, na.rm = TRUE), .groups = "drop") |> arrange(sas_year)
+        # areas: average per main season (seasons A and B farm the same land, so adding them double counts);
+        # harvests: added up over the seasons
+        summarise(ha = mean(irrigated_area_ha, na.rm = TRUE), t = sum(production_t, na.rm = TRUE),
+                  cult = mean(cultivated_area_ha, na.rm = TRUE), .groups = "drop") |> arrange(sas_year)
       ya <- D$model_yield$table |> filter(crop_name == "Maize")
       lst <- function(d, v = "estimate") if (nrow(d)) tail(d[[v]], 1) else NA
       dlt <- function(d, v = "estimate") if (nrow(d) >= 2) tail(d[[v]], 1) - d[[v]][1] else NA
@@ -122,7 +119,7 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
           stat_tile(tr("k_modern"), fmt_pct(lst(mod)), "gears", "#B07A1C", dlt(mod), TRUE, mod$estimate,
                     tagList(yr(mod), tr("k_modern_sub2"), " ", rel_badge(lst(mod, "rel"), tr)), num = lst(mod), suffix = "%", decimals = 1),
           stat_tile(tr("ind_irrig_any_farmer"), fmt_pct(lst(anyf)), "user-check", brand$green, dlt(anyf), TRUE, anyf$estimate,
-                    tagList(yr(anyf), tr("k_any_sub")), num = lst(anyf), suffix = "%", decimals = 1)),
+                    tagList(yr(anyf), tr("k_any_sub"), bench_line()), num = lst(anyf), suffix = "%", decimals = 1)),
         tile_row(
           stat_tile(tr("ind_inorganic_fert"), fmt_pct(lst(fert)), "flask", "#6A4C93", dlt(fert), TRUE, fert$estimate,
                     tagList(yr(fert), tr("k_fert_sub")), num = lst(fert), suffix = "%", decimals = 1),

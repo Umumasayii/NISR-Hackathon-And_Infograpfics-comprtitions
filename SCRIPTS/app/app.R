@@ -17,11 +17,10 @@ theme <- bs_theme(
   version = 5, bg = brand$canvas, fg = brand$ink,
   primary = brand$green, secondary = brand$blue, success = brand$green,
   warning = brand$amber, danger = brand$terracotta, info = brand$blue,
-  # fonts are bundled in www/fonts (no download at start-up)
-  base_font = "'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif",
-  heading_font = "'Sora', 'Segoe UI', system-ui, sans-serif",
-  "font-size-base" = "0.97rem", "border-radius" = "0.75rem", "card-border-color" = "#E4EAE5",
-  "card-cap-bg" = "#FFFFFF", "navbar-bg" = "#FFFFFF", "headings-font-weight" = "700")
+  # the system interface font, like a normal website (Segoe UI on Windows)
+  base_font = FONT_BODY, heading_font = FONT_BODY,
+  "font-size-base" = "0.9375rem", "border-radius" = "0.5rem", "card-border-color" = "#E3E6E4",
+  "card-cap-bg" = "#FFFFFF", "navbar-bg" = "#FFFFFF", "headings-font-weight" = "600")
 
 ui <- function(request) {
   lang <- get_lang(request$QUERY_STRING)
@@ -57,8 +56,7 @@ ui <- function(request) {
     title = div(class = "brand", img(src = "logo.svg", height = "34px"),
                 span(class = "brand-name", "SmartIrrigate Rwanda")),
     id = "nav", theme = theme, sidebar = sidebar_ui, fillable = FALSE,
-    header = tags$head(tags$link(rel = "stylesheet", href = "fonts/fonts.css"),
-                       tags$link(rel = "stylesheet", href = "custom.css"),
+    header = tags$head(tags$link(rel = "stylesheet", href = "custom.css"),
                        tags$meta(name = "viewport", content = "width=device-width, initial-scale=1"),
                        tags$title("SmartIrrigate Rwanda"),
                        tags$script(sprintf("document.documentElement.lang = '%s';", lang)),

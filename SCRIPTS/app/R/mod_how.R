@@ -44,7 +44,10 @@ mod_how_server <- function(id, f, tr) {
       d <- mix_d() |> group_by(category) |> summarise(s = weighted.mean(share, n_group), .groups = "drop") |> arrange(desc(s))
       if (!nrow(d)) return(NULL)
       small <- mix_d() |> filter(n_group < 100) |> nrow()
-      p(tr("m_mix", d$category[1], fmt_pct(d$s[1], 0)), if (small) tr("m_mix_small"))
+      os <- D$tech$other_share
+      oth <- if (!is.null(os)) os |> filter(dimension == input$dim, sas_year %in% f()$years) |> pull(other_pct) else numeric()
+      tagList(p(tr("m_mix", d$category[1], fmt_pct(d$s[1], 0)), if (small) tr("m_mix_small")),
+              p(class = "source", tr("named_only", if (length(oth)) fmt_pct(mean(oth), 0) else "\u2013")))
     })
 
     output$cost <- renderPlotly({

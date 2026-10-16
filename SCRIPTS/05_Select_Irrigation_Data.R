@@ -28,7 +28,8 @@ save_outputs <- TRUE    # writes DATA/processed/selection/
 #                  consolidation. All 21 seasons.
 # crop_prod   IN   Outcome side. Crop, area, harvest (kg) -> yield (kg/ha),
 #                  seed type (improved vs traditional), sales and price
-#                  -> gross sales value. All 21 seasons.
+#                  -> gross sales value. All 21 seasons (2019-2025),
+#                  2026A-B added automatically once their files are in DATA/SAS.
 # fert_pest   IN   Input intensity. Organic / inorganic fertiliser,
 #                  micronutrients, pesticides, quantities and costs. Modern
 #                  inputs usually go together with irrigation. All 21 seasons.
@@ -191,6 +192,29 @@ for (m in intersect(datasets_in, unique(data_index$abbrev))) {
 
 selection_report <- bind_rows(selection_report)
 
+# Column groups that disappear in a season compared with the same season one
+# year earlier (e.g. a question renamed in a new survey year such as 2026).
+# A gap means 06-08 will see NA for that topic: check
+# DATA/processed/logs/sas_questionnaire_changes.csv and extend the pattern.
+group_hits <- selection_report |>
+  left_join(select(data_index, object, year, season), by = "object") |>
+  (\(r) imap(active, \(g, gname) r |>
+     filter(module %in% g$modules) |>
+     group_by(module, year, season) |>
+     summarise(n_cols = sum(str_detect(column, g$pattern) &
+                              !str_detect(column, key_cols)), .groups = "drop") |>
+     mutate(group = gname)) |> bind_rows())()
+selection_gaps <- group_hits |>
+  arrange(module, group, season, year) |>
+  group_by(module, group, season) |>
+  mutate(cols_year_before = lag(n_cols), year_before = lag(year)) |>
+  ungroup() |>
+  filter(n_cols == 0, cols_year_before > 0, year == year_before + 1)
+if (nrow(selection_gaps)) {
+  message("Column groups missing compared with the year before (check before 06):")
+  print(select(selection_gaps, module, year, season, group, cols_year_before), n = Inf)
+}
+
 # Rainfall + map (already analysis-ready)
 if (exists("chirps"))       selected$rainfall  <- chirps
 if (exists("districts_sf")) selected$districts <- districts_sf
@@ -230,4 +254,5 @@ if (save_outputs) {
   dir.create(out, recursive = TRUE, showWarnings = FALSE)
   iwalk(selected, \(d, n) saveRDS(d, file.path(out, paste0("irr_", n, ".rds"))))
   write_csv(selection_report, file.path(out, "column_selection_report.csv"))
+  write_csv(selection_gaps, file.path(out, "selection_gaps.csv"))
 }

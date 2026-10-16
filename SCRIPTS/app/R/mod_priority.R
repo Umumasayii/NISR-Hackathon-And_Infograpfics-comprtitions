@@ -1,5 +1,7 @@
-# ---- Page 9: Priority screening (PRELIMINARY, adjustable weights) -----------
-# Section 13: a screening aid, not an allocation rule. No RWF/tonnes what-if.
+# ---- Page 9: Shortlist for field checks (adjustable weights) ----------------
+# A screening aid that says which districts to visit first for a feasibility
+# check. Not an allocation rule or investment ranking: water, schemes and costs
+# are not in the data yet, and the page lists them as still unknown.
 comp_names <- c("c_need", "c_gap", "c_scale", "c_equity", "c_readiness")
 
 mod_priority_ui <- function(id, tr) {
@@ -20,8 +22,14 @@ mod_priority_ui <- function(id, tr) {
         chart_card(tr("c_priority_map"), plotlyOutput(ns("map"), height = "380px"), ns("map_means"), tr("src_priority"), icon = "map"),
         chart_card(tr("c_sensitivity"), plotlyOutput(ns("sens"), height = "380px"), ns("sens_means"), tr("src_sensitivity"),
                    icon = "arrows-up-down"))),
-    card(class = "chart-card", full_screen = TRUE, card_header(span(class = "ch-icon", fontawesome::fa("table")), span(tr("c_priority_table"))),
-         card_body(DT::DTOutput(ns("table"))), card_footer(div(class = "source", tr("src_priority")))))
+    card(class = "chart-card", full_screen = TRUE, card_header(span(class = "ch-icon", fontawesome::fa("table")), span(tr("c_priority_table")),
+                                                                 div(class = "ms-auto", downloadButton(ns("dl"), tr("dl_shortlist"), class = "btn-sm btn-outline-primary"))),
+         card_body(DT::DTOutput(ns("table"))), card_footer(div(class = "source", tr("src_priority")))),
+    card(class = "chart-card feas-card",
+         card_header(span(class = "ch-icon", fontawesome::fa("clipboard-check")), span(tr("feas_title"))),
+         card_body(p(tr("feas_intro")),
+                   tags$ul(class = "feas-list", lapply(D$screen$feasibility_missing %||% character(), \(k)
+                     tags$li(fontawesome::fa("circle-question"), " ", tr(paste0("feas_", k))))))))
 }
 
 mod_priority_server <- function(id, f, tr, set_district) {
@@ -40,7 +48,8 @@ mod_priority_server <- function(id, f, tr, set_district) {
     output$map <- renderPlotly({
       d <- scored() |> transmute(district = district_std, value = score_user,
                                  hover = paste0("<b>", district, "</b> #", rank_user, "<br>", tr("score"), ": ", fmt_num(value, 0),
-                                                "/100<br>", tr("stability"), ": ", stability))
+                                                "/100<br>", tr("stability"), ": ", stability, "<br>", tr("ind_irrigated"), ": ",
+                                                fmt_pct(adoption_pct), " (", rel_label(adoption_reliability, tr), ")"))
       choropleth(d, D$geo, "value", tr("score"), colorscale = seq_green, source = "prio_map", zmin = 0, zmax = 100,
                  selected = if (f()$area_level != "national") f()$districts)
     })
@@ -48,8 +57,10 @@ mod_priority_server <- function(id, f, tr, set_district) {
     output$map_means <- renderUI({
       d <- scored(); top <- head(d, 5)
       moved <- sum(d$rank_user != d$rank)
+      unrel <- top$district_std[top$adoption_reliability %in% "Unreliable"]
       p(tr("m_priority", paste(top$district_std, collapse = ", ")), " ",
-        if (moved) tr("m_priority_moved", moved) else tr("m_priority_default"))
+        if (moved) tr("m_priority_moved", moved) else tr("m_priority_default"),
+        if (length(unrel)) tagList(" ", tr("m_unrel_districts", paste(unrel, collapse = ", "))))
     })
 
     output$sens <- renderPlotly({
@@ -73,16 +84,33 @@ mod_priority_server <- function(id, f, tr, set_district) {
       p(tr("m_sens", if (nrow(st)) paste(st$district_std, collapse = ", ") else "\u2013"))
     })
 
+    why <- function(r) vapply(strsplit(r, ","), \(x) paste(vapply(paste0("w_", x), tr, ""), collapse = " + "), "")
+    shortlist <- reactive(scored() |> filter(district_std %in% f()$districts) |>
+      left_join(D$lookup |> rename(prov = province), by = c("district_std" = "district")))
+    output$dl <- downloadHandler(
+      filename = function() "smartirrigate_shortlist.csv",
+      content = function(file) {
+        d <- shortlist() |>
+          transmute(rank = rank_user, district = district_std, province = prov, score = round(score_user, 1),
+                    why_listed = why(reasons), irrigated_plots_pct = round(adoption_pct, 1),
+                    irrigation_figure_quality = adoption_reliability,
+                    rank_range = paste0(round(rank_p10), "-", round(rank_p90)), stability,
+                    still_to_check = paste(vapply(paste0("feas_", D$screen$feasibility_missing %||% character()), tr, ""), collapse = "; "))
+        utils::write.csv(d, file, row.names = FALSE, fileEncoding = "UTF-8")
+      })
+
     output$table <- DT::renderDT({
-      d <- scored() |> filter(district_std %in% f()$districts) |> left_join(D$lookup |> rename(prov = province), by = c("district_std" = "district")) |>
+      d <- shortlist() |>
         transmute(`#` = rank_user, District = district_std, Province = prov, Score = round(score_user, 1),
                   Need = round(100 * c_need), Gap = round(100 * c_gap), Scale = round(100 * c_scale),
                   Equity = round(100 * c_equity), Readiness = round(100 * c_readiness),
                   `Adoption %` = round(adoption_pct, 1), Reliability = adoption_reliability,
-                  `Rank p10-p90` = paste0(round(rank_p10), "\u2013", round(rank_p90)), `Top-5 %` = round(prob_top5_pct), Stability = stability)
-      names(d)[2:14] <- c(tr("district"), tr("province"), tr("score"), tr("w_c_need"), tr("w_c_gap"), tr("w_c_scale"),
+                  `Rank p10-p90` = paste0(round(rank_p10), "\u2013", round(rank_p90)), `Top-5 %` = round(prob_top5_pct), Stability = stability,
+                  Why = why(reasons))
+      names(d)[2:15] <- c(tr("district"), tr("province"), tr("score"), tr("w_c_need"), tr("w_c_gap"), tr("w_c_scale"),
                           tr("w_c_equity"), tr("w_c_readiness"), tr("ind_irrigated"), tr("reliability"),
-                          tr("rank_range"), tr("prob_top5"), tr("stability"))
+                          tr("rank_range"), tr("prob_top5"), tr("stability"), tr("why_listed"))
+      d <- d[, c(1:4, 15, 5:14)]
       DT::datatable(d, rownames = FALSE, class = "compact stripe hover",
                     options = list(pageLength = 10, scrollX = TRUE, dom = "ftip")) |>
         DT::formatStyle(4, background = DT::styleColorBar(c(0, 100), "#CFE5D8"), backgroundSize = "95% 70%",
