@@ -95,7 +95,8 @@ export default function How() {
           means={mixTop.length ? <><p>{tr('m_mix', mixTop[0].c, fmtPct(mixTop[0].s, 0))}{small ? ` ${tr('m_mix_small')}` : ''}</p><p className="muted small">{tr('named_only', oth.length ? fmtPct(mean(oth), 0) : '–')}</p></> : null}>
           <Plot fig={mixFig} height={330} empty={tr('no_data')} />
         </ChartCard>
-        <ChartCard title={tr('c_cost')} icon={Coins} means={costS.length ? tr('m_cost', costS[0].irrig_tool_level, fmtNum(costS[0].median / 1000), fmtNum(Math.max(...cost.map((r) => r.median)) / 1000)) : null}>
+        <ChartCard title={tr('c_cost')} icon={Coins} source={tr('period_pooled', '2019–2025')}
+          table={{ cols: [tr('c_cost'), 'p25', tr('median'), 'p75', 'n'], rows: cost.map((r) => [r.irrig_tool_level, Math.round(r.p25), Math.round(r.median), Math.round(r.p75), r.n]) }} means={costS.length ? tr('m_cost', costS[0].irrig_tool_level, fmtNum(costS[0].median / 1000), fmtNum(Math.max(...cost.map((r) => r.median)) / 1000)) : null}>
           <Plot fig={costFig} height={330} />
         </ChartCard>
       </Grid>

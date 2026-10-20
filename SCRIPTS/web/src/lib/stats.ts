@@ -61,27 +61,14 @@ export function combineEst(d: Est[], label: string): Est[] {
   for (const g of groupBy(d, (r) => `${r.sas_year}|${r.sas_season}|${r.indicator}`).values()) {
     const W = sum(g.map((r) => r.wsum));
     const estimate = sum(g.map((r) => r.wsum * r.estimate)) / W;
-    const pub = g.every((r) => r.source === 'nisr');
-    const se = pub ? null : Math.sqrt(sum(g.map((r) => (r.wsum / W) ** 2 * (r.se ?? 0) ** 2)));
+    const se = Math.sqrt(sum(g.map((r) => (r.wsum / W) ** 2 * (r.se ?? 0) ** 2)));
     const n = sum(g.map((r) => r.n));
-    const cv = estimate > 0 && se != null ? se / estimate : null;
+    const cv = estimate > 0 ? se / estimate : null;
     out.push({
-      ...g[0], level: 'combined', area: label, wsum: W, estimate, se, n,
-      source: pub ? 'nisr' : 'survey',
-      ci_low: se == null ? null : Math.max(estimate - 1.96 * se, 0), ci_high: se == null ? null : estimate + 1.96 * se,
-      cv, reliability: pub ? 'Published' : reliabilityLab(n, cv),
+      ...g[0], level: 'combined', area: label, wsum: W, estimate, se, n, source: 'survey',
+      ci_low: Math.max(estimate - 1.96 * se, 0), ci_high: estimate + 1.96 * se,
+      cv, reliability: reliabilityLab(n, cv),
     });
-  }
-  return out;
-}
-
-/** Averages over several years use survey seasons; a NISR published season is used
- *  on its own only when the selection has no survey season for that group. */
-export function surveyFirst<T extends { source: string }>(d: T[], key: (r: T) => string): T[] {
-  const out: T[] = [];
-  for (const g of groupBy(d, key).values()) {
-    const hasSurvey = g.some((r) => r.source === 'survey');
-    out.push(...(hasSurvey ? g.filter((r) => r.source === 'survey') : g));
   }
   return out;
 }
@@ -94,7 +81,7 @@ export function estFor(D: AppData, f: Filters, inds: string[] | string, years = 
   return f.areas.length > 1 ? combineEst(d, f.area) : d;
 }
 
-export interface YearRow { sas_year: number; seasons: string; estimate: number; n: number; rel: Reliability | null; source: 'survey' | 'nisr' }
+export interface YearRow { sas_year: number; seasons: string; estimate: number; n: number; rel: Reliability | null }
 /** Several seasons -> one value per year (weighted by the weighted plot count) */
 export function byYear(d: Est[]): YearRow[] {
   return [...groupBy(d, (r) => String(r.sas_year)).values()].map((g) => ({
@@ -103,12 +90,12 @@ export function byYear(d: Est[]): YearRow[] {
     estimate: wm(g.map((r) => r.estimate), g.map((r) => r.wsum)),
     n: sum(g.map((r) => r.n)),
     rel: mode(g.map((r) => r.reliability)),
-    source: g.every((r) => r.source === 'nisr') ? 'nisr' as const : 'survey' as const,
   })).sort((a, b) => a.sas_year - b.sas_year);
 }
 
 const TOT_COLS = ['cultivated_area_ha', 'irrigated_area_ha', 'production_t', 'crop_area_ha', 'sold_t', 'sales_value_mrwf', 'modern_irrig_area_ha'] as const;
-/** Totals (ha, t) for the selection: districts summed */
+/** Totals (ha, t) for the selection: districts summed. A total is kept only when every
+ *  selected district has a value, so a missing district is never counted as zero. */
 export function totalsFor(D: AppData, f: Filters): Totals[] {
   const Y = new Set(f.years), S = new Set<string>(f.seasons);
   const t = D.totals.filter((r) => Y.has(r.sas_year) && S.has(r.sas_season));
@@ -116,13 +103,43 @@ export function totalsFor(D: AppData, f: Filters): Totals[] {
   const Ds = new Set(f.districts);
   return [...groupBy(t.filter((r) => r.level === 'district' && Ds.has(r.area)), (r) => `${r.sas_year}|${r.sas_season}`).values()].map((g) => {
     const row = { ...g[0], level: 'combined' as const, area: f.area } as Totals;
+    const complete = g.length === Ds.size;
     for (const c of TOT_COLS) {
       const v = g.map((r) => r[c]);
-      (row as unknown as Record<string, number | null>)[c] = v.every((x) => x == null) ? null : sum(v);
+      (row as unknown as Record<string, number | null>)[c] = complete && v.every((x) => x != null && Number.isFinite(x)) ? sum(v) : null;
     }
     row.irrigated_area_pct = row.irrigated_area_ha != null && row.cultivated_area_ha ? (100 * row.irrigated_area_ha) / row.cultivated_area_ha : null;
     return row;
   });
+}
+
+/** Seasons whose yields can be used (crop area measured for at least 80% of plots) */
+export function yieldSeasons(D: AppData): Set<string> {
+  return new Set(D.meta.season_quality.filter((r) => r.yield_usable).map((r) => `${r.sas_year}${r.sas_season}`));
+}
+
+export interface YieldAgg { all: number; irr: number; rf: number; nIrr: number; exact: boolean; excluded: number }
+/**
+ * Yield of a set of crop rows (kg/ha), with one eligibility rule for every chart:
+ * seasons with unusable area measurement are left out, and a yield is summed harvest
+ * over summed area of the eligible plots, never an average of yields. Data built
+ * before these sums were exported: one row is shown as it is, and a combination of
+ * rows stays empty rather than being averaged with the wrong weights.
+ */
+export function yieldOf(D: AppData, rows: Crop[]): YieldAgg {
+  const ok = yieldSeasons(D);
+  const d = rows.filter((r) => ok.has(`${r.sas_year}${r.sas_season}`));
+  const excluded = rows.length - d.length;
+  const nIrr = sum(d.map((r) => r.n_irrigated_yield));
+  const ratio = (h: (number | null | undefined)[], a: (number | null | undefined)[]) => { const A = sum(a); return A > 0 ? sum(h) / A : NaN; };
+  if (d.length && d.every((r) => r.yield_area_ha !== undefined)) return {
+    all: ratio(d.map((r) => r.yield_harvest_kg), d.map((r) => r.yield_area_ha)),
+    irr: ratio(d.map((r) => r.yield_harvest_irr_kg), d.map((r) => r.yield_area_irr_ha)),
+    rf: ratio(d.map((r) => r.yield_harvest_rf_kg), d.map((r) => r.yield_area_rf_ha)),
+    nIrr, exact: true, excluded,
+  };
+  if (d.length === 1) return { all: d[0].yield_kg_ha ?? NaN, irr: d[0].yield_irrigated_kg_ha ?? NaN, rf: d[0].yield_rainfed_kg_ha ?? NaN, nIrr, exact: true, excluded };
+  return { all: NaN, irr: NaN, rf: NaN, nIrr, exact: false, excluded };
 }
 
 /** Crop table for the selection. For a sub-national selection the district rows are kept. */

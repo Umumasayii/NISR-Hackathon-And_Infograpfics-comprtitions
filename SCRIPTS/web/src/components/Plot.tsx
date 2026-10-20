@@ -108,20 +108,30 @@ export function simpleLines(data: Data[], layout: Partial<Layout>): Fig {
 export const legendBottom = (y = -0.2): Partial<Layout['legend']> => ({ orientation: 'h', y, x: 0, font: { size: 11 } });
 
 // ---- district maps ---------------------------------------------------------------------
-export interface MapRow { district: string; value: number | null; hover?: string }
+export interface MapRow { district: string; value: number | null; hover?: string; /** rests on few plots: drawn paler */ weak?: boolean }
 export function choropleth(geo: unknown, rows: MapRow[], o: {
-  label: string; colorscale: [number, string][]; zmin?: number; zmax?: number; selected?: string[]; unit?: string; dec?: number;
+  label: string; colorscale: [number, string][]; zmin?: number; zmax?: number; selected?: string[]; unit?: string; dec?: number; noData?: string;
 }): Fig {
   const d = rows.filter((r) => r.value != null && Number.isFinite(r.value));
   const hl = !!o.selected && o.selected.length > 0 && o.selected.length < 30;
+  // a district without an estimate is drawn in plain grey and says so; it is never
+  // left blank (which reads as zero) or filled with another area's value
+  const all = ((geo as { features?: { properties: { district: string } }[] }).features ?? []).map((x) => x.properties.district);
+  const have = new Set(d.map((r) => r.district));
+  const none = all.filter((x) => !have.has(x));
   return {
-    data: [{
+    data: [...(none.length ? [{
+      type: 'choropleth', geojson: geo, featureidkey: 'properties.district', locations: none, z: none.map(() => 0),
+      colorscale: [[0, '#E4E7E5'], [1, '#E4E7E5']], showscale: false, customdata: none,
+      text: none.map((x) => `<b>${x}</b><br>${o.noData ?? 'No estimate'}`), hoverinfo: 'text',
+      marker: { line: { color: '#FFFFFF', width: 1 } },
+    } as unknown as Data] : []), {
       type: 'choropleth', geojson: geo, featureidkey: 'properties.district',
       locations: d.map((r) => r.district), z: d.map((r) => r.value as number),
       zmin: o.zmin, zmax: o.zmax, colorscale: o.colorscale, customdata: d.map((r) => r.district),
       text: d.map((r) => r.hover ?? `<b>${r.district}</b><br>${o.label}: ${(r.value as number).toFixed(o.dec ?? 1)}${o.unit ?? ''}`),
       hoverinfo: 'text',
-      marker: { line: { color: d.map((r) => (hl && o.selected!.includes(r.district) ? brand.ink : '#FFFFFF')), width: d.map((r) => (hl ? (o.selected!.includes(r.district) ? 2.5 : 0.8) : 1)) } },
+      marker: { opacity: d.map((r) => (r.weak ? 0.45 : 1)), line: { color: d.map((r) => (hl && o.selected!.includes(r.district) ? brand.ink : '#FFFFFF')), width: d.map((r) => (hl ? (o.selected!.includes(r.district) ? 2.5 : 0.8) : 1)) } },
       colorbar: { title: { text: o.label, side: 'top' }, thickness: 10, len: 0.6, orientation: 'h', x: 0.5, xanchor: 'center', y: -0.02, yanchor: 'top' },
     } as unknown as Data],
     layout: {

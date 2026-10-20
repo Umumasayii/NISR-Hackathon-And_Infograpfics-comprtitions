@@ -56,7 +56,8 @@ export default function Who() {
     <>
       <FiltersUsed used={['years', 'area']} />
       <Grid cols="1fr 1fr">
-        <ChartCard title={tr('c_equity')} icon={Users}
+        <ChartCard title={tr('c_equity')} icon={Users} source={tr('period_pooled', '2023–2025, Seasons A+B')}
+          table={{ cols: [tr('group'), tr('ind_irrigated'), 'n'], rows: eq.map((r) => [r.lbl, fmtPct(r.estimate), r.n]) }}
           means={tr('m_equity', fmtPct(g('gender', 'Female')), fmtPct(g('gender', 'Male')), fmtPct(g('consolidated', 'In consolidated site')), fmtPct(g('consolidated', 'Not consolidated')))}>
           <Plot fig={eqFig} height={400} />
         </ChartCard>
@@ -64,7 +65,7 @@ export default function Who() {
           <Plot fig={gtFig} height={400} empty={tr('no_data')} />
         </ChartCard>
       </Grid>
-      <ChartCard title={tr('c_gender_district')} icon={MapPinned}
+      <ChartCard title={tr('c_gender_district')} icon={MapPinned} source={tr('src_plots', 'A+B', '2023–2025', tr('n_districts', gd.length / 2 | 0))}
         means={gaps.length ? <>{tr('m_gender_district', gaps.filter((r) => r.gap > 0).length, gaps.length, gaps.slice(0, 3).map((r) => r.d).join(', '))} {tr('m_open_unreliable')}</> : null}>
         <Plot fig={gdFig} height={Math.max(300, 22 * w.length + 80)} empty={tr('no_data')} />
       </ChartCard>
