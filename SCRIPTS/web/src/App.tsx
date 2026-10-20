@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { HashRouter, NavLink, Route, Routes, useLocation, Link } from 'react-router-dom';
 import {
   BookOpen, LayoutDashboard, ChartColumn, Compass, House, MapPinned, IdCard, CloudSunRain, Table, Sprout, Droplets, Users, Brain, Trophy,
@@ -36,12 +36,10 @@ const PAGES: Record<string, PageDef> = {
   priority: { path: '/priority', key: 'p_priority', icon: Trophy, el: <Priority /> },
   methods: { path: '/methods', key: 'p_methods', icon: Info, el: <Methods /> },
 };
-// The decision path first (need and evidence, then the field-assessment shortlist);
-// technical analysis sits apart under "Supporting analysis"
 const MENUS: { key: string; icon: LucideIcon; pages: string[] }[] = [
-  { key: 'menu_story', icon: BookOpen, pages: ['overview', 'need', 'map', 'district'] },
-  { key: 'menu_act', icon: Compass, pages: ['priority'] },
-  { key: 'menu_analyse', icon: ChartColumn, pages: ['evidence', 'how', 'who', 'households', 'explorer', 'model'] },
+  { key: 'menu_story', icon: BookOpen, pages: ['overview', 'map', 'district', 'need'] },
+  { key: 'menu_analyse', icon: ChartColumn, pages: ['explorer', 'evidence', 'how', 'who', 'households'] },
+  { key: 'menu_act', icon: Compass, pages: ['model', 'priority'] },
 ];
 // pages that use no global filter at all hide the filter panel
 const NO_FILTERS = new Set(['/methods']);
@@ -81,32 +79,21 @@ function Shell() {
   useEffect(() => { document.title = page && page.path !== '/' ? `${tr(page.key)} · SmartIrrigate Rwanda` : 'SmartIrrigate Rwanda'; }, [page, tr]);
   const showFilters = !NO_FILTERS.has(loc.pathname);
   const docked = showFilters && pinned;
-  // a closed drawer is out of reach for keyboards and screen readers; an open one takes focus
-  const side = useRef<HTMLElement>(null);
-  useEffect(() => {
-    const el = side.current as (HTMLElement & { inert?: boolean }) | null;
-    if (!el) return;
-    // docked only shows as a side panel on wide screens (styles.css, min-width 961px)
-    const wide = window.matchMedia?.('(min-width: 961px)').matches ?? true;
-    el.inert = !drawer && !(docked && wide);
-    if (drawer) el.querySelector<HTMLElement>('button')?.focus();
-  }, [drawer, docked, showFilters]);
 
   return (
     <div className="app">
-      <a className="skip-link" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>{tr('skip_main')}</a>
       <TopBar onMenu={() => setMenu(!menu)} menuOpen={menu} onFilters={showFilters && !docked ? () => setDrawer(true) : undefined} />
       {menu && <MobileNav onClose={() => setMenu(false)} />}
       <div className={`shell ${docked ? 'docked' : ''}`}>
         {showFilters && (
           <>
-            <aside ref={side} className={`sidebar ${drawer ? 'open' : ''}`} aria-label={tr('filters')}>
+            <aside className={`sidebar ${drawer ? 'open' : ''}`} aria-label={tr('filters')} aria-hidden={!docked && !drawer}>
               <FilterPanel onDone={() => setDrawer(false)} pinned={pinned} onPin={() => setPinned(!pinned)} />
             </aside>
             {drawer && <div className="scrim" onClick={() => setDrawer(false)} />}
           </>
         )}
-        <main className="main" id="main" tabIndex={-1}>
+        <main className="main" id="main">
           {page && page.path !== '/' && (
             <div className="page-head"><page.icon size={22} strokeWidth={1.8} /><h1>{tr(page.key)}</h1></div>
           )}
@@ -118,7 +105,6 @@ function Shell() {
             <span>{tr('footer_by')}</span><span>{'·'}</span>
             <Link to="/methods">{tr('footer_see_sources')}</Link><span>{'·'}</span>
             <span>{tr('built')} {D.meta.built} {'·'} v {__SITE_VERSION__}</span>
-            <span className="footer-disclaimer">{tr('disclaimer')}</span>
           </footer>
         </main>
       </div>
@@ -142,9 +128,9 @@ function TopBar({ onMenu, menuOpen, onFilters }: { onMenu: () => void; menuOpen:
       <div className="top-right">
         {onFilters && <button className="btn outline sm top-filters" onClick={onFilters}><SlidersHorizontal size={15} /> {tr('show_filters')}<FilterCount /></button>}
         {install && <button className="btn outline sm install" onClick={install}><Smartphone size={15} /> {tr('install')}</button>}
-        <div className="lang-switch" role="group" aria-label={tr('language')}>
+        <div className="lang-switch" role="group" aria-label="Language">
           {(Object.keys(LANGS) as Lang[]).map((l) => (
-            <button key={l} className={l === lang ? 'active' : ''} title={LANGS[l]} lang={l} aria-label={LANGS[l]} aria-pressed={l === lang} onClick={() => setLang(l)}>{l.toUpperCase()}</button>
+            <button key={l} className={l === lang ? 'active' : ''} title={LANGS[l]} onClick={() => setLang(l)}>{l.toUpperCase()}</button>
           ))}
         </div>
         <button className="icon-btn menu-btn" onClick={onMenu} aria-label={tr('menu')} aria-expanded={menuOpen}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button>
@@ -160,9 +146,7 @@ function NavMenu({ m }: { m: (typeof MENUS)[number] }) {
   const active = m.pages.some((p) => PAGES[p].path === loc.pathname);
   useEffect(() => setOpen(false), [loc.pathname]);
   return (
-    <div className={`nav-menu ${open ? 'open' : ''}`} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}
-      onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); }}
-      onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(false); }}>
+    <div className={`nav-menu ${open ? 'open' : ''}`} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
       <button className={`nav-top ${active ? 'active' : ''}`} onClick={() => setOpen(!open)} aria-expanded={open}>
         <m.icon size={16} /> {tr(m.key)} <ChevronDown size={14} />
       </button>
@@ -180,7 +164,7 @@ function NavMenu({ m }: { m: (typeof MENUS)[number] }) {
 function MobileNav({ onClose }: { onClose: () => void }) {
   const { tr } = useApp();
   return (
-    <nav className="mobile-nav" aria-label={tr('menu')}>
+    <nav className="mobile-nav">
       {MENUS.map((m) => (
         <div key={m.key} className="mn-group">
           <div className="mn-title">{tr(m.key)}</div>

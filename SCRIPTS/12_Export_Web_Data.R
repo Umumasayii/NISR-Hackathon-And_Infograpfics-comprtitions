@@ -36,9 +36,6 @@ est    <- ld("est_plot") |> filter(!is.na(area))
 totals <- ld("totals")
 if (!"source" %in% names(est)) est$source <- "survey"
 if (!"totals_source" %in% names(totals)) totals$totals_source <- "survey"
-# NISR's drip + sprinkler + pivot share (2026) is not our tool-based irrig_modern; app data
-# built before 07 kept it under that name, so it is renamed here too (same as 07 now does)
-est$indicator[est$indicator == "irrig_modern" & est$source == "nisr"] <- "irrig_dsp_nisr"
 
 crop      <- ld("crop_season") |> filter(!is_other(crop_name), !is_other(crop_group))
 crop_dist <- ld("crop_district_season") |> filter(!is_other(crop_name), !is_other(crop_group))
@@ -77,25 +74,14 @@ model_web <- list(
 screen <- ld("priority_screening")
 my     <- ld("model_yield")
 meta   <- ld("meta")
-# Official headline figures copied by hand from NISR reports and tables, one row per
-# figure with its publication, table and link (DATA/NISR_published/nisr_report_headlines.csv).
-# Shown beside our survey estimates, never in place of them.
-off_file <- file.path(dir_root, "DATA", "NISR_published", "nisr_report_headlines.csv")
-official <- if (file.exists(off_file)) utils::read.csv(off_file, stringsAsFactors = FALSE, check.names = FALSE) else NULL
 ahs    <- if (file.exists(file.path(dir_app, "data", "ahs.rds"))) ld("ahs")
-# AHS 2020 has no cluster identifier, so its SEs ignore clustering: no CV-based label
-# (same rule as 10_AHS_Preparation.R; repeated here for app data built before that change)
-if (!is.null(ahs)) for (k in c("indicators", "equity"))
-  ahs[[k]]$reliability[ahs[[k]]$year == 2020] <- "Not assessed"
 
 drop_cols <- function(d, cols) d[, setdiff(names(d), cols), drop = FALSE]
 
 app_data <- list(
   built     = meta$built,
   lookup    = as_df(ld("district_lookup")),
-  # n_psu (survey clusters) drives the reliability label; survey_estimate and nisr_table
-  # keep each published figure traceable to its NISR table and to our own estimate
-  est       = as_df(est),
+  est       = as_df(drop_cols(est, c("n_psu", "survey_estimate", "nisr_table"))),
   totals    = as_df(totals),
   crop      = as_df(crop),
   crop_dist = as_df(drop_cols(crop_dist, c("production_survey_t"))),
@@ -114,7 +100,6 @@ app_data <- list(
                                     headline = as_df(meta$published$headline),
                                     production_alignment = as_df(meta$published$production_alignment),
                                     totals_alignment = as_df(meta$published$totals_alignment)),
-                   official = if (!is.null(official)) as_df(official),
                    skip_audit = as_df(meta$skip_audit), join_log = as_df(meta$join_log)),
   ahs       = if (!is.null(ahs)) list(indicators = as_df(ahs$indicators), equity = as_df(ahs$equity),
                                       irrigation_mix = as_df(ahs$irrigation_mix), built = ahs$built))

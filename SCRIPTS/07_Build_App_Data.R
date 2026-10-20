@@ -272,8 +272,7 @@ if (file.exists(ahs_file)) {
 # no 2026 microdata). Files built by SCRIPTS/11_NISR_Published_Tables.R.
 # Same definition as ours: farmers irrigating (Table 31/29), plots with inorganic or
 # organic fertiliser or pesticide (Tables 25/24/29 and 23/22/27, plot columns),
-# drip + sprinkler + pivot among irrigated plots (Table 32/30, stored as irrig_dsp_nisr:
-# a different definition from our tool-based irrig_modern), cultivated area,
+# drip + sprinkler + pivot among irrigated plots (Table 32/30), cultivated area,
 # production by crop. NISR's farmer-level erosion, machines and agroforestry figures
 # measure something else than our plot-level shares, so they are not used.
 dir_off  <- file.path(dir_root, "DATA", "processed", "official")
@@ -295,9 +294,7 @@ if (file.exists(pub_file)) {
               value = sum(value[category %in% c("Drip irrigation", "Sprinkler irrigation", "Pivot irrigation")], na.rm = TRUE),
               .groups = "drop") |>
     filter(all > 0) |>          # no irrigated plot in the sample (Musanze 2026B)
-    # NOT the same indicator as our irrig_modern (pump/machine, drip, sprinkler, pivot by
-    # tool): kept under its own name so it is never joined to the survey series
-    transmute(indicator = "irrig_dsp_nisr", sas_year = as.integer(sas_year), sas_season, level, area, value,
+    transmute(indicator = "irrig_modern", sas_year = as.integer(sas_year), sas_season, level, area, value,
               tab = paste0(sas_year, sas_season, " ", nisr_table))
   pct <- bind_rows(pub |> filter(indicator %in% c("irrig_any_farmer", "inorganic_fert", "organic_fert", "pesticide")) |>
                      select(indicator, sas_year, sas_season, level, area, value, tab), modern)
@@ -380,7 +377,7 @@ if (file.exists(pub_file)) {
 
   pub_meta <- list(
     seasons = sort(unique(paste0(pub$sas_year, pub$sas_season))),
-    indicators = c("irrig_any_farmer", "inorganic_fert", "organic_fert", "pesticide", "irrig_dsp_nisr",
+    indicators = c("irrig_any_farmer", "inorganic_fert", "organic_fert", "pesticide", "irrig_modern",
                    "cultivated_area_ha", "production_t"),
     est_replaced = nrow(hit), est_added = nrow(new_pct),
     production_alignment = align,
