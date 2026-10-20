@@ -8,6 +8,8 @@ export const seriesCols = ['#0F7044', '#B07A1C', '#1976B9', '#B65F47', '#6A4C93'
 export const extraCols = [...seriesCols, '#858F8A', '#7FA88F', '#C2A06A', '#7DA7CC'];
 export const colIrrigated = '#0F7044';
 export const colRainfed = '#858F8A';
+/** context bars next to the one that matters */
+export const colMuted = '#C3CBC7';
 export const seasonCols: Record<string, string> = { A: '#0F7044', B: '#1976B9', C: '#B07A1C' };
 export const provinceCols: Record<string, string> = { East: '#0F7044', Kigali: '#6A4C93', North: '#1976B9', South: '#B07A1C', West: '#B65F47' };
 export const relCols: Record<string, string> = { Good: '#0F7044', 'Use with caution': '#B07A1C', Unreliable: '#B65F47', Published: '#1976B9' };

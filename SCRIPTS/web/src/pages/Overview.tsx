@@ -7,10 +7,10 @@ import {
 import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
 import { ChartCard, FiltersUsed, Grid, Insight, InsightGrid, Kpi, KpiRow, RelBadge, SectionTitle, Select } from '../components/ui';
-import { Plot, simpleLines, std, legendBottom, type Fig } from '../components/Plot';
+import { Plot, simpleLines, std, type Fig } from '../components/Plot';
 import { ahsFor, ahsVal, byYear, cropsFor, estFor, groupBy, in100, last, sum, totalsFor, wm, mean, type YearRow } from '../lib/stats';
 import { fmtNum, fmtPct, seasonLabel } from '../lib/format';
-import { brand, seasonCols, seriesCols } from '../lib/theme';
+import { brand, colMuted, seasonCols, seriesCols } from '../lib/theme';
 import type { Season } from '../data/types';
 
 const TREND_INDS = ['irrigated', 'irrig_modern', 'irrig_any_farmer', 'inorganic_fert', 'organic_fert', 'anti_erosion'];
@@ -43,8 +43,8 @@ export default function Overview() {
   const isPub = (d: YearRow[]) => d.length > 0 && last(d).source === 'nisr';
   const dlt = (d: YearRow[]) => (isPub(d) || d.length < 2 ? null : last(d).estimate - d[0].estimate);
   const yr = (d: YearRow[]) => !d.length ? '' : isPub(d)
-    ? <span className="st-pub"><Landmark size={12} /> {tr('k_pub_line', last(d).sas_year, last(d).seasons)} </span>
-    : `${last(d).sas_year} · `;
+    ? <span className="st-pub"><Landmark size={12} /> {tr('k_pub_line', last(d).sas_year, last(d).seasons)}</span>
+    : <span>{last(d).sas_year}</span>;
   const since = (d: YearRow[]) => (d.length ? tr('k_pts_since', d[0].sas_year) : '');
   const bench = D.meta.benchmarks.find((b) => b.key === 'nisr_2026a_farmers');
   const { irr, mod, anyf, fert, sc, tot, totAll, pubYears, maize } = tiles;
@@ -87,7 +87,7 @@ export default function Overview() {
         text: pb.map((r) => `${r.sas_year}${s}: <b>${fmtPct(r.estimate)}</b> · ${tr('pub_hover')}`), hoverinfo: 'text',
       });
     }
-    return simpleLines(data, std({ y: tr(`ind_${trendInd}`), xaxis: { dtick: 1 } }));
+    return simpleLines(data, std({ y: tr(`ind_${trendInd}`), xaxis: { dtick: 1 }, yaxis: { ticksuffix: '%' } }));
   }, [trendE, trendInd, tr]);
   const trendMeans = useMemo(() => {
     const e = trendE.filter((r) => r.sas_season !== 'C' && r.source === 'survey').sort((a, b) => a.sas_year - b.sas_year || a.sas_season.localeCompare(b.sas_season));
@@ -112,7 +112,7 @@ export default function Overview() {
   const inputsFig = useMemo<Fig | null>(() => !inputs.length ? null : {
     data: [{
       type: 'bar', orientation: 'h', y: inputs.map((r) => r.label), x: inputs.map((r) => r.estimate),
-      marker: { color: inputs.map((r) => (r.indicator === 'irrigated' ? brand.blue : '#3E8E63')) },
+      marker: { color: inputs.map((r) => (r.indicator === 'irrigated' ? brand.blue : colMuted)) },
       text: inputs.map((r) => fmtPct(r.estimate, 0)), textposition: 'outside', cliponaxis: false, textfont: { size: 12, color: brand.ink },
       hovertext: inputs.map((r) => `<b>${r.label}</b><br>${fmtPct(r.estimate)} (95% CI ${fmtPct(r.ci_low)}–${fmtPct(r.ci_high)})<br>n = ${fmtNum(r.n)}`), hoverinfo: 'text',
     }],
@@ -142,7 +142,7 @@ export default function Overview() {
         marker: { size: 14, color: pcol[pp], line: { color: '#fff', width: 2 } },
         text: x.map((r) => `<b>${r.area}</b> ${pp}<br>${fmtPct(r.estimate)} · n = ${fmtNum(r.n)}`), hoverinfo: 'text' });
     }
-    return { data, layout: std({ x: tr('y_pct_plots_ab'), yaxis: { title: { text: '' }, categoryorder: 'array', categoryarray: ord }, legend: true }) };
+    return { data, layout: std({ x: tr('y_pct_plots_ab'), xaxis: { ticksuffix: '%' }, yaxis: { title: { text: '' }, categoryorder: 'array', categoryarray: ord }, legend: true }) };
   }, [prov, tr]);
 
   const prod = useMemo(() => [...groupBy(cropsFor(D, f), (r) => `${r.sas_year}|${r.crop_group}`).values()].map((g) => ({
@@ -153,14 +153,11 @@ export default function Overview() {
     const grp = [...groupBy(prod, (r) => r.crop_group).entries()].map(([k, g]) => ({ k, t: sum(g.map((r) => r.t)) })).sort((a, b) => b.t - a.t);
     // the four largest groups only, as clustered bars (no "Other" bucket)
     const top = grp.slice(0, 4).map((x) => x.k);
-    return {
-      data: top.map((g, i) => {
+    return simpleLines(top.map((g, i) => {
         const x = prod.filter((r) => r.crop_group === g).sort((a, b) => a.sas_year - b.sas_year);
-        return { type: 'bar', name: g, x: x.map((r) => r.sas_year), y: x.map((r) => r.t / 1000), marker: { color: seriesCols[i] },
-          text: x.map((r) => `<b>${g}</b> · ${r.sas_year}<br>${fmtNum(r.t / 1000)} kt`), hoverinfo: 'text', textposition: 'none' } as Data;
-      }),
-      layout: std({ barmode: 'group', bargap: 0.22, xaxis: { dtick: 1 }, yaxis: { ticksuffix: ' kt' }, legend: legendBottom(-0.18) }),
-    };
+        return { type: 'scatter', mode: 'lines+markers', name: g, x: x.map((r) => r.sas_year), y: x.map((r) => r.t / 1000),
+          line: { color: seriesCols[i] }, marker: { color: seriesCols[i] }, hovertemplate: `${g}: <b>%{y:,.0f} kt</b><extra></extra>` } as Data;
+      }), std({ xaxis: { tickformat: 'd', tickangle: 0 }, yaxis: { ticksuffix: ' kt' } }));
   }, [prod]);
   const prodMeans = useMemo(() => {
     if (!prod.length) return null;
@@ -169,12 +166,18 @@ export default function Overview() {
   }, [prod, tr]);
 
   const scD = useMemo(() => estFor(D, f, 'irrigated', f.years, ['C']).sort((a, b) => a.sas_year - b.sas_year), [D, f]);
+  const mainAvg = useMemo(() => { const v = yearly('irrigated'); return v.length ? mean(v.map((r) => r.estimate)) : NaN; }, [D, f]);
   const scFig = useMemo<Fig | null>(() => !scD.length ? null : {
     data: [{ type: 'bar', x: scD.map((r) => r.sas_year), y: scD.map((r) => r.estimate), marker: { color: '#B07A1C' },
       text: scD.map((r) => fmtPct(r.estimate, 0)), textposition: 'outside', cliponaxis: false, textfont: { color: brand.ink, size: 12 },
       hovertext: scD.map((r) => `<b>${r.sas_year}C</b><br>${fmtPct(r.estimate)} (95% CI ${fmtPct(r.ci_low)}–${fmtPct(r.ci_high)})<br>n = ${fmtNum(r.n)}`), hoverinfo: 'text' }],
-    layout: std({ y: tr('y_pct_plots'), legend: false, bargap: 0.4, xaxis: { dtick: 1 }, yaxis: { range: [0, Math.max(...scD.map((r) => r.estimate), 1) * 1.2] } }),
-  }, [scD, tr]);
+    layout: std({ y: tr('y_pct_plots'), legend: false, bargap: 0.4, xaxis: { dtick: 1 }, yaxis: { ticksuffix: '%', range: [0, Math.max(...scD.map((r) => r.estimate), mainAvg || 0, 1) * 1.2] },
+      margin: { l: 10, r: 88, t: 10, b: 10 },
+      // the main seasons as a reference, so the dry-season bars read against it
+      shapes: Number.isFinite(mainAvg) ? [{ type: 'line', xref: 'paper', x0: 0, x1: 1, y0: mainAvg, y1: mainAvg, line: { color: brand.ink, width: 1.5, dash: 'dot' } }] : [],
+      annotations: Number.isFinite(mainAvg) ? [{ xref: 'paper', x: 1, xanchor: 'left', xshift: 4, y: mainAvg, yanchor: 'middle', showarrow: false, align: 'left',
+        text: tr('main_avg', `<br><b>${fmtPct(mainAvg, 0)}</b>`), font: { size: 11.5, color: brand.ink } }] : [] }),
+  }, [scD, mainAvg, tr]);
 
   const hi = inputs.length ? last(inputs) : null, irrIn = inputs.find((r) => r.indicator === 'irrigated');
   const provLatest = (() => { const p = prov.filter((r) => r.period === (prov.some((x) => x.period === '2023-2025') ? '2023-2025' : '2019-2022')).sort((a, b) => b.estimate - a.estimate); return p; })();
@@ -183,9 +186,8 @@ export default function Overview() {
     <>
       <div className="hero">
         <div className="hero-text">
-          <span className="hero-kicker"><Droplet size={14} /> NISR Big Data Hackathon 2026 {'·'} Track 1</span>
-          <h1>{tr('hero_title')}</h1>
-          <p>{tr('hero_sub')}</p>
+          <h1>SmartIrrigate Rwanda</h1>
+          <p>{tr('tagline')}</p>
           <div className="hero-meta">
             <span><Database size={14} /> {tr('hero_m1')}</span><span><Calendar size={14} /> {tr('hero_m2')}</span>
             <span><Map size={14} /> {tr('hero_m3')}</span><span><CloudRain size={14} /> {tr('hero_m4')}</span>
@@ -201,29 +203,31 @@ export default function Overview() {
       </div>
 
       <FiltersUsed used={['years', 'seasons', 'area']} />
-      <SectionTitle title={tr('s_numbers')} sub={tr('s_numbers_sub')} />
+      <SectionTitle title={tr('s_numbers')} />
       <KpiRow>
-        <Kpi label={tr('k_irrigated')} value={fmtPct(lst(irr))} icon={Droplet} color={brand.blue} delta={dlt(irr)}
-          foot={<>{yr(irr)}{since(irr)} <RelBadge r={irr.length ? last(irr).rel : null} /></>} />
+        <Kpi label={tr('k_irrigated')} value={fmtPct(lst(irr))} icon={Droplet} color={brand.blue} delta={dlt(irr)} hint={since(irr)}
+          foot={<>{yr(irr)}<RelBadge r={irr.length ? last(irr).rel : null} /></>} />
         <Kpi label={tr('k_area')} value={`${fmtNum(lastTot?.ha)} ha`} icon={Waves} color="#00897B"
-          foot={<>{lastTot ? `${lastTot.sas_year} · ` : ''}{tr('k_area_sub2', fmtPct(lastTot ? (100 * lastTot.ha) / lastTot.cult : NaN))}</>} />
-        <Kpi label={tr('k_modern')} value={fmtPct(lst(mod))} icon={Cog} color="#B07A1C" delta={dlt(mod)}
-          foot={<>{yr(mod)}{tr('k_modern_sub2')} {!isPub(mod) && <RelBadge r={mod.length ? last(mod).rel : null} />}</>} />
+          hint={tr('k_area_sub2', fmtPct(lastTot ? (100 * lastTot.ha) / lastTot.cult : NaN))} foot={lastTot ? String(lastTot.sas_year) : null} />
+        <Kpi label={tr('k_modern')} value={fmtPct(lst(mod))} icon={Cog} color="#B07A1C" delta={dlt(mod)} hint={tr('k_modern_sub2')}
+          foot={<>{yr(mod)}{!isPub(mod) && <RelBadge r={mod.length ? last(mod).rel : null} />}</>} />
         <Kpi label={tr('ind_irrig_any_farmer')} value={fmtPct(lst(anyf))} icon={UserCheck} color={brand.green} delta={dlt(anyf)}
-          foot={<>{yr(anyf)}{tr('k_any_sub')}{bench && f.areaLevel === 'national' && !PUB_YEARS.includes(2026) && <div className="st-bench">{tr('k_any_bench', fmtPct(bench.value))}</div>}</>} />
+          hint={[tr('k_any_sub'), bench && f.areaLevel === 'national' && !PUB_YEARS.includes(2026) ? tr('k_any_bench', fmtPct(bench.value)) : ''].filter(Boolean).join(' · ')}
+          foot={<>{yr(anyf)}</>} />
       </KpiRow>
       <KpiRow>
-        <Kpi label={tr('ind_inorganic_fert')} value={fmtPct(lst(fert))} icon={FlaskConical} color="#6A4C93" delta={dlt(fert)} foot={<>{yr(fert)}{tr('k_fert_sub')}</>} />
+        <Kpi label={tr('ind_inorganic_fert')} value={fmtPct(lst(fert))} icon={FlaskConical} color="#6A4C93" delta={dlt(fert)} hint={tr('k_fert_sub')} foot={<>{yr(fert)}</>} />
         <Kpi label={tr('k_production')} value={`${fmtNum(lastAll ? lastAll.t / 1000 : NaN)} kt`} icon={Wheat} color="#B07A1C"
           foot={<>{lastAll && pubYears.has(lastAll.sas_year)
             ? <span className="st-pub"><Landmark size={12} /> {tr('k_pub_prod', lastAll.sas_year)}</span>
-            : lastAll ? `${lastAll.sas_year} · ` : ''} {tr('k_production_sub')}</>} />
-        <Kpi label={tr('k_season_c')} value={fmtPct(lst(sc))} icon={Sun} color={brand.terracotta} delta={dlt(sc)} foot={<>{yr(sc)}{tr('k_season_c_sub')}</>} />
+            : lastAll ? String(lastAll.sas_year) : ''}</>} hint={tr('k_production_sub')} />
+        <Kpi label={tr('k_season_c')} value={fmtPct(lst(sc))} icon={Sun} color={brand.terracotta} delta={dlt(sc)} hint={tr('k_season_c_sub')} foot={<>{yr(sc)}</>} />
         <Kpi label={tr('k_maize')} value={maize ? `+${fmtNum(maize.adjusted_pct, 0)}%` : '–'} icon={Sprout} color={brand.green}
-          foot={maize ? tr('k_maize_sub', fmtNum(maize.adjusted_low, 0), fmtNum(maize.adjusted_high, 0), fmtNum(maize.raw_pct, 0)) : null} />
+          foot={maize ? tr('k_maize_foot') : null}
+          hint={maize ? tr('k_maize_sub', fmtNum(maize.adjusted_low, 0), fmtNum(maize.adjusted_high, 0), fmtNum(maize.raw_pct, 0)) : undefined} />
       </KpiRow>
 
-      <SectionTitle title={tr('s_findings')} sub={tr('s_findings_sub')} />
+      <SectionTitle title={tr('s_findings')} />
       {findings && (
         <InsightGrid>
           <Insight icon={Droplet} color={brand.blue} title={tr('f1_t', in100(last(findings.a).estimate, tr))}

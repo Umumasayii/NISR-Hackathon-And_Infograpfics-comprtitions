@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { HashRouter, NavLink, Route, Routes, useLocation, Link } from 'react-router-dom';
 import {
   BookOpen, LayoutDashboard, ChartColumn, Compass, House, MapPinned, IdCard, CloudSunRain, Table, Sprout, Droplets, Users, Brain, Trophy,
-  Info, ChevronDown, Menu, X, SlidersHorizontal, CalendarDays, Map, MapPin, Layers, RotateCcw, Smartphone, type LucideIcon,
+  Info, ChevronDown, Menu, X, SlidersHorizontal, CalendarDays, Map, MapPin, Layers, RotateCcw, Smartphone, Pin, PinOff, type LucideIcon,
 } from 'lucide-react';
 import { useApp } from './data/store';
 import { LANGS, type Lang } from './lib/i18n';
@@ -52,25 +52,43 @@ export default function App() {
   );
 }
 
+const PIN_KEY = 'si-pin-filters';
+const readPin = () => { try { return localStorage.getItem(PIN_KEY) === '1'; } catch { return false; } };
+
 function Shell() {
   const { tr, D } = useApp();
   const loc = useLocation();
+  // filters stay out of the way until opened; pinned, they stay docked at the side (wide screens)
   const [drawer, setDrawer] = useState(false);
+  const [pinned, setPinnedState] = useState(readPin);
+  const setPinned = (v: boolean) => { setPinnedState(v); setDrawer(false); try { localStorage.setItem(PIN_KEY, v ? '1' : '0'); } catch { /* ignore */ } };
   const [menu, setMenu] = useState(false);
   useEffect(() => { setMenu(false); window.scrollTo({ top: 0 }); }, [loc.pathname]);
+  useEffect(() => {
+    const open = () => setDrawer(true);
+    window.addEventListener('si-open-filters', open);
+    return () => window.removeEventListener('si-open-filters', open);
+  }, []);
+  useEffect(() => {
+    if (!drawer) return;
+    const k = (e: KeyboardEvent) => e.key === 'Escape' && setDrawer(false);
+    window.addEventListener('keydown', k);
+    return () => window.removeEventListener('keydown', k);
+  }, [drawer]);
   const page = Object.values(PAGES).find((p) => p.path === loc.pathname);
   useEffect(() => { document.title = page && page.path !== '/' ? `${tr(page.key)} · SmartIrrigate Rwanda` : 'SmartIrrigate Rwanda'; }, [page, tr]);
   const showFilters = !NO_FILTERS.has(loc.pathname);
+  const docked = showFilters && pinned;
 
   return (
     <div className="app">
-      <TopBar onMenu={() => setMenu(!menu)} menuOpen={menu} />
+      <TopBar onMenu={() => setMenu(!menu)} menuOpen={menu} onFilters={showFilters && !docked ? () => setDrawer(true) : undefined} />
       {menu && <MobileNav onClose={() => setMenu(false)} />}
-      <div className={`shell ${showFilters ? '' : 'no-side'}`}>
+      <div className={`shell ${docked ? 'docked' : ''}`}>
         {showFilters && (
           <>
-            <aside className={`sidebar ${drawer ? 'open' : ''}`} aria-label={tr('filters')}>
-              <FilterPanel onDone={() => setDrawer(false)} />
+            <aside className={`sidebar ${drawer ? 'open' : ''}`} aria-label={tr('filters')} aria-hidden={!docked && !drawer}>
+              <FilterPanel onDone={() => setDrawer(false)} pinned={pinned} onPin={() => setPinned(!pinned)} />
             </aside>
             {drawer && <div className="scrim" onClick={() => setDrawer(false)} />}
           </>
@@ -97,7 +115,7 @@ function Shell() {
   );
 }
 
-function TopBar({ onMenu, menuOpen }: { onMenu: () => void; menuOpen: boolean }) {
+function TopBar({ onMenu, menuOpen, onFilters }: { onMenu: () => void; menuOpen: boolean; onFilters?: () => void }) {
   const { tr, lang, setLang } = useApp();
   const install = useInstallPrompt();
   return (
@@ -108,6 +126,7 @@ function TopBar({ onMenu, menuOpen }: { onMenu: () => void; menuOpen: boolean })
         <NavLink to="/methods" className={({ isActive }) => `nav-top ${isActive ? 'active' : ''}`}><Info size={16} /> {tr('p_methods')}</NavLink>
       </nav>
       <div className="top-right">
+        {onFilters && <button className="btn outline sm top-filters" onClick={onFilters}><SlidersHorizontal size={15} /> {tr('show_filters')}<FilterCount /></button>}
         {install && <button className="btn outline sm install" onClick={install}><Smartphone size={15} /> {tr('install')}</button>}
         <div className="lang-switch" role="group" aria-label="Language">
           {(Object.keys(LANGS) as Lang[]).map((l) => (
@@ -160,10 +179,10 @@ function MobileNav({ onClose }: { onClose: () => void }) {
 function FilterCount() {
   const { f, YEARS } = useApp();
   const n = (f.years.length < YEARS.length ? 1 : 0) + (f.seasons.join() !== 'A,B' ? 1 : 0) + (f.areaLevel !== 'national' ? 1 : 0) + (f.cropGroups.length || f.crops.length ? 1 : 0);
-  return n ? <span className="fab-n">{n}</span> : null;
+  return n ? <span className="f-count">{n}</span> : null;
 }
 
-function FilterPanel({ onDone }: { onDone: () => void }) {
+function FilterPanel({ onDone, pinned, onPin }: { onDone: () => void; pinned: boolean; onPin: () => void }) {
   const { tr, sel, setSel, resetSel, YEARS, ALL_P, CROP_GRPS, D } = useApp();
   const scope = D.lookup.filter((r) => (sel.provinces.length ? sel.provinces : ALL_P).includes(r.province)).map((r) => r.district);
   const G = sel.cropGroups.length ? sel.cropGroups : CROP_GRPS;
@@ -172,8 +191,11 @@ function FilterPanel({ onDone }: { onDone: () => void }) {
   return (
     <div className="filters">
       <div className="sidebar-head">
-        <span className="sh-icon"><SlidersHorizontal size={18} /></span>
-        <div><div className="sidebar-title">{tr('filters')}</div><div className="sh-sub">{tr('filters_sub')}</div></div>
+        <span className="sh-icon"><SlidersHorizontal size={17} /></span>
+        <div className="sidebar-title">{tr('filters')}</div>
+        <button className={`icon-btn pin-btn ${pinned ? 'on' : ''}`} onClick={onPin} aria-pressed={pinned} aria-label={tr(pinned ? 'unpin' : 'pin')} title={tr(pinned ? 'unpin' : 'pin')}>
+          {pinned ? <PinOff size={16} /> : <Pin size={16} />}
+        </button>
         <button className="icon-btn drawer-close" onClick={onDone} aria-label={tr('close')}><X size={18} /></button>
       </div>
       <div className="filter-group">
@@ -197,7 +219,6 @@ function FilterPanel({ onDone }: { onDone: () => void }) {
         <button className="btn outline" onClick={resetSel}><RotateCcw size={15} /> {tr('reset')}</button>
         <button className="btn primary drawer-apply" onClick={onDone}>{tr('apply')}</button>
       </div>
-      <p className="filter-note"><Info size={14} /> {tr('filter_note')}</p>
     </div>
   );
 }

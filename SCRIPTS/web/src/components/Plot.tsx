@@ -33,7 +33,8 @@ export function Plot({ fig, height = 320, onClick, empty }: {
     if (!el || !fig) return;
     getPlotly().then((P) => {
       if (!alive) return;
-      const layout = { ...fig.layout, height, autosize: true } as Partial<Layout>;
+      // rounded data ends on every bar chart, unless a figure sets its own
+      const layout = { barcornerradius: 4, ...fig.layout, height, autosize: true } as Partial<Layout>;
       P.react(el, fig.data, layout, { ...baseConfig, ...fig.config }).then(() => {
         if (!alive) return;
         setReady(true);
@@ -70,7 +71,7 @@ export function Plot({ fig, height = 320, onClick, empty }: {
 export function std(opts: { x?: string; y?: string; legend?: boolean | Partial<Layout['legend']>; xaxis?: Partial<Layout['xaxis']>; yaxis?: Partial<Layout['yaxis']> } & Omit<Partial<Layout>, 'legend' | 'xaxis' | 'yaxis'> = {}): Partial<Layout> {
   const { x, y, legend = true, xaxis, yaxis, ...rest } = opts;
   const axis = (title?: string) => ({
-    title: { text: title ?? '', font: { size: 12, color: '#5E6A66' } }, gridcolor: '#EDF0EC', zeroline: false,
+    title: { text: title ?? '', font: { size: 12, color: '#5E6A66' } }, gridcolor: '#EEF1ED', zeroline: false,
     linecolor: '#D5DDD8', tickfont: { color: '#5E6A66' }, automargin: true,
   });
   return {
@@ -85,7 +86,7 @@ export function std(opts: { x?: string; y?: string; legend?: boolean | Partial<L
   };
 }
 
-/** NISR-style trend lines: thin line, one marker shape per series, legend at the right */
+/** Trend lines: thin line, one marker shape per series, legend at the right */
 export function simpleLines(data: Data[], layout: Partial<Layout>): Fig {
   const syms = ['circle', 'diamond', 'square', 'triangle-up', 'cross', 'star'];
   let k = 0;
