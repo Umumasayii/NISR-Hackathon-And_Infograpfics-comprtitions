@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sprout, Workflow, TriangleAlert, Ruler, Bot, Download } from 'lucide-react';
+import { Sprout, Workflow, TriangleAlert, Ruler, Bot, Download, Scale } from 'lucide-react';
 import { useApp } from '../data/store';
 import { DataTable, RelBadge, Tabs, type Col } from '../components/ui';
 import { downloadCsv } from '../lib/stats';
@@ -20,7 +20,7 @@ export default function Methods() {
   const tabs = [
     { id: 'about', label: tr('t_about'), icon: Sprout }, { id: 'pipeline', label: tr('t_pipeline'), icon: Workflow },
     { id: 'traps', label: tr('t_traps'), icon: TriangleAlert }, { id: 'kpi', label: tr('t_kpi'), icon: Ruler },
-    { id: 'ai', label: tr('t_ai'), icon: Bot }, { id: 'downloads', label: tr('t_downloads'), icon: Download },
+    { id: 'register', label: tr('reg_title'), icon: Scale }, { id: 'ai', label: tr('t_ai'), icon: Bot }, { id: 'downloads', label: tr('t_downloads'), icon: Download },
   ];
   return (
     <section className="card pad prose">
@@ -30,6 +30,7 @@ export default function Methods() {
       {tab === 'traps' && <Traps />}
       {tab === 'kpi' && <KpiDefs />}
       {tab === 'ai' && <><p>{tr('ai_text')}</p><ul>{[1, 2, 3, 4].map((i) => <li key={i}>{tr(`ai_${i}`)}</li>)}</ul></>}
+      {tab === 'register' && <Register />}
       {tab === 'downloads' && <Downloads />}
     </section>
   );
@@ -81,38 +82,52 @@ export default function Methods() {
 
   function KpiDefs() {
     const k = ['irrigated', 'irrig_any_farmer', 'irrig_modern', 'irrigated_area_ha', 'yield', 'adjusted', 'sales', 'need', 'priority'];
-    const P = D.meta.published;
-    const nm: Record<string, string> = { irrig_any_farmer: 'ind_irrig_any_farmer', inorganic_fert: 'ind_inorganic_fert', organic_fert: 'ind_organic_fert', pesticide: 'ind_pesticide', cultivated_area_ha: 'pub_cultivated', modern_irrig_area_ha: 'pub_modern_area', irrig_modern: 'ind_irrig_modern' };
-    const h = P.headline.filter((r) => r.indicator in nm).map((r) => ({ i: r.indicator, s: `${r.sas_year}${r.sas_season}`, v: r.unit === '%' ? fmtPct(r.value) : `${fmtNum(r.value)} ha` }));
-    D.est.filter((r) => r.level === 'national' && r.indicator === 'irrig_modern' && r.source === 'nisr').forEach((r) => h.push({ i: 'irrig_modern', s: `${r.sas_year}${r.sas_season}`, v: fmtPct(r.estimate) }));
-    const seas = [...new Set(h.map((r) => r.s))].sort(), inds = [...new Set(h.map((r) => r.i))];
-    const big = P.production_alignment.filter((r) => Math.abs(r.survey_vs_published_pct) >= 10).sort((a, b) => a.season.localeCompare(b.season) || a.crop_name.localeCompare(b.crop_name));
     return (
       <>
         <p>{tr('kpi_rule')}</p>
         <table className="ptable"><thead><tr><th>KPI</th><th>{tr('definition')}</th></tr></thead>
           <tbody>{k.map((x) => <tr key={x}><td><strong>{tr(`kd_${x}_n`)}</strong></td><td>{tr(`kd_${x}`)}</td></tr>)}</tbody></table>
-        <h5>{tr('pub_title')}</h5><p className="muted">{tr('pub_note')}</p>
-        <table className="ptable"><thead><tr><th>{tr('indicator')}</th>{seas.map((s) => <th key={s}>{s}</th>)}</tr></thead>
-          <tbody>{inds.map((i) => <tr key={i}><td>{tr(nm[i])}</td>{seas.map((s) => <td key={s}>{h.find((r) => r.i === i && r.s === s)?.v ?? '–'}</td>)}</tr>)}</tbody></table>
-        <h5>{tr('pub_align_title')}</h5><p className="muted">{tr('pub_align_note')}</p>
-        <table className="ptable"><thead><tr><th>{tr('season')}</th><th>{tr('pub_survey')}</th><th>{tr('pub_published')}</th><th>{tr('pub_diff')}</th></tr></thead>
-          <tbody>{P.totals_alignment.map((a) => <tr key={a.season}><td>{a.season}</td><td>{fmtNum(a.survey_t / 1000)} kt</td><td>{fmtNum(a.published_t / 1000)} kt</td><td>{a.survey_vs_published_pct}%</td></tr>)}</tbody></table>
-        {big.length > 0 && <p className="muted">{tr('pub_align_crops', big.map((c) => `${c.crop_name} ${c.season} (${c.survey_vs_published_pct}%)`).join(', '))}</p>}
-        <h5>{tr('bench_title')}</h5><p className="muted">{tr('bench_note')}</p>
-        <table className="ptable"><tbody>{D.meta.benchmarks.map((b) => (
-          <tr key={b.key}><td>{tr(`bench_${b.key}`)}</td><td><strong>{b.unit === 'ha' ? `${fmtNum(b.value)} ha` : fmtPct(b.value)}</strong></td><td>{b.period}</td>
-            <td><a href={b.url} target="_blank" rel="noopener">{b.source}</a></td></tr>))}</tbody></table>
+      </>
+    );
+  }
+
+  /** published NISR figures beside our estimates: kept apart, never merged */
+  function Register() {
+    const rows = D.register ?? [];
+    type R = (typeof rows)[number];
+    const val = (r: R, v: number | null) => (v == null ? null : r.unit === '%' ? fmtPct(v) : fmtNum(v));
+    const cols: Col<R>[] = [
+      { key: 'ind', label: tr('indicator'), get: (r) => [r.indicator, r.crop_name, r.area].filter(Boolean).join(' · ') },
+      { key: 'ys', label: tr('season'), get: (r) => `${r.sas_year}${r.sas_season ?? ''}` },
+      { key: 'pub', label: tr('reg_published'), get: (r) => r.published_value_audit, num: true, render: (r) => val(r, r.published_value_audit) ?? '–' },
+      { key: 'ours', label: tr('reg_ours'), get: (r) => r.project_value, num: true, render: (r) => val(r, r.project_value) ?? '–' },
+      { key: 'gap', label: tr('reg_gap'), get: (r) => r.gap, num: true, render: (r) => (r.gap == null ? '–' : r.unit === '%' ? `${r.gap > 0 ? '+' : ''}${fmtNum(r.gap, 1)} pts` : `${(r.gap_pct ?? 0) > 0 ? '+' : ''}${fmtNum(r.gap_pct, 0)}%`) },
+      { key: 'src', label: tr('reg_source'), get: (r) => [r.source_title, r.cell].filter(Boolean).join(', ') },
+      { key: 'def', label: tr('definition'), get: (r) => r.published_definition },
+      { key: 'dec', label: tr('reg_decision'), get: (r) => r.decision },
+    ];
+    return (
+      <>
+        <p>{tr('reg_note')}</p>
+        {rows.length ? <DataTable rows={rows} cols={cols} pageSize={10} csvName="smartirrigate_reconciliation_register.csv"
+          csvRows={() => rows as unknown as Record<string, unknown>[]} /> : <p className="muted">{tr('no_data')}</p>}
       </>
     );
   }
 
   function Downloads() {
-    const sets: Record<string, () => Record<string, unknown>[]> = {
-      est_plot: () => D.est as unknown as Record<string, unknown>[], totals: () => D.totals as unknown as Record<string, unknown>[],
-      crop_season: () => D.crop as unknown as Record<string, unknown>[], priority_screening: () => D.screen.table as unknown as Record<string, unknown>[],
-      need_adoption: () => D.rain.district as unknown as Record<string, unknown>[], yield_adjusted: () => D.model_yield.table as unknown as Record<string, unknown>[],
-      model_validation: () => D.model.performance as unknown as Record<string, unknown>[],
+    type Rows = Record<string, unknown>[];
+    const tag = (rows: unknown[], layer: string, source: string): Rows =>
+      (rows as Rows).map((r) => ({ ...r, layer, source, scope: 'statistics 2019-2025; not official NISR statistics unless layer = published' }));
+    const w = Object.entries(D.screen.default_weights).map(([k, v]) => `${k}=${v}`).join(' ');
+    const sets: Record<string, () => Rows> = {
+      est_plot: () => tag(D.est, 'project_estimate', 'SAS 2019-2025 microdata, survey-weighted'),
+      totals: () => tag(D.totals, 'project_estimate', 'SAS 2019-2025 microdata, survey-weighted totals'),
+      crop_season: () => tag(D.crop, 'project_estimate', 'SAS 2019-2025 microdata; crop rows only, no group subtotals'),
+      priority_screening: () => tag(D.screen.table, 'project_analysis', `screening score, default weights ${w}; ${D.screen.meta?.sensitivity ?? ''}`),
+      need_adoption: () => tag(D.rain.district, 'project_analysis', 'CHIRPS v2 1991-2020 season-specific variability + SAS 2023-2025'),
+      yield_adjusted: () => tag(D.model_yield.table, 'model_output', 'survey-weighted log yield model, SAS 2019-2025 (2024B, 2024C excluded)'),
+      model_validation: () => tag(D.model.performance, 'model_output', 'out-of-time validation'),
     };
     return (
       <>

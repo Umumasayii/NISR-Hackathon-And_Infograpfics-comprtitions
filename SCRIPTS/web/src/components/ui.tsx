@@ -1,6 +1,6 @@
 import { Fragment, isValidElement, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
-  CalendarDays, Check, CheckCheck, ChevronDown, CloudSunRain, Download, Info, MapPin, Maximize2, Minimize2, Search, SlidersHorizontal, Sprout, X,
+  CalendarDays, Check, Table2, CheckCheck, ChevronDown, CloudSunRain, Download, Info, MapPin, Maximize2, Minimize2, Search, SlidersHorizontal, Sprout, X,
   type LucideIcon,
 } from 'lucide-react';
 import { useApp } from '../data/store';
@@ -58,11 +58,17 @@ export function Brief({ children, className = '' }: { children: ReactNode; class
 }
 
 // ---- cards -------------------------------------------------------------------------------
-/** Every chart card: title, the one-line message the chart shows, optional tools, the chart */
-export function ChartCard({ title, icon: Icon, tools, means, children, className = '' }: {
+/** A chart's data as a plain table: the alternative to reading the chart */
+export interface ChartTable { cols: string[]; rows: (string | number | null)[][] }
+
+/** Every chart card: title, the one-line message the chart shows, optional tools, the chart,
+ *  then the source line and a "show as table" switch, so nothing needs a mouse hover */
+export function ChartCard({ title, icon: Icon, tools, means, children, className = '', source, table }: {
   title: string; icon?: LucideIcon; tools?: ReactNode; means?: ReactNode; children: ReactNode; className?: string;
+  source?: ReactNode; table?: ChartTable | null;
 }) {
   const [full, setFull] = useState(false);
+  const [asTable, setAsTable] = useState(false);
   const { tr } = useApp();
   useEffect(() => {
     if (!full) return;
@@ -70,8 +76,9 @@ export function ChartCard({ title, icon: Icon, tools, means, children, className
     window.addEventListener('keydown', k);
     return () => window.removeEventListener('keydown', k);
   }, [full]);
+  const hasTable = !!table && table.rows.length > 0;
   return (
-    <section className={`card chart-card ${full ? 'is-full' : ''} ${className}`}>
+    <section className={`card chart-card ${full ? 'is-full' : ''} ${className}`} aria-label={title}>
       <header className="card-head">
         {Icon && <span className="ch-icon"><Icon size={15} strokeWidth={2} /></span>}
         <h3>{title}</h3>
@@ -81,8 +88,30 @@ export function ChartCard({ title, icon: Icon, tools, means, children, className
       </header>
       {means ? <Brief className="takeaway">{means}</Brief> : null}
       {tools && <div className="card-tools">{tools}</div>}
-      <div className="card-body">{children}</div>
+      <div className="card-body">{hasTable && asTable ? <MiniTable t={table!} caption={title} /> : children}</div>
+      {(source || hasTable) && (
+        <footer className="card-foot">
+          {source && <span className="card-src">{source}</span>}
+          {hasTable && (
+            <button type="button" className="link-btn" aria-pressed={asTable} onClick={() => setAsTable(!asTable)}>
+              <Table2 size={13} /> {tr(asTable ? 'show_chart' : 'show_table')}
+            </button>
+          )}
+        </footer>
+      )}
     </section>
+  );
+}
+
+function MiniTable({ t, caption }: { t: ChartTable; caption: string }) {
+  return (
+    <div className="dt-scroll mini-table">
+      <table>
+        <caption className="sr-only">{caption}</caption>
+        <thead><tr>{t.cols.map((c, i) => <th key={i} scope="col" className={i ? 'num' : ''}>{c}</th>)}</tr></thead>
+        <tbody>{t.rows.map((r, i) => <tr key={i}>{r.map((v, j) => j === 0 ? <th key={j} scope="row">{cell(v)}</th> : <td key={j} className="num">{cell(v)}</td>)}</tr>)}</tbody>
+      </table>
+    </div>
   );
 }
 
@@ -94,6 +123,7 @@ export function Kpi({ label, value, icon: Icon, color, foot, delta, deltaGood = 
   label: string; value: string; icon: LucideIcon; color: string; foot?: ReactNode; delta?: number | null; deltaGood?: boolean; hint?: string;
 }) {
   const shown = useCountUp(value);
+  const [open, setOpen] = useState(false);
   // a long plain-text note keeps its first part on the card; the rest moves to the hint
   if (typeof foot === 'string' && !hint) {
     const m = foot.match(/^(.+?)(?:\s\(|\.\s)/);
@@ -102,13 +132,14 @@ export function Kpi({ label, value, icon: Icon, color, foot, delta, deltaGood = 
   return (
     <div className="card kpi" style={{ ['--accent' as string]: color }}>
       <span className="kpi-icon"><Icon size={22} strokeWidth={1.8} /></span>
-      {hint && <span className="kpi-hint" tabIndex={0} title={hint} aria-label={hint}><Info size={14} /></span>}
+      {hint && <button type="button" className="kpi-hint" aria-expanded={open} aria-label={`${label}: ${hint}`} onClick={() => setOpen(!open)}><Info size={14} /></button>}
       <div className="kpi-label">{label}</div>
       <div className="kpi-value">{shown}
         {delta != null && Number.isFinite(delta) && (
           <span className={`delta ${(delta >= 0) === deltaGood ? 'good' : 'bad'}`}>{delta >= 0 ? '+' : ''}{delta.toFixed(1)}</span>)}
       </div>
       {foot && <div className="kpi-foot">{foot}</div>}
+      {hint && open && <div className="kpi-note" role="note">{hint}</div>}
     </div>
   );
 }
@@ -310,7 +341,7 @@ export function DataTable<T>({ rows, cols, pageSize = 12, csvName, csvRows, sear
   return (
     <div className="dt">
       <div className="dt-bar">
-        {searchable && <label className="dt-search"><Search size={14} /><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr('search_ph')} /></label>}
+        {searchable && <label className="dt-search"><Search size={14} /><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr('search_ph')} aria-label={tr('search_ph')} /></label>}
         <span className="dt-count">{shown.length.toLocaleString('en-US')} {tr('rows')}</span>
         {csvName && (
           <button className="btn outline sm" onClick={() => downloadCsv(csvRows ? csvRows() : shown.map((r) => Object.fromEntries(cols.map((c) => [c.label, c.get(r)]))), csvName)}>
@@ -321,8 +352,11 @@ export function DataTable<T>({ rows, cols, pageSize = 12, csvName, csvRows, sear
       <div className="dt-scroll">
         <table>
           <thead><tr>{cols.map((c) => (
-            <th key={c.key} className={c.num ? 'num' : ''} onClick={() => setSort(sort?.k === c.key ? { k: c.key, dir: sort.dir === 1 ? -1 : 1 } : { k: c.key, dir: c.num ? -1 : 1 })}>
-              {c.label}{sort?.k === c.key ? (sort.dir === 1 ? ' ▲' : ' ▼') : ''}
+            <th key={c.key} scope="col" className={c.num ? 'num' : ''}
+              aria-sort={sort?.k === c.key ? (sort.dir === 1 ? 'ascending' : 'descending') : 'none'}>
+              <button type="button" className="th-btn" onClick={() => setSort(sort?.k === c.key ? { k: c.key, dir: sort.dir === 1 ? -1 : 1 } : { k: c.key, dir: c.num ? -1 : 1 })}>
+                {c.label}<span aria-hidden="true">{sort?.k === c.key ? (sort.dir === 1 ? ' ▲' : ' ▼') : ''}</span>
+              </button>
             </th>))}</tr></thead>
           <tbody>{slice.map((r, i) => (
             <tr key={i}>{cols.map((c) => <td key={c.key} className={c.num ? 'num' : ''}>{c.render ? c.render(r) : cell(c.get(r))}</td>)}</tr>
@@ -331,9 +365,9 @@ export function DataTable<T>({ rows, cols, pageSize = 12, csvName, csvRows, sear
       </div>
       {pages > 1 && (
         <div className="dt-pages">
-          <button className="btn ghost sm" disabled={page === 0} onClick={() => setPage(page - 1)}>{'‹'}</button>
+          <button className="btn ghost sm" disabled={page === 0} onClick={() => setPage(page - 1)} aria-label={tr('prev_page')}>{'‹'}</button>
           <span>{page + 1} / {pages}</span>
-          <button className="btn ghost sm" disabled={page >= pages - 1} onClick={() => setPage(page + 1)}>{'›'}</button>
+          <button className="btn ghost sm" disabled={page >= pages - 1} onClick={() => setPage(page + 1)} aria-label={tr('next_page')}>{'›'}</button>
         </div>
       )}
     </div>

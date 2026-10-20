@@ -3,7 +3,7 @@ import { MapPinned, MapPin, ArrowDownWideNarrow, Hand, Play, Pause, CloudRain, T
 import { useApp } from '../data/store';
 import { ChartCard, FiltersUsed, Grid, RelBadge, Select } from '../components/ui';
 import { Plot, choropleth, std, type Fig } from '../components/Plot';
-import { groupBy, mean, mode, sum, surveyFirst, wm } from '../lib/stats';
+import { groupBy, mean, mode, sum, wm } from '../lib/stats';
 import { fmtNum, fmtPct } from '../lib/format';
 import { brand, colIrrigated, seqAmber, seqGreen } from '../lib/theme';
 
@@ -25,7 +25,10 @@ export default function MapPage() {
     if (total) {
       const t = D.totals.filter((r) => r.level === 'district' && Y.has(r.sas_year) && S.has(r.sas_season));
       return [...groupBy(t, (r) => `${r.area}|${r.sas_year}`).values()].map((g) => ({
-        district: g[0].area, year: g[0].sas_year, value: sum(g.map((r) => (r as unknown as Record<string, number>)[metric])), n: null as number | null, rel: null as string | null, wsum: 1,
+        // tonnes of Seasons A, B and C add up; hectares do not (the same land is farmed
+        // in several seasons), so an area is the average per selected season
+        district: g[0].area, year: g[0].sas_year, wsum: 1, n: null as number | null, rel: null as string | null,
+        value: (() => { const v = g.map((r) => (r as unknown as Record<string, number | null>)[metric]); return v.some((x) => x == null) ? NaN : metric === 'production_t' ? sum(v) : mean(v); })(),
       }));
     }
     const e = D.est.filter((r) => r.level === 'district' && r.indicator === metric && Y.has(r.sas_year) && S.has(r.sas_season));
@@ -37,8 +40,8 @@ export default function MapPage() {
   // the whole period: average over the selected years (survey seasons first)
   const vals = useMemo(() => {
     const Y = new Set(f.years), S = new Set<string>(f.seasons);
-    if (total) return [...groupBy(perYear, (r) => r.district).values()].map((g) => ({ district: g[0].district, value: mean(g.map((r) => r.value)), n: null as number | null, rel: null as string | null }));
-    const e = surveyFirst(D.est.filter((r) => r.level === 'district' && r.indicator === metric && Y.has(r.sas_year) && S.has(r.sas_season)), (r) => r.area);
+    if (total) return [...groupBy(perYear, (r) => r.district).values()].map((g) => ({ district: g[0].district, value: g.some((r) => !Number.isFinite(r.value)) ? NaN : mean(g.map((r) => r.value)), n: null as number | null, rel: null as string | null }));
+    const e = D.est.filter((r) => r.level === 'district' && r.indicator === metric && Y.has(r.sas_year) && S.has(r.sas_season));
     return [...groupBy(e, (r) => r.area).values()].map((g) => ({ district: g[0].area, value: wm(g.map((r) => r.estimate), g.map((r) => r.wsum)), n: sum(g.map((r) => r.n)), rel: mode(g.map((r) => r.reliability)) }));
   }, [D, f, metric, total, perYear]);
 
@@ -59,16 +62,16 @@ export default function MapPage() {
       const y = years[Math.min(yi, years.length - 1)];
       const d = perYear.filter((r) => r.year === y);
       if (!d.length) return null;
-      const all = perYear.map((r) => r.value).sort((a, b) => a - b);
+      const all = perYear.map((r) => r.value).filter(Number.isFinite).sort((a, b) => a - b);
       const zmax = all[Math.floor(all.length * 0.97)] ?? all[all.length - 1];
       return choropleth(geo, d.map((r) => ({ district: r.district, value: r.value, hover: `<b>${r.district}</b> · ${y}<br>${fmtNum(r.value, dec)}${unit}` })),
-        { label, colorscale: scale, zmin: 0, zmax, selected });
+        { label, colorscale: scale, zmin: 0, zmax, selected, noData: tr('no_estimate') });
     }
     if (!vals.length) return null;
     return choropleth(geo, vals.map((r) => ({
-      district: r.district, value: r.value,
+      district: r.district, value: r.value, weak: r.rel === 'Unreliable',
       hover: `<b>${r.district}</b><br>${tr(`ind_${metric}`)}: ${fmtNum(r.value, dec)}${unit}${total ? '' : `<br>n = ${fmtNum(r.n)} · ${r.rel}`}`,
-    })), { label, colorscale: scale, selected });
+    })), { label, colorscale: scale, selected, noData: tr('no_estimate') });
   }, [animate, yi, years, perYear, vals, geo, label, scale, selected, metric, dec, unit, total, tr]);
 
   const sorted = [...vals].filter((r) => Number.isFinite(r.value)).sort((a, b) => b.value - a.value);
@@ -136,7 +139,7 @@ function Profile({ metric, vals, unit, dec }: { metric: string; vals: { district
   const inds = ['irrigated', 'irrig_modern', 'inorganic_fert', 'organic_fert', 'anti_erosion', 'mechanised'];
   const Y = new Set(f.years), S = new Set<string>(f.seasons);
   const pick = (lv: string, ar: string) => {
-    const e = surveyFirst(D.est.filter((r) => r.level === lv && r.area === ar && inds.includes(r.indicator) && Y.has(r.sas_year) && S.has(r.sas_season)), (r) => r.indicator);
+    const e = D.est.filter((r) => r.level === lv && r.area === ar && inds.includes(r.indicator) && Y.has(r.sas_year) && S.has(r.sas_season));
     return new Map([...groupBy(e, (r) => r.indicator).entries()].map(([k, g]) => [k, { v: wm(g.map((r) => r.estimate), g.map((r) => r.wsum)), n: sum(g.map((r) => r.n)), rel: mode(g.map((r) => r.reliability)) }]));
   };
   const dd = pick('district', dist), nn = pick('national', 'Rwanda');

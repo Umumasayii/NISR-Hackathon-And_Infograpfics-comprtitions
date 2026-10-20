@@ -4,29 +4,30 @@ import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
 import { Callout, ChartCard, DataTable, FiltersUsed, Grid, Kpi, KpiRow, Select, type Col } from '../components/ui';
 import { Plot, simpleLines, std, legendBottom, type Fig } from '../components/Plot';
-import { cropsFor, groupBy, mean, sum, wm } from '../lib/stats';
+import { cropsFor, groupBy, mean, sum, yieldOf } from '../lib/stats';
 import { fmtNum, fmtPct, shortSet } from '../lib/format';
 import { brand, catCols, seasonCols } from '../lib/theme';
-import type { Crop } from '../data/types';
+import type { AppData, Crop } from '../data/types';
 
 const MEASURES = ['production_t', 'crop_area_ha', 'yield_kg_ha', 'yield_irrigated_kg_ha', 'yield_rainfed_kg_ha', 'sold_t', 'sold_share_pct', 'price_rwf_kg', 'sales_value_mrwf', 'improved_seed_pct'] as const;
 type M = (typeof MEASURES)[number];
 const SUMS: M[] = ['production_t', 'crop_area_ha', 'sold_t', 'sales_value_mrwf'];
 
-type Agg = Record<M | 'n_irrigated_yield' | 'n_crop_plots', number>;
-// sums for t/ha; ratios recomputed. A sum of nothing but missing values stays missing (2026 has no crop area)
+type Agg = Record<M | 'n_irrigated_yield' | 'n_crop_plots', number> & { yield_exact: boolean };
+// sums for t and ha; ratios recomputed from sums. A sum of nothing but missing values stays missing.
+// Yields come from yieldOf (summed harvest / summed eligible area, unusable seasons left out);
+// a share without its denominator (improved seed) is shown for one row only, never averaged.
 const sumNA = (x: (number | null | undefined)[]) => (x.some((v) => Number.isFinite(v as number)) ? sum(x) : NaN);
-function agg(d: Crop[]): Agg {
+function agg(D: AppData, d: Crop[]): Agg {
   const sum = sumNA;
-  const production_t = sum(d.map((r) => r.production_t)), sold_t = sum(d.map((r) => r.sold_t));
+  const production_t = sum(d.map((r) => r.production_t)), sold_t = sum(d.map((r) => r.sold_t)), value = sum(d.map((r) => r.sales_value_mrwf));
+  const y = yieldOf(D, d);
   return {
     production_t, crop_area_ha: sum(d.map((r) => r.crop_area_ha)),
-    yield_kg_ha: wm(d.map((r) => r.yield_kg_ha), d.map((r) => r.crop_area_ha)),
-    yield_irrigated_kg_ha: wm(d.map((r) => r.yield_irrigated_kg_ha), d.map((r) => r.n_irrigated_yield)),
-    yield_rainfed_kg_ha: wm(d.map((r) => r.yield_rainfed_kg_ha), d.map((r) => r.crop_area_ha)),
-    sold_t, price_rwf_kg: wm(d.map((r) => r.price_rwf_kg), d.map((r) => r.sold_t)),
-    sales_value_mrwf: sum(d.map((r) => r.sales_value_mrwf)), improved_seed_pct: wm(d.map((r) => r.improved_seed_pct), d.map((r) => r.crop_area_ha)),
-    n_crop_plots: sum(d.map((r) => r.n_crop_plots)), n_irrigated_yield: sum(d.map((r) => r.n_irrigated_yield)),
+    yield_kg_ha: y.all, yield_irrigated_kg_ha: y.irr, yield_rainfed_kg_ha: y.rf, yield_exact: y.exact,
+    sold_t, price_rwf_kg: sold_t > 0 ? (1e6 * value) / (1000 * sold_t) : NaN,
+    sales_value_mrwf: value, improved_seed_pct: d.length === 1 ? d[0].improved_seed_pct ?? NaN : NaN,
+    n_crop_plots: sum(d.map((r) => r.n_crop_plots)), n_irrigated_yield: y.nIrr,
     sold_share_pct: production_t ? (100 * sold_t) / production_t : NaN,
   };
 }
@@ -42,11 +43,11 @@ export default function Explorer() {
 
   const k = useMemo(() => {
     if (!cr.length) return null;
-    const ny = new Set(cr.map((r) => r.sas_year)).size, a = agg(cr);
+    const ny = new Set(cr.map((r) => r.sas_year)).size, a = agg(D, cr);
     return { ny, a, nCrops: new Set(cr.map((r) => r.crop_name)).size };
-  }, [cr]);
+  }, [D, cr]);
 
-  const byCrop = useMemo(() => [...groupBy(cr, (r) => `${r.crop_group}|${r.crop_name}`).values()].map((g) => ({ crop_group: g[0].crop_group, crop_name: g[0].crop_name, ...agg(g) })), [cr]);
+  const byCrop = useMemo(() => [...groupBy(cr, (r) => `${r.crop_group}|${r.crop_name}`).values()].map((g) => ({ crop_group: g[0].crop_group, crop_name: g[0].crop_name, ...agg(D, g) })), [cr]);
   const treeFig = useMemo<Fig | null>(() => {
     const tm: M = SUMS.includes(m) ? m : 'production_t';
     const d = byCrop.filter((r) => num(r[tm]) > 0);
@@ -74,7 +75,7 @@ export default function Explorer() {
     };
   }, [top, m, grpCols, dec, tr]);
 
-  const trendD = useMemo(() => [...groupBy(cr, (r) => `${r.sas_year}|${r.sas_season}`).values()].map((g) => ({ y: g[0].sas_year, s: g[0].sas_season, ...agg(g) })).filter((r) => Number.isFinite(num(r[m]))), [cr, m]);
+  const trendD = useMemo(() => [...groupBy(cr, (r) => `${r.sas_year}|${r.sas_season}`).values()].map((g) => ({ y: g[0].sas_year, s: g[0].sas_season, ...agg(D, g) })).filter((r) => Number.isFinite(num(r[m]))), [cr, m]);
   const trendFig = useMemo<Fig | null>(() => {
     if (!trendD.length) return null;
     const data: Data[] = ['A', 'B', 'C'].map((s) => { const x = trendD.filter((r) => r.s === s).sort((a, b) => a.y - b.y); return x.length ? {
@@ -91,7 +92,7 @@ export default function Explorer() {
   })();
 
   const table = useMemo(() => [...groupBy(cr, (r) => `${r.sas_year}|${r.sas_season}|${r.crop_group}|${r.crop_name}`).values()]
-    .map((g) => ({ sas_year: g[0].sas_year, sas_season: g[0].sas_season, crop_group: g[0].crop_group, crop_name: g[0].crop_name, ...agg(g) }))
+    .map((g) => ({ sas_year: g[0].sas_year, sas_season: g[0].sas_season, crop_group: g[0].crop_group, crop_name: g[0].crop_name, ...agg(D, g) }))
     .sort((a, b) => b.sas_year - a.sas_year || a.sas_season.localeCompare(b.sas_season) || num(b.production_t) - num(a.production_t)), [cr]);
   type Row = (typeof table)[number];
   const r1 = (x: number | string | null) => { const v = num(x); return Number.isFinite(v) ? Math.round(v * 10) / 10 : null; };

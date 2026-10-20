@@ -567,26 +567,54 @@ farmer_measures <- function(d) summarise(d,
   farmers_irrig_pct = 100 * wmean(irrig_farmer, weight),        # one record per farmer
   .groups = "drop")
 
-# NB: inside summarise() a new column masks the old one, so yields come first
+# NB: inside summarise() a new column masks the old one, so yields come first.
+# Yields use ONE eligibility mask everywhere: yield_ok (positive harvest, crop area,
+# inside the 1st-99th percentile of its crop-season) AND a season whose crop areas are
+# complete enough (season_yield_usable; 2024B and 2024C are not). The weighted sums
+# behind every ratio are kept (yield_*_kg, yield_*_ha), so the app can combine
+# districts, seasons and crops as sum(harvest) / sum(area) instead of averaging ratios.
 crop_measures <- function(d) summarise(d,
   n_crop_plots   = n(),
   # coverage: share of harvested crop plots with a usable crop area (and so a yield)
   area_coverage_pct = 100 * mean(!is.na(crop_area_ha[harvest_kg > 0 & !is.na(harvest_kg)])),
-  yield_kg_ha    = wsum(harvest_kg[yield_ok], weight[yield_ok]) / wsum(crop_area_ha[yield_ok], weight[yield_ok]),
-  yield_irrigated_kg_ha = { k <- yield_ok & irrigated %in% 1L; wsum(harvest_kg[k], weight[k]) / wsum(crop_area_ha[k], weight[k]) },
-  yield_rainfed_kg_ha   = { k <- yield_ok & irrigated %in% 0L; wsum(harvest_kg[k], weight[k]) / wsum(crop_area_ha[k], weight[k]) },
-  n_irrigated_yield     = sum(yield_ok & irrigated %in% 1L),
+  yield_harvest_kg     = { k <- yield_ok & season_yield_usable %in% TRUE; wsum(harvest_kg[k], weight[k]) },
+  yield_area_ha        = { k <- yield_ok & season_yield_usable %in% TRUE; wsum(crop_area_ha[k], weight[k]) },
+  yield_harvest_irr_kg = { k <- yield_ok & season_yield_usable %in% TRUE & irrigated %in% 1L; wsum(harvest_kg[k], weight[k]) },
+  yield_area_irr_ha    = { k <- yield_ok & season_yield_usable %in% TRUE & irrigated %in% 1L; wsum(crop_area_ha[k], weight[k]) },
+  yield_harvest_rf_kg  = { k <- yield_ok & season_yield_usable %in% TRUE & irrigated %in% 0L; wsum(harvest_kg[k], weight[k]) },
+  yield_area_rf_ha     = { k <- yield_ok & season_yield_usable %in% TRUE & irrigated %in% 0L; wsum(crop_area_ha[k], weight[k]) },
+  yield_kg_ha           = yield_harvest_kg / yield_area_ha,
+  yield_irrigated_kg_ha = yield_harvest_irr_kg / yield_area_irr_ha,
+  yield_rainfed_kg_ha   = yield_harvest_rf_kg / yield_area_rf_ha,
+  n_yield               = sum(yield_ok & season_yield_usable %in% TRUE),
+  n_irrigated_yield     = sum(yield_ok & season_yield_usable %in% TRUE & irrigated %in% 1L),
+  n_rainfed_yield       = sum(yield_ok & season_yield_usable %in% TRUE & irrigated %in% 0L),
   yield_premium_pct     = 100 * (yield_irrigated_kg_ha / yield_rainfed_kg_ha - 1),
   production_t   = wsum(harvest_kg, weight) / 1000,
   crop_area_ha   = wsum(crop_area_ha, weight),
   sold_t         = wsum(sold_kg_plot, weight) / 1000,
-  sold_share_pct = 100 * sold_t / production_t,
+  # sold share uses only plots where both the harvest and the sold quantity are known
+  sold_share_pct = { k <- !is.na(harvest_kg) & !is.na(sold_kg_plot)
+                     100 * wsum(sold_kg_plot[k], weight[k]) / wsum(harvest_kg[k], weight[k]) },
   price_rwf_kg   = wmean(price_rwf_kg[sold_kg > 0], weight[sold_kg > 0]),
   sales_value_mrwf = wsum(sales_value_rwf, weight) / 1e6,          # GROSS sales value, not income
   sales_value_imputed_pct = 100 * wsum(sales_value_rwf[price_imputed %in% TRUE], weight[price_imputed %in% TRUE]) /
                             wsum(sales_value_rwf, weight),
   improved_seed_pct = 100 * wmean(improved_seed, weight),
   .groups = "drop")
+
+# Seasons where crop areas are too incomplete for yields (2024B: 46%, 2024C: 7%).
+# Computed here, before any aggregate, so national, district and crop tables, the
+# yield charts and the yield model all leave out the same seasons.
+min_area_coverage <- 80
+season_quality <- master_crop_plot |>
+  group_by(sas_year, sas_season) |>
+  summarise(area_coverage_pct = round(100 * mean(!is.na(crop_area_ha[harvest_kg > 0 & !is.na(harvest_kg)])), 1),
+            .groups = "drop") |>
+  mutate(yield_usable = area_coverage_pct >= min_area_coverage)
+master_crop_plot <- master_crop_plot |>
+  left_join(season_quality |> select(sas_year, sas_season, season_yield_usable = yield_usable),
+            by = c("sas_year", "sas_season"))
 
 finite <- \(d) mutate(d, across(where(is.numeric), \(x) if_else(is.finite(x), x, NA_real_)))
 
@@ -617,16 +645,6 @@ if (!all(reconcile$ok)) {
   print(filter(reconcile, !ok))
   stop("District totals do not add up to national totals (see above)")
 }
-
-# Seasons where crop areas are too incomplete for yields (2024B: 46%, 2024C: 7%).
-# Yields, yield gaps and the yield model leave these seasons out.
-min_area_coverage <- 80
-season_quality <- master_national_season |>
-  transmute(sas_year, sas_season, area_coverage_pct = round(area_coverage_pct, 1),
-            yield_usable = area_coverage_pct >= min_area_coverage)
-master_crop_plot <- master_crop_plot |>
-  left_join(season_quality |> select(sas_year, sas_season, season_yield_usable = yield_usable),
-            by = c("sas_year", "sas_season"))
 
 master_crop_season <- master_crop_plot |>
   group_by(crop_group, crop_name, sas_year, sas_season) |> crop_measures() |> finite()

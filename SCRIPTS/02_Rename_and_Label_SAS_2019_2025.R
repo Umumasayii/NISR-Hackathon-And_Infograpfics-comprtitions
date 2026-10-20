@@ -23,7 +23,7 @@
 # STEP 1. FIND YOUR HACKATHON FOLDER -----------------------------------------
 # You can edit this line if your folder is in a different location.
 
-hackathon_folder <- "C:\\Users\\branc\\OneDrive\\Documenti\\Hackathon"
+hackathon_folder <- Sys.getenv("HACKATHON_ROOT", ".")   # run from the project root
 
 
 # STEP 2. LOAD ORIGINAL DATA IF STEP 1 HAS NOT ALREADY RUN ---------------------
