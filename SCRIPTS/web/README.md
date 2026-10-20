@@ -31,13 +31,10 @@ source("SCRIPTS/12_Export_Web_Data.R")
 ```
 
 It writes `app_data.json`, `districts.json`, `i18n.json` (the Shiny translations) and
-`data_source.md` (the general Data Source) into `SCRIPTS/web/public/data/`. It also adds the cited
-NISR headline figures from `DATA/NISR_published/nisr_report_headlines.csv`.
-
-**By default it then commits and pushes every project change to GitHub** with
-`SCRIPTS/13_Push_To_GitHub.R` (needs the `gert` package), and Vercel rebuilds the website from
-`master`. To export without committing or pushing, run `Sys.setenv(SI_AUTO_PUSH = "FALSE")` first.
-The push script never commits microdata-type files or secrets, even if `.gitignore` changes.
+`data_source.md` (the one general Data Source) into `SCRIPTS/web/public/data/`, then pushes every
+project change to GitHub with `SCRIPTS/13_Push_To_GitHub.R` (needs the `gert` package). Vercel
+rebuilds the website from `master` a minute or two later. To push other changes on their own:
+`source("SCRIPTS/13_Push_To_GitHub.R"); push_project()`.
 
 ## Run it on your computer
 
@@ -66,11 +63,8 @@ new version of the site, and every pull request gets its own preview link. The G
 | `src/lib/stats.ts` | Survey maths ported from the Shiny app: combining districts with stratum variances, reliability labels, weighted means |
 | `src/lib/i18n.ts`, `src/lib/webI18n.ts` | Translations (reuses `SCRIPTS/app/translations.json`) |
 | `src/components/Plot.tsx` | Plotly wrapper (lazy loaded) and shared chart styles: plain lines with markers, clustered bars, district map |
-| `src/lib/sources.ts` | The source list and the provenance fields shown under each chart and added to each CSV |
-| `src/components/ui.tsx` | Number cards, chart cards (takeaway, source line, "Show the numbers" table), filters, sortable tables with CSV download |
+| `src/components/ui.tsx` | NISR-style number cards, chart cards with "What this means", filters, sortable tables with CSV download |
 | `src/pages/*.tsx` | The 12 pages: Overview, Map, District, Need, Explorer, Evidence, How, Who, Households, Model, Priority, Methods |
 
-Rules the app keeps: NISR published figures are shown as published and labelled, never replaced
-by or joined to project estimates; every chart and number card names its measure, period, kind
-of number and source next to it (`src/lib/sources.ts`), with a table alternative and a CSV that
-repeats those fields; "Other" answers are never shown; associations, not causes.
+Rules the app keeps (same as the Shiny app): NISR published figures win where both exist;
+"Other" answers are never shown; associations, not causes; one general Data Source on Methods.

@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { MapPinned, MapPin, ArrowDownWideNarrow, Hand, Play, Pause, CloudRain, Trophy } from 'lucide-react';
 import { useApp } from '../data/store';
-import { ChartCard, FiltersUsed, Grid, RelBadge, Select, relLabel } from '../components/ui';
-import type { Prov, SrcId } from '../lib/sources';
+import { ChartCard, FiltersUsed, Grid, RelBadge, Select } from '../components/ui';
 import { Plot, choropleth, std, type Fig } from '../components/Plot';
 import { groupBy, mean, mode, sum, surveyFirst, wm } from '../lib/stats';
 import { fmtNum, fmtPct } from '../lib/format';
@@ -10,11 +9,6 @@ import { brand, colIrrigated, seqAmber, seqGreen } from '../lib/theme';
 
 const METRICS = ['irrigated', 'irrig_modern', 'irrig_any_farmer', 'inorganic_fert', 'anti_erosion', 'irrigated_area_ha', 'production_t'];
 const isTotal = (m: string) => m === 'irrigated_area_ha' || m === 'production_t';
-/** what each map measure counts, and over whom */
-const UNIT: Record<string, string> = {
-  irrigated: 'u_pct_plots', irrig_modern: 'u_pct_irr_plots', irrig_any_farmer: 'u_pct_farmers', inorganic_fert: 'u_pct_plots',
-  anti_erosion: 'u_pct_plots', irrigated_area_ha: 'u_ha_irr', production_t: 'u_kt',
-};
 
 export default function MapPage() {
   const { D, f, tr, geo, pickDistrict } = useApp();
@@ -32,13 +26,11 @@ export default function MapPage() {
       const t = D.totals.filter((r) => r.level === 'district' && Y.has(r.sas_year) && S.has(r.sas_season));
       return [...groupBy(t, (r) => `${r.area}|${r.sas_year}`).values()].map((g) => ({
         district: g[0].area, year: g[0].sas_year, value: sum(g.map((r) => (r as unknown as Record<string, number>)[metric])), n: null as number | null, rel: null as string | null, wsum: 1,
-        pub: metric === 'production_t' && g.some((r) => r.totals_source === 'nisr'),
       }));
     }
     const e = D.est.filter((r) => r.level === 'district' && r.indicator === metric && Y.has(r.sas_year) && S.has(r.sas_season));
     return [...groupBy(e, (r) => `${r.area}|${r.sas_year}`).values()].map((g) => ({
       district: g[0].area, year: g[0].sas_year, value: wm(g.map((r) => r.estimate), g.map((r) => r.wsum)), n: sum(g.map((r) => r.n)), rel: mode(g.map((r) => r.reliability)), wsum: sum(g.map((r) => r.wsum)),
-      pub: g.every((r) => r.source === 'nisr'),
     }));
   }, [D, f, metric, total]);
 
@@ -60,7 +52,7 @@ export default function MapPage() {
     return () => clearInterval(t);
   }, [playing, years.length]);
 
-  const label = tr(UNIT[metric]);
+  const label = tr(`unit_${total ? metric : 'pct'}`);
   const scale = metric === 'production_t' ? seqAmber : seqGreen;
   const mapFig = useMemo<Fig | null>(() => {
     if (animate) {
@@ -69,7 +61,7 @@ export default function MapPage() {
       if (!d.length) return null;
       const all = perYear.map((r) => r.value).sort((a, b) => a - b);
       const zmax = all[Math.floor(all.length * 0.97)] ?? all[all.length - 1];
-      return choropleth(geo, d.map((r) => ({ district: r.district, value: r.value, hover: `<b>${r.district}</b> · ${y}<br>${fmtNum(r.value, dec)}${unit}${r.pub ? `<br>${tr('rb_published')}` : ''}` })),
+      return choropleth(geo, d.map((r) => ({ district: r.district, value: r.value, hover: `<b>${r.district}</b> · ${y}<br>${fmtNum(r.value, dec)}${unit}` })),
         { label, colorscale: scale, zmin: 0, zmax, selected });
     }
     if (!vals.length) return null;
@@ -80,20 +72,6 @@ export default function MapPage() {
   }, [animate, yi, years, perYear, vals, geo, label, scale, selected, metric, dec, unit, total, tr]);
 
   const sorted = [...vals].filter((r) => Number.isFinite(r.value)).sort((a, b) => b.value - a.value);
-  // published district figures (2026 tables, or published production) are named as such
-  const curY = years[Math.min(yi, years.length - 1)];
-  const anyPub = animate ? perYear.some((r) => r.pub && r.year === curY) : total ? perYear.some((r) => r.pub) : perYear.length > 0 && perYear.every((r) => r.pub);
-  const pubSrcs: SrcId[] = ['sas2026a', 'sas2026b'];
-  const mapProv: Prov = {
-    unit: label, period: animate && years.length ? String(curY) : years.length ? `${years[0]}–${years[years.length - 1]}` : undefined,
-    kind: anyPub ? 'mixed' : 'survey', src: anyPub ? ['sas_micro', ...pubSrcs] : ['sas_micro'],
-    note: [total ? tr(metric === 'production_t' ? 'n_prod_mixed' : 'n_area') : tr('n_district_small'), !total && anyPub ? tr('n_map_pub') : ''].filter(Boolean).join(' '),
-  };
-  const mapTable = { name: `map_${metric}`, rows: sorted, cols: [
-    { label: tr('district'), get: (r: (typeof sorted)[number]) => r.district },
-    { label, get: (r: (typeof sorted)[number]) => fmtNum(r.value, dec), num: true },
-    ...(total ? [] : [{ label: 'n', get: (r: (typeof sorted)[number]) => fmtNum(r.n), num: true }, { label: tr('quality'), get: (r: (typeof sorted)[number]) => relLabel(tr, r.rel) }]),
-  ] };
   const rankFig = useMemo<Fig | null>(() => {
     const d = [...sorted].reverse(); if (!d.length) return null;
     const sel = selected ?? [];
@@ -114,8 +92,7 @@ export default function MapPage() {
             <Select value={metric} onChange={setMetric} options={METRICS.map((m) => ({ value: m, label: tr(`ind_${m}`) }))} width={320} />
             <label className="switch"><input type="checkbox" checked={animate} onChange={(e) => { setAnimate(e.target.checked); setPlaying(e.target.checked); }} /><Play size={14} /> {tr('animate_years')}</label>
           </>}
-          means={sorted.length >= 3 ? <>{tr('m_map', tr(`ind_${metric}`), sorted.slice(0, 3).map((r) => r.district).join(', '), sorted.slice(-3).reverse().map((r) => r.district).join(', '))} {tr('m_click')}</> : null}
-          prov={mapProv} table={mapTable}>
+          means={sorted.length >= 3 ? <>{tr('m_map', tr(`ind_${metric}`), sorted.slice(0, 3).map((r) => r.district).join(', '), sorted.slice(-3).reverse().map((r) => r.district).join(', '))} {tr('m_click')}</> : null}>
           {animate && years.length > 0 && (
             <div className="play-row">
               <button className="btn outline sm" onClick={() => { if (yi >= years.length - 1) setYi(0); setPlaying(!playing); }}>
@@ -132,7 +109,7 @@ export default function MapPage() {
           <div className="card-body profile"><Profile metric={metric} vals={vals} unit={unit} dec={dec} /></div>
         </section>
       </Grid>
-      <ChartCard title={tr('c_ranking')} icon={ArrowDownWideNarrow} means={tr('m_rank')} prov={mapProv} table={mapTable}>
+      <ChartCard title={tr('c_ranking')} icon={ArrowDownWideNarrow} means={tr('m_rank')}>
         <Plot fig={rankFig} height={470} onClick={pickDistrict} empty={tr('no_data')} />
       </ChartCard>
     </>

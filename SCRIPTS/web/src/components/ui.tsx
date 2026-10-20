@@ -1,12 +1,11 @@
 import { Fragment, isValidElement, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
-  CalendarDays, Check, CheckCheck, ChevronDown, CircleCheck, CircleHelp, CloudSunRain, Download, Info, Landmark, MapPin, Maximize2, Minimize2, Search,
-  SlidersHorizontal, Sprout, TriangleAlert, X, CircleSlash, type LucideIcon,
+  CalendarDays, Check, CheckCheck, ChevronDown, CloudSunRain, Download, Info, MapPin, Maximize2, Minimize2, Search, SlidersHorizontal, Sprout, X,
+  type LucideIcon,
 } from 'lucide-react';
 import { useApp } from '../data/store';
 import { relCols } from '../lib/theme';
 import { downloadCsv } from '../lib/stats';
-import { SOURCES, provColumns, type Prov } from '../lib/sources';
 
 // ---- short text ------------------------------------------------------------------------------
 /** plain text of a string or a fragment of strings; null when it holds other elements */
@@ -59,55 +58,12 @@ export function Brief({ children, className = '' }: { children: ReactNode; class
 }
 
 // ---- cards -------------------------------------------------------------------------------
-// ---- provenance ----------------------------------------------------------------------------
-/** "What, when, which kind of number, from where": shown under every chart and number card */
-export function SourceLine({ p, compact = false }: { p: Prov; compact?: boolean }) {
-  const { tr } = useApp();
-  return (
-    <div className={`src-line ${compact ? 'compact' : ''}`}>
-      <span><b>{tr('src_measure')}</b> {p.unit}</span>
-      {p.period && <span><b>{tr('src_period')}</b> {p.period}</span>}
-      <span className={`src-kind k-${p.kind}`}><b>{tr('src_type')}</b> {tr(`kind_${p.kind}`)}</span>
-      <span><b>{tr('src_source')}</b> {p.src.map((s, i) => (
-        <Fragment key={s}>{i > 0 && '; '}<a href={SOURCES[s].url} target="_blank" rel="noopener noreferrer" title={SOURCES[s].title}>{SOURCES[s].short}</a></Fragment>
-      ))}{p.tables && p.tables.length > 0 && <> ({p.tables.join('; ')})</>}</span>
-      {p.note && <span className="src-note"><b>{tr('src_note')}</b> {p.note}</span>}
-    </div>
-  );
-}
-
-/** A table alternative for a chart or map: the same numbers as text, with a CSV that carries the source */
-export interface AltTable { cols: { label: string; get: (r: never) => string | number | null; num?: boolean }[]; rows: unknown[]; name: string }
-function DataAlt({ t, p, title }: { t: AltTable; p?: Prov; title: string }) {
-  const { tr } = useApp();
-  const cols = t.cols as { label: string; get: (r: unknown) => string | number | null; num?: boolean }[];
-  const csv = () => downloadCsv(t.rows.map((r) => ({
-    ...Object.fromEntries(cols.map((c) => [c.label, c.get(r)])), ...(p ? provColumns(p, tr(`kind_${p.kind}`)) : {}),
-  })), `smartirrigate_${t.name}.csv`);
-  return (
-    <details className="data-alt">
-      <summary>{tr('show_numbers')}</summary>
-      <div className="dt-scroll">
-        <table>
-          <caption className="sr-only">{title}</caption>
-          <thead><tr>{cols.map((c) => <th key={c.label} scope="col" className={c.num ? 'num' : ''}>{c.label}</th>)}</tr></thead>
-          <tbody>{t.rows.map((r, i) => <tr key={i}>{cols.map((c) => <td key={c.label} className={c.num ? 'num' : ''}>{naCell(c.get(r), tr)}</td>)}</tr>)}</tbody>
-        </table>
-      </div>
-      <button type="button" className="btn outline sm" onClick={csv}><Download size={14} /> {tr('download_csv')}</button>
-    </details>
-  );
-}
-
-/** Every chart card: title, the one-line message the chart shows, optional tools, the chart,
- *  then what it measures and where it comes from, and the numbers as a table */
-export function ChartCard({ title, icon: Icon, tools, means, children, className = '', prov, table, chart = true }: {
+/** Every chart card: title, the one-line message the chart shows, optional tools, the chart */
+export function ChartCard({ title, icon: Icon, tools, means, children, className = '' }: {
   title: string; icon?: LucideIcon; tools?: ReactNode; means?: ReactNode; children: ReactNode; className?: string;
-  prov?: Prov; table?: AltTable | null; chart?: boolean;
 }) {
   const [full, setFull] = useState(false);
   const { tr } = useApp();
-  const said = toText(means ?? '');
   useEffect(() => {
     if (!full) return;
     const k = (e: KeyboardEvent) => e.key === 'Escape' && setFull(false);
@@ -125,41 +81,34 @@ export function ChartCard({ title, icon: Icon, tools, means, children, className
       </header>
       {means ? <Brief className="takeaway">{means}</Brief> : null}
       {tools && <div className="card-tools">{tools}</div>}
-      {chart
-        ? <div className="card-body" role="img" aria-label={[title, said].filter(Boolean).join('. ') + (table ? `. ${tr('sr_table_below')}` : '')}>{children}</div>
-        : <div className="card-body">{children}</div>}
-      {prov && <SourceLine p={prov} />}
-      {table && table.rows.length > 0 && <DataAlt t={table} p={prov} title={title} />}
+      <div className="card-body">{children}</div>
     </section>
   );
 }
 
-/** a missing table cell (null or NaN) says "No data" (zero stays 0) */
-const naCell = (v: unknown, tr: (k: string) => string) =>
-  (v == null || v === '' || (typeof v === 'number' && !Number.isFinite(v)) ? <span className="na">{tr('na_no_data')}</span> : (v as ReactNode));
+/** a missing table cell (null or NaN) shows as a dash */
+const cell = (v: unknown) => (v == null || (typeof v === 'number' && !Number.isFinite(v)) ? '–' : (v as ReactNode));
 
 /** Number card: circled line icon, title, one big value, period below; the definition in a hover hint */
-export function Kpi({ label, value, icon: Icon, color, foot, delta, deltaGood = true, hint, prov }: {
-  label: string; value: string; icon: LucideIcon; color: string; foot?: ReactNode; delta?: number | null; deltaGood?: boolean; hint?: string; prov?: Prov;
+export function Kpi({ label, value, icon: Icon, color, foot, delta, deltaGood = true, hint }: {
+  label: string; value: string; icon: LucideIcon; color: string; foot?: ReactNode; delta?: number | null; deltaGood?: boolean; hint?: string;
 }) {
   const shown = useCountUp(value);
-  const { tr } = useApp();
-  // a long plain-text note keeps its first part on the card; the rest opens below on a tap
+  // a long plain-text note keeps its first part on the card; the rest moves to the hint
   if (typeof foot === 'string' && !hint) {
     const m = foot.match(/^(.+?)(?:\s\(|\.\s)/);
     if (m && m[1].length >= 8) { hint = foot; foot = m[1]; }
   }
   return (
     <div className="card kpi" style={{ ['--accent' as string]: color }}>
-      <span className="kpi-icon" aria-hidden="true"><Icon size={22} strokeWidth={1.8} /></span>
+      <span className="kpi-icon"><Icon size={22} strokeWidth={1.8} /></span>
+      {hint && <span className="kpi-hint" tabIndex={0} title={hint} aria-label={hint}><Info size={14} /></span>}
       <div className="kpi-label">{label}</div>
-      <div className="kpi-value"><span aria-hidden="true">{shown}</span><span className="sr-only">{value}</span>
+      <div className="kpi-value">{shown}
         {delta != null && Number.isFinite(delta) && (
-          <span className={`delta ${(delta >= 0) === deltaGood ? 'good' : 'bad'}`} title={tr('delta_pts')}>{delta >= 0 ? '+' : ''}{delta.toFixed(1)} {tr('pts')}</span>)}
+          <span className={`delta ${(delta >= 0) === deltaGood ? 'good' : 'bad'}`}>{delta >= 0 ? '+' : ''}{delta.toFixed(1)}</span>)}
       </div>
       {foot && <div className="kpi-foot">{foot}</div>}
-      {prov && <SourceLine p={prov} compact />}
-      {hint && <details className="kpi-more"><summary><Info size={13} /> {tr('definition')}</summary><p>{hint}</p></details>}
     </div>
   );
 }
@@ -234,14 +183,11 @@ export function FiltersUsed({ used }: { used: ('years' | 'seasons' | 'area' | 'c
   );
 }
 
-const REL_KEY: Record<string, string> = { Good: 'rb_good', 'Use with caution': 'rb_caution', Unreliable: 'rb_unreliable', Published: 'rb_published', 'Not assessed': 'rb_not_assessed' };
-// an icon as well as a colour, so the label never depends on colour alone
-const REL_ICON: Record<string, LucideIcon> = { Good: CircleCheck, 'Use with caution': TriangleAlert, Unreliable: CircleSlash, Published: Landmark, 'Not assessed': CircleHelp };
+const REL_KEY: Record<string, string> = { Good: 'rb_good', 'Use with caution': 'rb_caution', Unreliable: 'rb_unreliable', Published: 'rb_published' };
 export function RelBadge({ r }: { r: string | null | undefined }) {
   const { tr } = useApp();
   if (!r || !REL_KEY[r]) return null;
-  const I = REL_ICON[r];
-  return <span className="rel-badge" style={{ color: relCols[r], borderColor: relCols[r] }}><I size={11} strokeWidth={2.4} aria-hidden="true" /> {tr(REL_KEY[r])}</span>;
+  return <span className="rel-badge" style={{ color: relCols[r], borderColor: relCols[r] }}>{tr(REL_KEY[r])}</span>;
 }
 export const relLabel = (tr: (k: string) => string, r: string | null | undefined) => (r && REL_KEY[r] ? tr(REL_KEY[r]) : '–');
 
@@ -338,10 +284,8 @@ export function Tabs({ tabs, active, onChange }: { tabs: { id: string; label: st
 // ---- table -------------------------------------------------------------------------------
 export interface Col<T> { key: string; label: string; get: (r: T) => string | number | null; render?: (r: T) => ReactNode; num?: boolean }
 /** Sortable, searchable table with pages and a CSV download */
-export function DataTable<T>({ rows, cols, pageSize = 12, csvName, csvRows, searchable = true, prov, caption }: {
+export function DataTable<T>({ rows, cols, pageSize = 12, csvName, csvRows, searchable = true }: {
   rows: T[]; cols: Col<T>[]; pageSize?: number; csvName?: string; csvRows?: () => Record<string, unknown>[]; searchable?: boolean;
-  /** source fields repeated on every CSV row */
-  prov?: Prov; caption?: string;
 }) {
   const { tr } = useApp();
   const [q, setQ] = useState('');
@@ -369,33 +313,27 @@ export function DataTable<T>({ rows, cols, pageSize = 12, csvName, csvRows, sear
         {searchable && <label className="dt-search"><Search size={14} /><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr('search_ph')} /></label>}
         <span className="dt-count">{shown.length.toLocaleString('en-US')} {tr('rows')}</span>
         {csvName && (
-          <button className="btn outline sm" onClick={() => {
-            const base = csvRows ? csvRows() : shown.map((r) => Object.fromEntries(cols.map((c) => [c.label, c.get(r)])));
-            downloadCsv(prov ? base.map((r) => ({ ...r, ...provColumns(prov, tr(`kind_${prov.kind}`)) })) : base, csvName);
-          }}>
+          <button className="btn outline sm" onClick={() => downloadCsv(csvRows ? csvRows() : shown.map((r) => Object.fromEntries(cols.map((c) => [c.label, c.get(r)]))), csvName)}>
             <Download size={14} /> {tr('download_csv')}
           </button>
         )}
       </div>
       <div className="dt-scroll">
         <table>
-          {caption && <caption className="sr-only">{caption}</caption>}
           <thead><tr>{cols.map((c) => (
-            <th key={c.key} scope="col" className={c.num ? 'num' : ''} aria-sort={sort?.k === c.key ? (sort.dir === 1 ? 'ascending' : 'descending') : 'none'}>
-              <button type="button" className="th-sort" onClick={() => setSort(sort?.k === c.key ? { k: c.key, dir: sort.dir === 1 ? -1 : 1 } : { k: c.key, dir: c.num ? -1 : 1 })}>
-                {c.label}<span aria-hidden="true">{sort?.k === c.key ? (sort.dir === 1 ? ' ▲' : ' ▼') : ''}</span>
-              </button>
+            <th key={c.key} className={c.num ? 'num' : ''} onClick={() => setSort(sort?.k === c.key ? { k: c.key, dir: sort.dir === 1 ? -1 : 1 } : { k: c.key, dir: c.num ? -1 : 1 })}>
+              {c.label}{sort?.k === c.key ? (sort.dir === 1 ? ' ▲' : ' ▼') : ''}
             </th>))}</tr></thead>
           <tbody>{slice.map((r, i) => (
-            <tr key={i}>{cols.map((c) => <td key={c.key} className={c.num ? 'num' : ''}>{c.render ? c.render(r) : naCell(c.get(r), tr)}</td>)}</tr>
+            <tr key={i}>{cols.map((c) => <td key={c.key} className={c.num ? 'num' : ''}>{c.render ? c.render(r) : cell(c.get(r))}</td>)}</tr>
           ))}</tbody>
         </table>
       </div>
       {pages > 1 && (
         <div className="dt-pages">
-          <button className="btn ghost sm" disabled={page === 0} onClick={() => setPage(page - 1)} aria-label={tr('prev_page')}>{'‹'}</button>
-          <span aria-live="polite">{page + 1} / {pages}</span>
-          <button className="btn ghost sm" disabled={page >= pages - 1} onClick={() => setPage(page + 1)} aria-label={tr('next_page')}>{'›'}</button>
+          <button className="btn ghost sm" disabled={page === 0} onClick={() => setPage(page - 1)}>{'‹'}</button>
+          <span>{page + 1} / {pages}</span>
+          <button className="btn ghost sm" disabled={page >= pages - 1} onClick={() => setPage(page + 1)}>{'›'}</button>
         </div>
       )}
     </div>

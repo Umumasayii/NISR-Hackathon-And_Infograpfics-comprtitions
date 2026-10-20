@@ -3,7 +3,6 @@ import { Filter, Network, Trophy, ChartLine, Table2, Wheat, Sprout, Store, Scale
 import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
 import { Callout, ChartCard, DataTable, FiltersUsed, Grid, Kpi, KpiRow, Select, type Col } from '../components/ui';
-import type { Prov } from '../lib/sources';
 import { Plot, simpleLines, std, legendBottom, type Fig } from '../components/Plot';
 import { cropsFor, groupBy, mean, sum, wm } from '../lib/stats';
 import { fmtNum, fmtPct, shortSet } from '../lib/format';
@@ -92,7 +91,7 @@ export default function Explorer() {
   })();
 
   const table = useMemo(() => [...groupBy(cr, (r) => `${r.sas_year}|${r.sas_season}|${r.crop_group}|${r.crop_name}`).values()]
-    .map((g) => ({ sas_year: g[0].sas_year, sas_season: g[0].sas_season, crop_group: g[0].crop_group, crop_name: g[0].crop_name, pub: g.some((r) => r.production_source === 'nisr'), ...agg(g) }))
+    .map((g) => ({ sas_year: g[0].sas_year, sas_season: g[0].sas_season, crop_group: g[0].crop_group, crop_name: g[0].crop_name, ...agg(g) }))
     .sort((a, b) => b.sas_year - a.sas_year || a.sas_season.localeCompare(b.sas_season) || num(b.production_t) - num(a.production_t)), [cr]);
   type Row = (typeof table)[number];
   const r1 = (x: number | string | null) => { const v = num(x); return Number.isFinite(v) ? Math.round(v * 10) / 10 : null; };
@@ -100,57 +99,37 @@ export default function Explorer() {
     { key: 'y', label: tr('year'), get: (r) => r.sas_year, num: true }, { key: 's', label: tr('season'), get: (r) => r.sas_season },
     { key: 'g', label: tr('crop_group'), get: (r) => r.crop_group }, { key: 'c', label: tr('crop'), get: (r) => r.crop_name },
     { key: 'n', label: 'n', get: (r) => r.n_crop_plots, num: true },
-    { key: 'src', label: tr('src_type').replace(':', ''), get: (r) => (r.pub ? tr('rb_published') : tr('kind_survey')) },
     ...MEASURES.map((x) => ({ key: x, label: tr(`ms_${x}`), get: (r: Row) => r1(r[x]), num: true, render: (r: Row) => fmtNum(num(r[x]), x.endsWith('pct') ? 1 : 0) })),
   ];
 
-  // from 2024 Season B, production of the main crops is the NISR published figure (no area, yield or sales for those rows)
-  const pubAny = cr.some((r) => r.production_source === 'nisr');
-  const yrs = [...new Set(cr.map((r) => r.sas_year))].sort((a, b) => a - b);
-  const xp = (unit: string, extra?: string): Prov => ({
-    unit, period: yrs.length ? `${yrs[0]}–${yrs[yrs.length - 1]}` : undefined, kind: pubAny ? 'mixed' : 'survey',
-    src: pubAny ? ['sas_micro', 'sas2026a', 'sas2026b'] : ['sas_micro'], note: [pubAny ? tr('n_prod_mixed') : '', extra].filter(Boolean).join(' ') || undefined,
-  });
   return (
     <>
       <FiltersUsed used={['years', 'seasons', 'area', 'crop']} />
       <Callout icon={Filter} kind="soft">{tr('explorer_intro')}</Callout>
       {k ? (
         <KpiRow>
-          <Kpi label={tr('ms_production_t')} value={`${fmtNum(num(k.a.production_t) / k.ny / 1000)} kt`} icon={Wheat} color="#B07A1C" foot={tr('k_per_year', label, f.area)} prov={xp(tr('u_kt_year'))} />
-          <Kpi label={tr('ms_crop_area_ha')} value={`${fmtNum(num(k.a.crop_area_ha) / k.ny / 1000, 1)}k ha`} icon={Sprout} color={brand.green} foot={tr('k_per_year', label, f.area)} prov={xp(tr('u_ha_t'))} />
-          <Kpi label={tr('ms_sold_share_pct')} value={fmtPct(num(k.a.sold_share_pct))} icon={Store} color={brand.blue} foot={tr('k_sold_sub', fmtNum(num(k.a.sold_t) / k.ny / 1000), fmtNum(num(k.a.sales_value_mrwf) / k.ny / 1000, 1))} prov={xp(tr('u_ha_t'))} />
+          <Kpi label={tr('ms_production_t')} value={`${fmtNum(num(k.a.production_t) / k.ny / 1000)} kt`} icon={Wheat} color="#B07A1C" foot={tr('k_per_year', label, f.area)} />
+          <Kpi label={tr('ms_crop_area_ha')} value={`${fmtNum(num(k.a.crop_area_ha) / k.ny / 1000, 1)}k ha`} icon={Sprout} color={brand.green} foot={tr('k_per_year', label, f.area)} />
+          <Kpi label={tr('ms_sold_share_pct')} value={fmtPct(num(k.a.sold_share_pct))} icon={Store} color={brand.blue} foot={tr('k_sold_sub', fmtNum(num(k.a.sold_t) / k.ny / 1000), fmtNum(num(k.a.sales_value_mrwf) / k.ny / 1000, 1))} />
           {f.crops.length === 1
-            ? <Kpi label={tr('ms_yield_kg_ha')} value={`${fmtNum(num(k.a.yield_kg_ha))} kg/ha`} icon={Scale} color="#6A4C93" foot={tr('k_yield_sub', fmtNum(k.a.n_crop_plots))} prov={xp(tr('u_kgha'), tr('n_yield_excl'))} />
+            ? <Kpi label={tr('ms_yield_kg_ha')} value={`${fmtNum(num(k.a.yield_kg_ha))} kg/ha`} icon={Scale} color="#6A4C93" foot={tr('k_yield_sub', fmtNum(k.a.n_crop_plots))} />
             : <Kpi label={tr('k_n_crops')} value={String(k.nCrops)} icon={ListChecks} color="#6A4C93" foot={tr('k_n_crops_sub')} />}
         </KpiRow>
       ) : <p className="muted">{tr('no_data')}</p>}
       <div className="toolbar">
         <Select label={tr('c_top_crops')} value={m} onChange={setM} options={MEASURES.map((x) => ({ value: x, label: tr(`ms_${x}`) }))} width={320} />
       </div>
-      <ChartCard title={tr('c_treemap')} icon={Network} means={tr('m_tree')} prov={xp(tr(`ms_${SUMS.includes(m) ? m : 'production_t'}`))}
-        table={{ name: 'crop_shares', rows: [...byCrop].sort((a, b) => num(b.production_t) - num(a.production_t)), cols: [
-          { label: tr('crop_group'), get: (r: (typeof byCrop)[number]) => r.crop_group }, { label: tr('crop'), get: (r: (typeof byCrop)[number]) => r.crop_name },
-          { label: tr(`ms_${SUMS.includes(m) ? m : 'production_t'}`), get: (r: (typeof byCrop)[number]) => fmtNum(num(r[SUMS.includes(m) ? m : 'production_t'])), num: true },
-        ] }}><Plot fig={treeFig} height={360} empty={tr('no_data')} /></ChartCard>
+      <ChartCard title={tr('c_treemap')} icon={Network} means={tr('m_tree')}><Plot fig={treeFig} height={360} empty={tr('no_data')} /></ChartCard>
       <div style={{ height: 16 }} />
       <Grid cols="1fr 1fr">
         <ChartCard title={tr('c_top_crops')} icon={Trophy}
-          means={top.length ? <>{tr('m_bycrop', top[0].crop_name, tr(`ms_${m}`))}{SUMS.includes(m) ? tr('m_bycrop_share', fmtPct((100 * num(top[0][m])) / sum(top.map((r) => num(r[m]))), 0)) : ''} {tr('m_bycrop_note')}</> : null}
-          prov={xp(tr(`ms_${m}`))}
-          table={{ name: `top_crops_${m}`, rows: top.slice(0, 15), cols: [
-            { label: tr('crop'), get: (r: (typeof top)[number]) => r.crop_name }, { label: tr(`ms_${m}`), get: (r: (typeof top)[number]) => fmtNum(num(r[m]), dec), num: true },
-            { label: 'n', get: (r: (typeof top)[number]) => fmtNum(r.n_crop_plots), num: true },
-          ] }}>
+          means={top.length ? <>{tr('m_bycrop', top[0].crop_name, tr(`ms_${m}`))}{SUMS.includes(m) ? tr('m_bycrop_share', fmtPct((100 * num(top[0][m])) / sum(top.map((r) => num(r[m]))), 0)) : ''} {tr('m_bycrop_note')}</> : null}>
           <Plot fig={barFig} height={380} empty={tr('no_data')} />
         </ChartCard>
-        <ChartCard title={tr('c_measure_trend')} icon={ChartLine} means={trendMeans} prov={xp(tr(`ms_${m}`))}
-          table={{ name: `trend_${m}`, rows: [...trendD].sort((a, b) => a.y - b.y || a.s.localeCompare(b.s)), cols: [
-            { label: tr('season'), get: (r: (typeof trendD)[number]) => `${r.y}${r.s}` }, { label: tr(`ms_${m}`), get: (r: (typeof trendD)[number]) => fmtNum(num(r[m]), dec), num: true },
-          ] }}><Plot fig={trendFig} height={380} empty={tr('no_data')} /></ChartCard>
+        <ChartCard title={tr('c_measure_trend')} icon={ChartLine} means={trendMeans}><Plot fig={trendFig} height={380} empty={tr('no_data')} /></ChartCard>
       </Grid>
-      <ChartCard title={tr('c_table')} icon={Table2} chart={false} prov={xp(tr('u_ha_t'))}>
-        <DataTable rows={table} cols={cols} csvName={`smartirrigate_crops_${f.area.replace(/\W+/g, '_')}.csv`} prov={xp(tr('u_ha_t'))} caption={tr('c_table')} />
+      <ChartCard title={tr('c_table')} icon={Table2}>
+        <DataTable rows={table} cols={cols} csvName={`smartirrigate_crops_${f.area.replace(/\W+/g, '_')}.csv`} />
       </ChartCard>
     </>
   );
