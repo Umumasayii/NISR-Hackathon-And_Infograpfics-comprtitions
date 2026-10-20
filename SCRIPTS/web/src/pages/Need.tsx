@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { TriangleAlert, Crosshair, Thermometer, CirclePlay, CloudRain, Play, Pause } from 'lucide-react';
 import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
-import { Callout, ChartCard, FiltersUsed, Grid, Select } from '../components/ui';
+import { Callout, ChartCard, FiltersUsed, Grid, Select, relLabel } from '../components/ui';
+import type { Prov } from '../lib/sources';
 import { Plot, choropleth, std, type Fig } from '../components/Plot';
 import { groupBy, mean, median, sum, wm } from '../lib/stats';
 import { fmtNum, fmtPct } from '../lib/format';
@@ -107,23 +108,49 @@ export default function Need() {
     return { data, layout: std({ y: tr('y_rain_mm'), barmode: 'group', bargap: 0.25 }) };
   }, [rt, f, tr]);
   const rtSel = rt.filter((r) => f.years.includes(r.y)), below = rtSel.filter((r) => r.mm < 0.85 * r.normal);
+  const rainProv = (unit: string): Prov => ({ unit: tr(unit), period: '1981–2025', kind: 'derived', src: ['chirps'], note: tr('n_rain') });
+  const curYear = years[Math.min(yi, years.length - 1)];
 
   return (
     <>
       <FiltersUsed used={['years', 'seasons', 'area']} />
       <Callout icon={TriangleAlert}>{tr('need_caveat')}</Callout>
       <Grid cols="7fr 5fr">
-        <ChartCard title={tr('c_quadrant')} icon={Crosshair} means={tr('m_quadrant', hnla.length, hnla.map((r) => r.district_std).join(', '))}>
+        <ChartCard title={tr('c_quadrant')} icon={Crosshair} means={tr('m_quadrant', hnla.length, hnla.map((r) => r.district_std).join(', '))}
+          prov={{ unit: `${tr('u_need')}; ${tr('u_pct_plots_ab')} (2023–2025)`, period: '1991–2025', kind: 'derived', src: ['chirps', 'sas_micro'], note: `${tr('n_rain')} ${tr('n_district_small')}` }}
+          table={{ name: 'need_vs_irrigation', rows: [...nd].sort((a, b) => b.need_score - a.need_score), cols: [
+            { label: tr('district'), get: (r: (typeof nd)[number]) => r.district_std },
+            { label: tr('need_score'), get: (r: (typeof nd)[number]) => fmtNum(r.need_score, 0), num: true },
+            { label: tr('ind_irrigated'), get: (r: (typeof nd)[number]) => (r.adoption_pct == null ? null : fmtPct(r.adoption_pct)), num: true },
+            { label: '95% CI', get: (r: (typeof nd)[number]) => (r.adoption_low == null ? null : `${fmtPct(r.adoption_low)}–${fmtPct(r.adoption_high)}`), num: true },
+            { label: tr('quality'), get: (r: (typeof nd)[number]) => relLabel(tr, r.adoption_reliability) },
+            { label: tr('group'), get: (r: (typeof nd)[number]) => tr(qKey(r.quadrant)) },
+          ] }}>
           <Plot fig={quadFig} height={380} onClick={pickDistrict} />
         </ChartCard>
         <ChartCard title={tr('c_anomaly_map')} icon={Thermometer}
           tools={<Select value={curYs} onChange={setYs} options={ysOpts.map((y) => ({ value: y, label: y }))} width="100%" />}
-          means={amap.length ? (dryMap.length ? tr('m_anom_dry', curYs, dryMap.length, dryMap.slice(0, 5).map((r) => r.district_std).join(', ')) : tr('m_anom_ok', curYs, fmtNum(mean(amap.map((r) => r.rain_anomaly_pct)), 0))) : null}>
+          means={amap.length ? (dryMap.length ? tr('m_anom_dry', curYs, dryMap.length, dryMap.slice(0, 5).map((r) => r.district_std).join(', ')) : tr('m_anom_ok', curYs, fmtNum(mean(amap.map((r) => r.rain_anomaly_pct)), 0))) : null}
+          prov={{ ...rainProv('u_rain'), period: curYs }}
+          table={{ name: `rain_anomaly_${curYs}`, rows: [...amap].sort((a, b) => a.rain_anomaly_pct - b.rain_anomaly_pct), cols: [
+            { label: tr('district'), get: (r: (typeof amap)[number]) => r.district_std },
+            { label: 'mm', get: (r: (typeof amap)[number]) => fmtNum(r.rain_mm), num: true },
+            { label: `${tr('normal')} (mm)`, get: (r: (typeof amap)[number]) => fmtNum(r.rain_normal_mm), num: true },
+            { label: tr('anomaly'), get: (r: (typeof amap)[number]) => `${r.rain_anomaly_pct > 0 ? '+' : ''}${fmtNum(r.rain_anomaly_pct, 0)}%`, num: true },
+          ] }}>
           <Plot fig={amapFig} height={328} onClick={pickDistrict} empty={tr('no_data')} />
         </ChartCard>
       </Grid>
       <Grid cols="7fr 5fr">
-        <ChartCard title={tr('c_bubble')} icon={CirclePlay} means={tr('m_bubble')}>
+        <ChartCard title={tr('c_bubble')} icon={CirclePlay} means={tr('m_bubble')}
+          prov={{ unit: `${tr('u_pct_plots_ab')}; ${tr('u_need')}`, period: curYear ? String(curYear) : undefined, kind: 'mixed', src: ['sas_micro', 'chirps'], note: tr('n_district_small') }}
+          table={{ name: `irrigation_need_${curYear ?? ''}`, rows: bub.filter((r) => r.y === curYear).sort((a, b) => b.a - a.a), cols: [
+            { label: tr('district'), get: (r: (typeof bub)[number]) => r.d },
+            { label: tr('ind_irrigated'), get: (r: (typeof bub)[number]) => fmtPct(r.a), num: true },
+            { label: tr('need_score'), get: (r: (typeof bub)[number]) => fmtNum(r.need, 0), num: true },
+            { label: 'ha', get: (r: (typeof bub)[number]) => fmtNum(r.ha), num: true },
+            { label: 'n', get: (r: (typeof bub)[number]) => fmtNum(r.n), num: true },
+          ] }}>
           {years.length > 0 && (
             <div className="play-row">
               <button className="btn outline sm" onClick={() => { if (yi >= years.length - 1) setYi(0); setPlaying(!playing); }}>
@@ -136,7 +163,13 @@ export default function Need() {
           <Plot fig={bubFig} height={370} onClick={pickDistrict} empty={tr('no_data')} />
         </ChartCard>
         <ChartCard title={tr('c_rain_trend')} icon={CloudRain}
-          means={!rtSel.length ? null : below.length ? tr('m_rain_trend', f.area, below.length, rtSel.length, below.map((r) => `${r.y}${r.s}`).join(', ')) : tr('m_rain_none', f.area, rtSel.length)}>
+          means={!rtSel.length ? null : below.length ? tr('m_rain_trend', f.area, below.length, rtSel.length, below.map((r) => `${r.y}${r.s}`).join(', ')) : tr('m_rain_none', f.area, rtSel.length)}
+          prov={{ ...rainProv('y_rain_mm'), period: rt.length ? `${rt[0].y}–${rt[rt.length - 1].y}` : undefined }}
+          table={{ name: 'season_rainfall', rows: rt, cols: [
+            { label: tr('season'), get: (r: (typeof rt)[number]) => `${r.y}${r.s}` },
+            { label: 'mm', get: (r: (typeof rt)[number]) => fmtNum(r.mm), num: true },
+            { label: `${tr('normal')} (mm)`, get: (r: (typeof rt)[number]) => fmtNum(r.normal), num: true },
+          ] }}>
           <Plot fig={rtFig} height={400} empty={tr('no_data')} />
         </ChartCard>
       </Grid>

@@ -44,12 +44,20 @@ export function mode<T extends string>(x: (T | null)[]): T | null {
 export const seasonOrder = (s: string) => ({ A: 0, B: 1, C: 2 } as Record<string, number>)[s] ?? 3;
 export const last = <T,>(x: T[]) => x[x.length - 1];
 
-export function reliabilityLab(n: number | null, cv: number | null): Reliability {
-  if (n == null || n < 30) return 'Unreliable';
-  if (cv != null && cv <= 0.2 && n >= 50) return 'Good';
+/**
+ * Same rule as reliability() in SCRIPTS/00_Config.R: the unweighted sample (n), the number
+ * of survey clusters it comes from (n_psu) and the design-based CV. Without a standard
+ * error there is nothing to judge ("Not assessed"); without the cluster count an estimate
+ * can be "Use with caution" at best, never "Good".
+ */
+export function reliabilityLab(n: number | null, cv: number | null, nPsu?: number | null, hasSe = true): Reliability {
+  if (!hasSe) return 'Not assessed';
+  if (n == null || n < 30 || (nPsu != null && nPsu < 5)) return 'Unreliable';
+  if (cv != null && cv <= 0.2 && n >= 50 && nPsu != null && nPsu >= 12) return 'Good';
   if (cv != null && cv <= 0.35) return 'Use with caution';
   return 'Unreliable';
 }
+const psuSum = (x: (number | null | undefined)[]) => (x.every((v) => v != null && Number.isFinite(v)) ? sum(x) : null);
 
 /**
  * Several districts or provinces -> one estimate. Districts are survey strata, so the
@@ -65,11 +73,15 @@ export function combineEst(d: Est[], label: string): Est[] {
     const se = pub ? null : Math.sqrt(sum(g.map((r) => (r.wsum / W) ** 2 * (r.se ?? 0) ** 2)));
     const n = sum(g.map((r) => r.n));
     const cv = estimate > 0 && se != null ? se / estimate : null;
+    const nPsu = psuSum(g.map((r) => r.n_psu));
+    // a survey area with no standard error cannot be judged, and neither can the sum
+    const noSe = g.some((r) => r.source === 'survey' && r.se == null);
     out.push({
-      ...g[0], level: 'combined', area: label, wsum: W, estimate, se, n,
-      source: pub ? 'nisr' : 'survey',
-      ci_low: se == null ? null : Math.max(estimate - 1.96 * se, 0), ci_high: se == null ? null : estimate + 1.96 * se,
-      cv, reliability: pub ? 'Published' : reliabilityLab(n, cv),
+      ...g[0], level: 'combined', area: label, wsum: W, estimate, se: noSe ? null : se, n, n_psu: nPsu,
+      source: pub ? 'nisr' : 'survey', survey_estimate: null, nisr_table: pub ? g.map((r) => r.nisr_table).filter(Boolean).join('; ') : null,
+      // districts are strata, so 1.96 is used: the combined design df runs into the hundreds
+      ci_low: se == null || noSe ? null : Math.max(estimate - 1.96 * se, 0), ci_high: se == null || noSe ? null : estimate + 1.96 * se,
+      cv: noSe ? null : cv, reliability: pub ? 'Published' : reliabilityLab(n, cv, nPsu, !noSe),
     });
   }
   return out;
@@ -144,8 +156,11 @@ export function ahsFor(D: AppData, f: Filters, inds?: string[]): AhsRow[] {
     const se = Math.sqrt(sum(g.map((r) => (r.wsum / W) ** 2 * (r.se ?? 0) ** 2)));
     const n = sum(g.map((r) => r.n));
     const cv = estimate > 0 ? se / estimate : null;
+    // AHS 2020 has no cluster identifiers: its SEs ignore clustering, so no label (see 10_AHS_Preparation.R)
+    const na = g.some((r) => r.reliability === 'Not assessed');
     return { ...g[0], level: 'combined' as const, area: f.area, wsum: W, estimate, se, n,
-      ci_low: Math.max(estimate - 1.96 * se, 0), ci_high: estimate + 1.96 * se, cv, reliability: reliabilityLab(n, cv) };
+      ci_low: Math.max(estimate - 1.96 * se, 0), ci_high: estimate + 1.96 * se, cv,
+      reliability: na ? 'Not assessed' as const : reliabilityLab(n, cv, psuSum(g.map((r) => r.n_psu))) };
   });
 }
 export const ahsVal = (d: AhsRow[], ind: string, yr: number) => d.find((r) => r.indicator === ind && r.year === yr)?.estimate ?? NaN;

@@ -921,7 +921,7 @@ indicators <- map_dfr(levels_def, \(L) bind_rows(
   mutate(across(c(estimate, se, ci_low, ci_high), \(x) 100 * x), source = "AHS",
          series_break = year == 2024L,
          series_note = if_else(series_break, "2024: plot-level questions on the EICV7 sub-sample; not directly comparable with 2017-2020", NA_character_)) |>
-  select(source, level, area, year, indicator, population, estimate, se, ci_low, ci_high, n, wsum, cv, reliability,
+  select(source, level, area, year, indicator, population, estimate, se, ci_low, ci_high, n, n_psu, wsum, cv, reliability,
          series_break, series_note)
 # Equity cuts for household irrigation (national, by year)
 equity <- map_dfr(c("head_sex", "head_age_band", "head_education", "ubudehe", "farm_size_band"), \(g)
@@ -933,6 +933,12 @@ irrigation_mix <- irrigation_detail |> filter(!is.na(weight)) |>
   group_by(year, dimension, hh_id) |> mutate(w = weight / n()) |>      # split weight across multiple answers
   group_by(year, dimension, category) |> summarise(w = sum(w), n = n_distinct(hh_id), .groups = "drop_last") |>
   mutate(share = 100 * w / sum(w)) |> ungroup() |> mutate(series_break = year == 2024L)
+# The 2020 file has no cluster (PSU) identifier, so households stand in for PSUs and the
+# standard errors ignore clustering: they are too small. CV-based labels are therefore not
+# supported for 2020; those estimates are marked "Not assessed" (the SE is kept for reference).
+not_assessed_2020 <- function(d) d |> mutate(reliability = if_else(year == 2020L, "Not assessed", reliability))
+indicators <- not_assessed_2020(indicators)
+equity <- not_assessed_2020(equity)
 saveRDS(list(indicators = indicators, equity = equity, irrigation_mix = irrigation_mix,
              built = format(Sys.time(), "%Y-%m-%d %H:%M")),
         file.path(dir_ahs, "ahs_indicators.rds"), compress = "xz")
