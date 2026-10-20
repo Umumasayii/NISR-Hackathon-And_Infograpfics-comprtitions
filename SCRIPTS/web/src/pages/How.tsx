@@ -3,7 +3,6 @@ import { Info, Layers, ChartColumn, Coins, Waves, MapPinned } from 'lucide-react
 import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
 import { Callout, ChartCard, FiltersUsed, Grid, Select } from '../components/ui';
-import type { Prov } from '../lib/sources';
 import { Plot, simpleLines, std, legendBottom, narrow, type Fig } from '../components/Plot';
 import { groupBy, mean, sum, wm } from '../lib/stats';
 import { fmtNum, fmtPct } from '../lib/format';
@@ -54,8 +53,6 @@ export default function How() {
     };
   }, [cost, tr]);
   const costS = [...cost].sort((a, b) => a.median - b.median);
-  const yrs = [...Y].sort((a, b) => a - b);
-  const sp = (unit: string, note: string, period = yrs.length ? `${yrs[0]}–${yrs[yrs.length - 1]}` : undefined): Prov => ({ unit: tr(unit), period, kind: 'survey', src: ['sas_micro'], note });
 
   const src = useMemo(() => [...groupBy(D.tech.sources_any.filter((r) => Y.has(r.sas_year) && S.has(r.sas_season)), (r) => `${r.source}|${r.sas_year}`).values()]
     .map((g) => ({ s: g[0].source, y: g[0].sas_year, share: wm(g.map((r) => r.share), g.map((r) => r.n)), n: sum(g.map((r) => r.n)) })), [D, f]); // eslint-disable-line
@@ -95,40 +92,18 @@ export default function How() {
       </div>
       <Grid cols="7fr 5fr">
         <ChartCard title={tr('c_mix_trend')} icon={ChartColumn}
-          means={mixTop.length ? <><p>{tr('m_mix', mixTop[0].c, fmtPct(mixTop[0].s, 0))}{small ? ` ${tr('m_mix_small')}` : ''}</p><p className="muted small">{tr('named_only', oth.length ? fmtPct(mean(oth), 0) : '–')}</p></> : null}
-          prov={sp('u_pct_irr_plots', tr('n_named'))}
-          table={{ name: `irrigation_${dim}`, rows: [...mix].sort((a, b) => a.y - b.y || b.share - a.share), cols: [
-            { label: tr('year'), get: (r: (typeof mix)[number]) => r.y }, { label: tr(`dim_${dim}`), get: (r: (typeof mix)[number]) => r.cat },
-            { label: '%', get: (r: (typeof mix)[number]) => fmtPct(r.share), num: true }, { label: tr('irrigated_plots_n').replace(':', ''), get: (r: (typeof mix)[number]) => fmtNum(r.nGroup), num: true },
-          ] }}>
+          means={mixTop.length ? <><p>{tr('m_mix', mixTop[0].c, fmtPct(mixTop[0].s, 0))}{small ? ` ${tr('m_mix_small')}` : ''}</p><p className="muted small">{tr('named_only', oth.length ? fmtPct(mean(oth), 0) : '–')}</p></> : null}>
           <Plot fig={mixFig} height={330} empty={tr('no_data')} />
         </ChartCard>
-        <ChartCard title={tr('c_cost')} icon={Coins} means={costS.length ? tr('m_cost', costS[0].irrig_tool_level, fmtNum(costS[0].median / 1000), fmtNum(Math.max(...cost.map((r) => r.median)) / 1000)) : null}
-          prov={sp('u_rwf', tr('n_cost'), '2019–2025')}
-          table={{ name: 'irrigation_cost', rows: costS, cols: [
-            { label: tr('dim_irrig_tool_level'), get: (r: (typeof cost)[number]) => r.irrig_tool_level },
-            { label: tr('median'), get: (r: (typeof cost)[number]) => fmtNum(r.median), num: true },
-            { label: tr('iqr'), get: (r: (typeof cost)[number]) => `${fmtNum(r.p25)}–${fmtNum(r.p75)}`, num: true },
-            { label: 'n', get: (r: (typeof cost)[number]) => fmtNum(r.n), num: true },
-          ] }}>
+        <ChartCard title={tr('c_cost')} icon={Coins} means={costS.length ? tr('m_cost', costS[0].irrig_tool_level, fmtNum(costS[0].median / 1000), fmtNum(Math.max(...cost.map((r) => r.median)) / 1000)) : null}>
           <Plot fig={costFig} height={330} />
         </ChartCard>
       </Grid>
       <Grid cols="1fr 1fr">
-        <ChartCard title={tr('c_sources_any')} icon={Waves} means={srcCats.length >= 2 ? tr('m_sources', srcCats[0].c, fmtPct(srcCats[0].s, 0), srcCats[1].c, fmtPct(srcCats[1].s, 0)) : null}
-          prov={sp('u_pct_irr_plots', tr('n_sources_multi'))}
-          table={{ name: 'water_sources', rows: [...src].sort((a, b) => a.y - b.y || b.share - a.share), cols: [
-            { label: tr('year'), get: (r: (typeof src)[number]) => r.y }, { label: tr('dim_irrig_source'), get: (r: (typeof src)[number]) => r.s },
-            { label: '%', get: (r: (typeof src)[number]) => fmtPct(r.share), num: true }, { label: 'n', get: (r: (typeof src)[number]) => fmtNum(r.n), num: true },
-          ] }}>
+        <ChartCard title={tr('c_sources_any')} icon={Waves} means={srcCats.length >= 2 ? tr('m_sources', srcCats[0].c, fmtPct(srcCats[0].s, 0), srcCats[1].c, fmtPct(srcCats[1].s, 0)) : null}>
           <Plot fig={srcFig} height={380} empty={tr('no_data')} />
         </ChartCard>
-        <ChartCard title={tr('c_mix_district')} icon={MapPinned} means={dist.d.length ? <>{tr('m_mix_district')}{dist.thin ? ` ${tr('m_thin', dist.thin)}` : ''}</> : null}
-          prov={sp('u_pct_irr_plots', `${tr('n_named')} ${tr('n_district_small')}`, '2023–2025')}
-          table={{ name: `irrigation_${dim}_district`, rows: [...dist.d].sort((a, b) => (a.district_std ?? '').localeCompare(b.district_std ?? '') || b.share - a.share), cols: [
-            { label: tr('district'), get: (r: (typeof dist.d)[number]) => r.district_std }, { label: tr(`dim_${dim}`), get: (r: (typeof dist.d)[number]) => r.category },
-            { label: '%', get: (r: (typeof dist.d)[number]) => fmtPct(r.share), num: true }, { label: tr('irrigated_plots_n').replace(':', ''), get: (r: (typeof dist.d)[number]) => fmtNum(r.n_group), num: true },
-          ] }}>
+        <ChartCard title={tr('c_mix_district')} icon={MapPinned} means={dist.d.length ? <>{tr('m_mix_district')}{dist.thin ? ` ${tr('m_thin', dist.thin)}` : ''}</> : null}>
           <Plot fig={distFig} height={380} empty={tr('no_data')} />
         </ChartCard>
       </Grid>

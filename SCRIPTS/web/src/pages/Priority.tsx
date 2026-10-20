@@ -1,19 +1,17 @@
 import { useMemo, useState } from 'react';
-import { TriangleAlert, SlidersHorizontal, Map as MapIcon, ArrowUpDown, Table2, ClipboardCheck, CircleHelp, RotateCcw, Download, Sigma } from 'lucide-react';
+import { TriangleAlert, SlidersHorizontal, Map as MapIcon, ArrowUpDown, Table2, ClipboardCheck, CircleHelp, RotateCcw, Download } from 'lucide-react';
 import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
 import { ChartCard, DataTable, FiltersUsed, Grid, RelBadge, relLabel, type Col, Callout } from '../components/ui';
 import { Plot, choropleth, std, type Fig } from '../components/Plot';
 import { downloadCsv } from '../lib/stats';
-import { provColumns, type Prov } from '../lib/sources';
 import { fmtNum, fmtPct } from '../lib/format';
 import { brand, colIrrigated, seqGreen } from '../lib/theme';
 import { COMP } from './District';
 import type { ScreenRow } from '../data/types';
 
-// A screening aid: which districts to assess first in the field. Not an allocation
-// rule; water, schemes, infrastructure and costs are not in the data yet. The formula,
-// default weights and their rationale are shown on the page (SCRIPTS/07_Build_App_Data.R, section 8).
+// A screening aid: which districts to visit first for a feasibility check. Not an
+// allocation rule; water, schemes and costs are not in the data yet.
 export default function Priority() {
   const { D, f, tr, geo, pickDistrict } = useApp();
   const w0 = D.screen.default_weights;
@@ -36,12 +34,10 @@ export default function Priority() {
   const sensFig = useMemo<Fig>(() => {
     const d = (f.areaLevel !== 'national' ? scored.filter((r) => f.districts.includes(r.district_std)) : scored.slice(0, 15)).sort((a, b) => b.rank_user - a.rank_user);
     const SC: Record<string, string> = { Stable: colIrrigated, 'Moderately sensitive': '#B07A1C', 'Sensitive to weights': brand.terracotta };
-    // a shape for each group as well as a colour
-    const SY: Record<string, string> = { Stable: 'circle', 'Moderately sensitive': 'diamond', 'Sensitive to weights': 'x' };
     return { data: [
       ...d.map((r) => ({ type: 'scatter', mode: 'lines', x: [r.rank_p10, r.rank_p90], y: [r.district_std, r.district_std], line: { color: '#C9D3CD', width: 8 }, hoverinfo: 'skip', showlegend: false })),
       ...Object.keys(SC).map((st) => { const x = d.filter((r) => r.stability === st); return { type: 'scatter', mode: 'markers', name: st, x: x.map((r) => r.rank_user), y: x.map((r) => r.district_std),
-        marker: { size: 12, color: SC[st], symbol: SY[st], line: { color: '#fff', width: 1.5 } },
+        marker: { size: 12, color: SC[st], line: { color: '#fff', width: 1.5 } },
         text: x.map((r) => `<b>${r.district_std}</b><br>${tr('your_rank')}: ${r.rank_user}<br>${tr('rank_range')}: ${Math.round(r.rank_p10)}–${Math.round(r.rank_p90)}<br>${tr('prob_top5')}: ${fmtPct(r.prob_top5_pct, 0)}`), hoverinfo: 'text' }; }),
     ] as Data[], layout: std({ x: tr('x_rank'), xaxis: { autorange: 'reversed', dtick: 5 }, yaxis: { title: { text: '' }, tickfont: { size: 11 }, categoryorder: 'array', categoryarray: d.map((r) => r.district_std) } }) };
   }, [scored, f, tr]);
@@ -65,31 +61,16 @@ export default function Priority() {
     { key: 'top5', label: tr('prob_top5'), get: (r) => Math.round(r.prob_top5_pct), num: true },
     { key: 'stab', label: tr('stability'), get: (r) => r.stability },
   ];
-  const wsum = COMP.reduce((a, c) => a + w[c], 0) || 1;
-  const scoreProv: Prov = { unit: tr('u_score'), period: '2023–2025', kind: 'derived', src: ['screen', 'sas_micro', 'chirps'], note: tr('n_screen') };
-  const sensProv: Prov = { unit: tr('u_rank'), period: '2023–2025', kind: 'derived', src: ['screen'], note: tr('n_sens') };
   const dl = () => downloadCsv(shortlist.map((r) => ({
     rank: r.rank_user, district: r.district_std, province: prov(r.district_std), score: Math.round(r.score_user * 10) / 10, why_listed: why(r.reasons),
     irrigated_plots_pct: r.adoption_pct == null ? '' : Math.round(r.adoption_pct * 10) / 10, irrigation_figure_quality: r.adoption_reliability,
     rank_range: `${Math.round(r.rank_p10)}-${Math.round(r.rank_p90)}`, stability: r.stability, still_to_check: missing.map((k) => tr(`feas_${k}`)).join('; '),
-    weights_used: COMP.map((c) => `${c}=${(w[c] / wsum).toFixed(2)}`).join(' '),
-    ...provColumns(scoreProv, tr('kind_derived')),
   })), 'smartirrigate_shortlist.csv');
 
   return (
     <>
       <FiltersUsed used={['area']} />
       <Callout icon={TriangleAlert} kind="warn">{tr('prelim_text')}</Callout>
-      <section className="card chart-card">
-        <header className="card-head"><span className="ch-icon"><Sigma size={16} /></span><h3>{tr('formula_t')}</h3></header>
-        <div className="card-body prose">
-          <p className="formula">score = 100 × (w<sub>need</sub>·need + w<sub>gap</sub>·gap + w<sub>area</sub>·area + w<sub>gender</sub>·gender + w<sub>inputs</sub>·inputs) ÷ (w<sub>need</sub> + w<sub>gap</sub> + w<sub>area</sub> + w<sub>gender</sub> + w<sub>inputs</sub>)</p>
-          <p>{tr('formula_how')}</p>
-          <p>{tr('formula_parts')}</p>
-          <p>{tr('formula_why')}</p>
-        </div>
-      </section>
-      <div style={{ height: 16 }} />
       <Grid cols="3fr 9fr">
         <section className="card chart-card">
           <header className="card-head"><span className="ch-icon"><SlidersHorizontal size={16} /></span><h3>{tr('weights')}</h3></header>
@@ -105,26 +86,17 @@ export default function Priority() {
           </div>
         </section>
         <Grid cols="1fr 1fr">
-          <ChartCard title={tr('c_priority_map')} icon={MapIcon} prov={scoreProv}
-            table={{ name: 'screening_scores', rows: scored, cols: [
-              { label: '#', get: (r: Row) => r.rank_user, num: true }, { label: tr('district'), get: (r: Row) => r.district_std },
-              { label: tr('score'), get: (r: Row) => fmtNum(r.score_user, 1), num: true },
-            ] }}
+          <ChartCard title={tr('c_priority_map')} icon={MapIcon}
             means={<>{tr('m_priority', top5.map((r) => r.district_std).join(', '))} {moved ? tr('m_priority_moved', moved) : tr('m_priority_default')}{unrel.length ? ` ${tr('m_unrel_districts', unrel.join(', '))}` : ''}</>}>
             <Plot fig={mapFig} height={380} onClick={pickDistrict} />
           </ChartCard>
-          <ChartCard title={tr('c_sensitivity')} icon={ArrowUpDown} means={tr('m_sens', stable.length ? stable.join(', ') : '–')} prov={sensProv}
-            table={{ name: 'weight_sensitivity', rows: [...scored].sort((a, b) => a.rank_user - b.rank_user), cols: [
-              { label: tr('district'), get: (r: Row) => r.district_std }, { label: tr('your_rank'), get: (r: Row) => r.rank_user, num: true },
-              { label: tr('rank_range'), get: (r: Row) => `${Math.round(r.rank_p10)}–${Math.round(r.rank_p90)}` },
-              { label: tr('prob_top5'), get: (r: Row) => fmtPct(r.prob_top5_pct, 0), num: true }, { label: tr('stability'), get: (r: Row) => r.stability },
-            ] }}>
+          <ChartCard title={tr('c_sensitivity')} icon={ArrowUpDown} means={tr('m_sens', stable.length ? stable.join(', ') : '–')}>
             <Plot fig={sensFig} height={380} onClick={pickDistrict} />
           </ChartCard>
         </Grid>
       </Grid>
-      <ChartCard title={tr('c_priority_table')} icon={Table2} chart={false} prov={scoreProv} tools={<button className="btn outline sm" onClick={dl}><Download size={14} /> {tr('dl_shortlist')}</button>}>
-        <DataTable rows={shortlist} cols={cols} pageSize={10} caption={tr('c_priority_table')} />
+      <ChartCard title={tr('c_priority_table')} icon={Table2} tools={<button className="btn outline sm" onClick={dl}><Download size={14} /> {tr('dl_shortlist')}</button>}>
+        <DataTable rows={shortlist} cols={cols} pageSize={10} />
       </ChartCard>
       <div style={{ height: 16 }} />
       <section className="card chart-card">

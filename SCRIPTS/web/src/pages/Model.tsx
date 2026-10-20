@@ -2,8 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { FlaskConical, Target, ChartLine, Scale, CalendarCheck, ListOrdered, ArrowLeftRight, SlidersHorizontal, Map as MapIcon } from 'lucide-react';
 import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
-import { Callout, ChartCard, FiltersUsed, Grid, Kpi, KpiRow, Select, SourceLine } from '../components/ui';
-import type { Prov } from '../lib/sources';
+import { Callout, ChartCard, FiltersUsed, Grid, Kpi, KpiRow, Select } from '../components/ui';
 import { Plot, choropleth, std, type Fig } from '../components/Plot';
 import { fmtNum, fmtPct } from '../lib/format';
 import { brand, colIrrigated, divGap } from '../lib/theme';
@@ -39,8 +38,6 @@ export default function Model() {
     ] as Data[], layout: std({ x: tr('x_predicted'), y: tr('y_observed'), legend: { x: 0.02, y: 0.98, orientation: 'v' } }) };
   }, [M, tr]);
   const topBin = [...M.calibration].sort((a, b) => b.bin - a.bin)[0];
-  // every model output says it is one, with the test period and the main caveat
-  const mp = (unit: string, note?: string): Prov => ({ unit: tr(unit), period: tr('model_period'), kind: 'model', src: ['model', 'sas_micro'], note });
 
   const fairFig = useMemo<Fig>(() => {
     const d = M.fairness.map((r) => ({ ...r, lbl: `${r.group} (${r.dimension})` }));
@@ -59,7 +56,7 @@ export default function Model() {
   const OR_MIN = 0.05, OR_MAX = 20, clip = (v: number) => Math.min(Math.max(v, OR_MIN), OR_MAX);
   const oddsFig: Fig = { data: [
     ...odds.map((r) => ({ type: 'scatter', mode: 'lines', x: [clip(r.or_low), clip(r.or_high)], y: [r.term, r.term], line: { color: '#C5D6CC', width: 2.5 }, hoverinfo: 'skip', showlegend: false })),
-    { type: 'scatter', mode: 'markers', showlegend: false, x: odds.map((r) => clip(r.odds_ratio)), y: odds.map((r) => r.term), marker: { size: 10, color: odds.map((r) => (r.or_low > 1 ? colIrrigated : r.or_high < 1 ? brand.terracotta : brand.grey)), symbol: odds.map((r) => (r.or_low > 1 ? 'triangle-right' : r.or_high < 1 ? 'triangle-left' : 'circle-open')) },
+    { type: 'scatter', mode: 'markers', showlegend: false, x: odds.map((r) => clip(r.odds_ratio)), y: odds.map((r) => r.term), marker: { size: 10, color: odds.map((r) => (r.or_low > 1 ? colIrrigated : r.or_high < 1 ? brand.terracotta : brand.grey)) },
       text: odds.map((r) => `${r.term}<br>OR ${fmtNum(r.odds_ratio, 2)} (${fmtNum(r.or_low, 2)}–${fmtNum(r.or_high, 2)})`), hoverinfo: 'text' },
   ] as Data[], layout: std({ x: tr('x_odds'), legend: false, xaxis: { type: 'log', range: [Math.log10(OR_MIN), Math.log10(OR_MAX)], tickvals: [0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20], ticktext: ['0.05', '0.1', '0.2', '0.5', '1', '2', '5', '10', '20'] }, yaxis: { title: { text: '' }, tickfont: { size: 11 }, tickmode: 'array', tickvals: odds.map((r) => r.term), automargin: true, categoryorder: 'array', categoryarray: odds.map((r) => r.term) },
     shapes: [{ type: 'line', x0: 1, x1: 1, y0: 0, y1: 1, yref: 'paper', line: { color: brand.ink } }] }) };
@@ -75,41 +72,21 @@ export default function Model() {
       <FiltersUsed used={['area']} />
       <Callout icon={FlaskConical}>{tr('model_caveat', fmtNum(M.n_train), fmtNum(M.n_test))}</Callout>
       <KpiRow>
-        <Kpi label={tr('k_auc')} value={glm.auc.toFixed(3)} icon={Target} color={brand.green} foot={tr('k_auc_sub', rf ? rf.auc.toFixed(3) : '–')} prov={mp('u_auc')} />
-        <Kpi label={tr('k_brier')} value={glm.brier.toFixed(4)} icon={ChartLine} color={brand.blue} foot={tr('k_brier_sub')} prov={mp('u_auc')} />
-        <Kpi label={tr('k_obs_pred')} value={`${fmtPct(glm.observed_pct)} / ${fmtPct(glm.predicted_pct)}`} icon={Scale} color="#6A4C93" foot={tr('k_obs_pred_sub')} prov={mp('u_pct_plots')} />
-        <Kpi label={tr('k_validation')} value={'2024–2025'} icon={CalendarCheck} color="#B07A1C" foot={tr('k_validation_sub')} prov={mp('u_auc')} />
+        <Kpi label={tr('k_auc')} value={glm.auc.toFixed(3)} icon={Target} color={brand.green} foot={tr('k_auc_sub', rf ? rf.auc.toFixed(3) : '–')} />
+        <Kpi label={tr('k_brier')} value={glm.brier.toFixed(4)} icon={ChartLine} color={brand.blue} foot={tr('k_brier_sub')} />
+        <Kpi label={tr('k_obs_pred')} value={`${fmtPct(glm.observed_pct)} / ${fmtPct(glm.predicted_pct)}`} icon={Scale} color="#6A4C93" foot={tr('k_obs_pred_sub')} />
+        <Kpi label={tr('k_validation')} value={'2024–2025'} icon={CalendarCheck} color="#B07A1C" foot={tr('k_validation_sub')} />
       </KpiRow>
       <Grid cols="1fr 1fr">
-        <ChartCard title={tr('c_calibration')} icon={Target} means={tr('m_calib', fmtPct(topBin.predicted_pct), fmtPct(topBin.observed_pct))} prov={mp('u_prob')}
-          table={{ name: 'model_calibration', rows: M.calibration, cols: [
-            { label: tr('decile'), get: (r: (typeof M.calibration)[number]) => r.bin, num: true },
-            { label: tr('predicted'), get: (r: (typeof M.calibration)[number]) => fmtPct(r.predicted_pct, 2), num: true },
-            { label: tr('observed'), get: (r: (typeof M.calibration)[number]) => fmtPct(r.observed_pct, 2), num: true },
-            { label: 'n', get: (r: (typeof M.calibration)[number]) => fmtNum(r.n), num: true },
-          ] }}><Plot fig={calFig} height={300} /></ChartCard>
+        <ChartCard title={tr('c_calibration')} icon={Target} means={tr('m_calib', fmtPct(topBin.predicted_pct), fmtPct(topBin.observed_pct))}><Plot fig={calFig} height={300} /></ChartCard>
         <ChartCard title={tr('c_fairness')} icon={Scale}
-          means={tr('m_fair', Math.min(...M.fairness.map((r) => r.auc)).toFixed(2), Math.max(...M.fairness.map((r) => r.auc)).toFixed(2), worst.group, fmtNum(Math.abs(worst.calibration_gap_pts), 1))}
-          prov={mp('u_auc')}
-          table={{ name: 'model_performance_by_group', rows: M.fairness, cols: [
-            { label: tr('group'), get: (r: (typeof M.fairness)[number]) => `${r.group} (${r.dimension})` },
-            { label: 'AUC', get: (r: (typeof M.fairness)[number]) => r.auc.toFixed(3), num: true },
-            { label: tr('calib_gap'), get: (r: (typeof M.fairness)[number]) => `${fmtNum(r.calibration_gap_pts, 2)} ${tr('pts')}`, num: true },
-            { label: 'n', get: (r: (typeof M.fairness)[number]) => fmtNum(r.n), num: true },
-          ] }}>
+          means={tr('m_fair', Math.min(...M.fairness.map((r) => r.auc)).toFixed(2), Math.max(...M.fairness.map((r) => r.auc)).toFixed(2), worst.group, fmtNum(Math.abs(worst.calibration_gap_pts), 1))}>
           <Plot fig={fairFig} height={300} />
         </ChartCard>
       </Grid>
       <Grid cols="5fr 7fr">
-        <ChartCard title={tr('c_importance')} icon={ListOrdered} means={tr('m_imp', M.importance[0]?.feature, M.importance[1]?.feature)} prov={mp('u_imp')}
-          table={{ name: 'model_importance', rows: [...imp].reverse(), cols: [
-            { label: tr('variable'), get: (r: (typeof imp)[number]) => r.feature }, { label: tr('u_imp'), get: (r: (typeof imp)[number]) => fmtNum(r.importance, 0), num: true },
-          ] }}><Plot fig={impFig} height={340} /></ChartCard>
-        <ChartCard title={tr('c_odds')} icon={ArrowLeftRight} means={tr('m_odds')} prov={mp('u_or', tr('n_model_ci'))}
-          table={{ name: 'model_odds_ratios', rows: [...odds].reverse(), cols: [
-            { label: tr('variable'), get: (r: (typeof odds)[number]) => r.term }, { label: 'OR', get: (r: (typeof odds)[number]) => fmtNum(r.odds_ratio, 2), num: true },
-            { label: '95% CI', get: (r: (typeof odds)[number]) => `${fmtNum(r.or_low, 2)}–${fmtNum(r.or_high, 2)}`, num: true },
-          ] }}><Plot fig={oddsFig} height={340} /></ChartCard>
+        <ChartCard title={tr('c_importance')} icon={ListOrdered} means={tr('m_imp', M.importance[0]?.feature, M.importance[1]?.feature)}><Plot fig={impFig} height={340} /></ChartCard>
+        <ChartCard title={tr('c_odds')} icon={ArrowLeftRight} means={tr('m_odds')}><Plot fig={oddsFig} height={340} /></ChartCard>
       </Grid>
       <Grid cols="5fr 7fr">
         <section className="card chart-card">
@@ -134,16 +111,9 @@ export default function Model() {
               <p>{tr('sim_alt', fmtPct(100 * sim.alt))}</p>
               <p className="muted small">{tr('sim_caveat')}</p>
             </div>
-            <SourceLine p={mp('u_prob', tr('n_model_ci'))} />
           </div>
         </section>
-        <ChartCard title={tr('c_potential')} icon={MapIcon} means={tr('m_potential', potTop.join(', '))} prov={mp('u_pts', tr('n_pred_gap'))}
-          table={{ name: 'model_observed_vs_predicted', rows: [...M.potential].sort((a, b) => b.gap_pts - a.gap_pts), cols: [
-            { label: tr('district'), get: (r: (typeof M.potential)[number]) => r.district_std },
-            { label: tr('observed'), get: (r: (typeof M.potential)[number]) => fmtPct(r.observed_pct), num: true },
-            { label: tr('predicted'), get: (r: (typeof M.potential)[number]) => fmtPct(r.predicted_pct), num: true },
-            { label: tr('gap_pts'), get: (r: (typeof M.potential)[number]) => fmtNum(r.gap_pts, 1), num: true },
-          ] }}><Plot fig={potFig} height={470} onClick={pickDistrict} /></ChartCard>
+        <ChartCard title={tr('c_potential')} icon={MapIcon} means={tr('m_potential', potTop.join(', '))}><Plot fig={potFig} height={470} onClick={pickDistrict} /></ChartCard>
       </Grid>
     </>
   );
