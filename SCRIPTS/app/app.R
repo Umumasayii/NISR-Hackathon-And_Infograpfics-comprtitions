@@ -80,7 +80,7 @@ ui <- function(request) {
     nav_item(lang_links),
     footer = div(class = "app-footer",
                  span(tr("footer_by")), span(" \u00B7 "),
-                 span(tr("footer_sources")), span(" \u00B7 "),
+                 a(href = "#", onclick = "document.querySelector('a[data-value=methods]').click(); return false;", tr("footer_see_sources")), span(" \u00B7 "),
                  span(paste(tr("built"), D$meta$built))))
 }
 

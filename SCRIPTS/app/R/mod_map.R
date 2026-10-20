@@ -33,6 +33,7 @@ mod_map_server <- function(id, f, tr, set_district) {
           group_by(district) |> summarise(value = mean(v), n = NA_integer_, reliability = NA_character_, .groups = "drop")
       } else {
         D$est |> filter(level == "district", indicator == m, sas_year %in% f()$years, sas_season %in% f()$seasons) |>
+          survey_first("area") |>
           group_by(district = area) |>
           summarise(value = weighted.mean(estimate, wsum), n = sum(n),
                     reliability = names(sort(table(reliability), decreasing = TRUE))[1], .groups = "drop")
@@ -118,7 +119,7 @@ mod_map_server <- function(id, f, tr, set_district) {
       inds <- c("irrigated", "irrig_modern", "inorganic_fert", "organic_fert", "anti_erosion", "mechanised")
       pick <- function(lv, ar) D$est |> filter(level == lv, area == ar, indicator %in% inds,
                                                sas_year %in% f()$years, sas_season %in% f()$seasons) |>
-        group_by(indicator) |> summarise(v = weighted.mean(estimate, wsum), n = sum(n),
+        survey_first() |> group_by(indicator) |> summarise(v = weighted.mean(estimate, wsum), n = sum(n),
                                          rel = names(sort(table(reliability), decreasing = TRUE))[1], .groups = "drop")
       dd <- pick("district", dist); nn <- pick("national", "Rwanda") |> select(indicator, nat = v)
       rr <- D$rain$district |> filter(district_std == dist)
@@ -136,8 +137,7 @@ mod_map_server <- function(id, f, tr, set_district) {
             tags$td(class = "muted", fmt_num(tab$n[i])))))),
         if (nrow(rr)) p(fontawesome::fa("cloud-rain"), " ",
                         tr("profile_rain", fmt_num(rr$rain_normal_ab_mm), fmt_num(rr$rain_cv_pct, 0), rr$dry_seasons_2016_2025)),
-        if (nrow(sc)) p(fontawesome::fa("ranking-star"), " ", tr("profile_rank", sc$rank, sc$stability)),
-        p(class = "source", tr("src_sas_ci")))
+        if (nrow(sc)) p(fontawesome::fa("ranking-star"), " ", tr("profile_rank", sc$rank, sc$stability)))
     })
   })
 }

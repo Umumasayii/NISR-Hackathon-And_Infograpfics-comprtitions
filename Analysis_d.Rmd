@@ -1,0 +1,852 @@
+---
+title: "3-Factor Factorial Experiment Analysis - Maize and Soybean"
+author: "Drocella"
+date: "2026-07-02"
+output: html_document
+---
+
+## Loading Required Libraries
+
+```{r}
+library(readxl)
+library(tidyverse)
+library(agricolae)
+library(car)
+library(emmeans)
+library(multcomp)
+library(ggplot2)
+library(ggpubr)
+library(corrplot)
+library(psych)
+library(GGally)
+```
+
+## 2. Data Import
+
+```{r}
+# Read Maize Proximate Composition Data
+maize_data <- read_excel("maize proximate composition.xlsx", 
+                         sheet = "Maize data bothsites")
+
+# Check structure
+str(maize_data)
+```
+
+```{r}
+head(maize_data)
+```
+
+```{r}
+# Convert factors
+maize_data <- maize_data %>%
+  mutate(
+    Sites = as.factor(Sites),
+    Replication = as.factor(Replication),
+    N = as.factor(N),
+    P = as.factor(P),
+    V = as.factor(V)
+  )
+
+# Summary
+summary(maize_data)
+```
+
+```{r}
+# Read sSoybean Proximate Composition Data
+soybean_data <- read_excel("Soybean proximate composition.xlsx", 
+                           sheet = "soya data bothsites")
+
+# Convert factors
+soybean_data <- soybean_data %>%
+  mutate(
+    Sites = as.factor(Sites),
+    Replication = as.factor(Replication),
+    N = as.factor(N),
+    P = as.factor(P),
+    V = as.factor(V)
+  )
+
+str(soybean_data)
+```
+
+```{r}
+head(soybean_data)
+```
+
+```{r}
+# Read Soil Biological Data - Initial Conditions
+soil_initial <- read_excel("Nyagatare&Huye soil biological at initial field condition.xlsx",
+                           sheet = "Huye soil data 6 samples")
+
+# Clean column names
+names(soil_initial) <- c("Site", "Replication", "Bacteria_initial", "Fungi_initial")
+
+# Convert factors
+soil_initial <- soil_initial %>%
+  mutate(
+    Site = as.factor(Site),
+    Replication = as.factor(Replication)
+  )
+
+str(soil_initial)
+```
+
+```{r}
+head(soil_initial)
+```
+
+```{r}
+# Read Soil Biological Data - Season 1
+soil_season1 <- read_excel("Soil biological 1st season.xlsx",
+                           sheet = "microorganisms 1st season")
+
+# Clean column names
+names(soil_season1) <- c("Site", "Replication", "N", "P", "V", 
+                         "Bacteria_S1", "Fungi_S1")
+
+# Convert factors
+soil_season1 <- soil_season1 %>%
+  mutate(
+    Site = as.factor(Site),
+    Replication = as.factor(Replication),
+    N = as.factor(N),
+    P = as.factor(P),
+    V = as.factor(V)
+  )
+
+str(soil_season1)
+```
+
+```{r}
+head(soil_season1)
+```
+
+```{r}
+# Read Soil Biological Data - Season 2
+soil_season2 <- read_excel("Soil biological 2nd season.xlsx",
+                           sheet = "Sheet1")
+
+# Clean column names
+names(soil_season2) <- c("Site", "Replication", "N", "P", "V", 
+                         "Bacteria_S2", "Fungi_S2")
+
+# Convert factors
+soil_season2 <- soil_season2 %>%
+  mutate(
+    Site = as.factor(Site),
+    Replication = as.factor(Replication),
+    N = as.factor(N),
+    P = as.factor(P),
+    V = as.factor(V)
+  )
+
+str(soil_season2)
+```
+
+```{r}
+head(soil_season2)
+```
+
+## 3. Exploratory Data Analysis
+
+### 3.1 Maize Data Visualization
+
+```{r}
+# Maize data distribution - Bar graph with error bars
+maize_long <- maize_data %>%
+  pivot_longer(cols = c(Ash, Protein, Fat, Starch, Fiber, Sugar),
+               names_to = "Component", values_to = "Value")
+
+# Calculate means and standard errors for maize
+maize_summary <- maize_long %>%
+  group_by(Sites, Component) %>%
+  summarise(
+    Mean = mean(Value, na.rm = TRUE),
+    SE = sd(Value, na.rm = TRUE) / sqrt(n()),
+    .groups = 'drop'
+  )
+
+# Bar graph for maize proximate composition by site
+ggplot(maize_summary, aes(x = Sites, y = Mean, fill = Sites)) +
+  geom_bar(stat = "identity", position = position_dodge(0.9), width = 0.7) +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
+                width = 0.2, position = position_dodge(0.9)) +
+  facet_wrap(~Component, scales = "free_y", ncol = 3) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 10, angle = 0),
+    axis.text.y = element_text(size = 9),
+    axis.title = element_text(size = 11),
+    strip.text = element_text(size = 11, face = "bold"),
+    legend.position = "top",
+    legend.text = element_text(size = 10),
+    legend.title = element_text(size = 11),
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5)
+  ) +
+  labs(
+    title = "Maize Proximate Composition by Site",
+    x = "Site",
+    y = "Composition (Mean ± SE)"
+  ) +
+  scale_fill_brewer(palette = "Set2")
+```
+
+```{r}
+# Heatmap of correlations (KEPT ORIGINAL)
+maize_cor <- maize_data %>%
+  dplyr::select(Ash, Protein, Fat, Starch, Fiber, Sugar) %>%
+  cor()
+
+corrplot(maize_cor,
+         method = "color",
+         type = "upper",
+         addCoef.col = "black",
+         tl.col = "black",
+         tl.srt = 45)
+```
+
+### 3.2 Soybean Data Visualization
+
+```{r}
+# Soybean data distribution - Bar graph with error bars
+soybean_long <- soybean_data %>%
+  pivot_longer(cols = c(Ash, Protein, Fat, Starch, Fiber, Sugar),
+               names_to = "Component", values_to = "Value")
+
+# Calculate means and standard errors for soybean
+soybean_summary <- soybean_long %>%
+  group_by(Sites, Component) %>%
+  summarise(
+    Mean = mean(Value, na.rm = TRUE),
+    SE = sd(Value, na.rm = TRUE) / sqrt(n()),
+    .groups = 'drop'
+  )
+
+# Bar graph for soybean proximate composition by site
+ggplot(soybean_summary, aes(x = Sites, y = Mean, fill = Sites)) +
+  geom_bar(stat = "identity", position = position_dodge(0.9), width = 0.7) +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
+                width = 0.2, position = position_dodge(0.9)) +
+  facet_wrap(~Component, scales = "free_y", ncol = 3) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 10, angle = 0),
+    axis.text.y = element_text(size = 9),
+    axis.title = element_text(size = 11),
+    strip.text = element_text(size = 11, face = "bold"),
+    legend.position = "top",
+    legend.text = element_text(size = 10),
+    legend.title = element_text(size = 11),
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5)
+  ) +
+  labs(
+    title = "Soybean Proximate Composition by Site",
+    x = "Site",
+    y = "Composition (Mean ± SE)"
+  ) +
+  scale_fill_brewer(palette = "Set2")
+```
+
+```{r}
+# Heatmap of correlations (KEPT ORIGINAL)
+soybean_cor <- soybean_data %>%
+  dplyr::select(Ash, Protein, Fat, Starch, Fiber, Sugar) %>%
+  cor()
+
+corrplot(soybean_cor,
+         method = "color",
+         type = "upper",
+         addCoef.col = "black",
+         tl.col = "black",
+         tl.srt = 45)
+```
+
+### 3.3 Soil Microbial Data Visualization
+
+```{r}
+# Combine soil seasons for comparison
+soil_all <- soil_season1 %>%
+  left_join(soil_season2, by = c("Site", "Replication", "N", "P", "V")) %>%
+  mutate(
+    Site = as.factor(Site),
+    Replication = as.factor(Replication)
+  )
+
+# Soil microbial comparison - Bar graph with error bars
+soil_long <- soil_all %>%
+  pivot_longer(cols = c(Bacteria_S1, Fungi_S1, Bacteria_S2, Fungi_S2),
+               names_to = "Microbe_Season", values_to = "Value") %>%
+  separate(Microbe_Season, into = c("Microbe", "Season"), sep = "_")
+
+# Calculate means and standard errors
+soil_summary <- soil_long %>%
+  group_by(Site, Microbe, Season) %>%
+  summarise(
+    Mean = mean(Value, na.rm = TRUE),
+    SE = sd(Value, na.rm = TRUE) / sqrt(n()),
+    .groups = 'drop'
+  )
+
+# Bar graph for soil microbial populations
+ggplot(soil_summary, aes(x = Site, y = Mean, fill = Site)) +
+  geom_bar(stat = "identity", position = position_dodge(0.9), width = 0.7) +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
+                width = 0.2, position = position_dodge(0.9)) +
+  facet_grid(Microbe ~ Season, scales = "free_y") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 12, angle = 0),
+    axis.text.y = element_text(size = 10),
+    axis.title = element_text(size = 12),
+    strip.text = element_text(size = 12),
+    legend.position = "top"
+  ) +
+  labs(
+    title = "Soil Microbial Populations by Site and Season",
+    x = "Site",
+    y = "Population (Mean ± SE)"
+  ) +
+  scale_fill_brewer(palette = "Set2")
+```
+
+```{r}
+# Initial soil conditions - Bar graph with error bars
+soil_initial_long <- soil_initial %>%
+  pivot_longer(cols = c(Bacteria_initial, Fungi_initial),
+               names_to = "Microbe", values_to = "Value")
+
+# Calculate means and standard errors for initial conditions
+soil_initial_summary <- soil_initial_long %>%
+  group_by(Site, Microbe) %>%
+  summarise(
+    Mean = mean(Value, na.rm = TRUE),
+    SE = sd(Value, na.rm = TRUE) / sqrt(n()),
+    .groups = 'drop'
+  )
+
+# Bar graph for initial soil conditions
+ggplot(soil_initial_summary, aes(x = Site, y = Mean, fill = Site)) +
+  geom_bar(stat = "identity", position = position_dodge(0.9), width = 0.7) +
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE),
+                width = 0.2, position = position_dodge(0.9)) +
+  facet_wrap(~Microbe, scales = "free_y") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 12, angle = 0),
+    axis.text.y = element_text(size = 10),
+    axis.title = element_text(size = 12),
+    strip.text = element_text(size = 12),
+    legend.position = "top"
+  ) +
+  labs(
+    title = "Initial Soil Microbial Populations",
+    x = "Site",
+    y = "Population (Mean ± SE)"
+  ) +
+  scale_fill_brewer(palette = "Set2")
+```
+
+## 4. Statistical Analysis
+
+### 4.1 Maize Data Analysis
+
+#### 4.1.1 Three-Way ANOVA with Site as Fixed Factor
+
+```{r}
+# Function to perform ANOVA for each response variable
+analyze_maize <- function(response) {
+  formula <- as.formula(paste(response, "~ Sites * N * P * V + Error(Replication)"))
+  aov_model <- aov(formula, data = maize_data)
+  return(summary(aov_model))
+}
+
+# Analyze each component
+maize_responses <- c("Ash", "Protein", "Fat", "Starch", "Fiber", "Sugar")
+
+maize_anova_results <- lapply(maize_responses, analyze_maize)
+names(maize_anova_results) <- maize_responses
+
+# Display results
+for (i in 1:length(maize_responses)) {
+  cat("\n========================================\n")
+  cat("Maize", maize_responses[i], "ANOVA Results\n")
+  cat("========================================\n")
+  print(maize_anova_results[[i]])
+}
+```
+
+#### 4.1.2 Mixed Model Approach for Maize
+
+```{r}
+library(lme4)
+library(lmerTest)
+
+# Function to fit mixed model
+fit_mixed_maize <- function(response) {
+  formula <- as.formula(paste(response, "~ Sites * N * P * V + (1|Replication)"))
+  model <- lmer(formula, data = maize_data)
+  return(anova(model))
+}
+
+# Fit mixed models
+maize_mixed_results <- lapply(maize_responses, fit_mixed_maize)
+names(maize_mixed_results) <- maize_responses
+
+# Display results
+for (i in 1:length(maize_responses)) {
+  cat("\n========================================\n")
+  cat("Maize", maize_responses[i], "Mixed Model Results\n")
+  cat("========================================\n")
+  print(maize_mixed_results[[i]])
+}
+```
+
+#### 4.1.3 Post-hoc Comparisons for Maize
+
+```{r}
+# Function to perform post-hoc comparisons
+posthoc_maize <- function(response) {
+  model <- lm(as.formula(paste(response, "~ Sites * N * P * V")), data = maize_data)
+  
+  # Get emmeans
+  emm <- emmeans(model, ~ Sites | N | P | V)
+  
+  # Pairwise comparisons
+  pairs <- contrast(emm, "pairwise", adjust = "tukey")
+  
+  return(list(emmeans = emm, contrasts = pairs))
+}
+
+# Example: Post-hoc for Protein
+maize_protein_posthoc <- posthoc_maize("Protein")
+print(maize_protein_posthoc$contrasts)
+```
+
+### 4.2 Soybean Data Analysis
+
+#### 4.2.1 Three-Way ANOVA with Site as Fixed Factor
+
+```{r}
+# Function to perform ANOVA for each response variable
+analyze_soybean <- function(response) {
+  formula <- as.formula(paste(response, "~ Sites * N * P * V + Error(Replication)"))
+  aov_model <- aov(formula, data = soybean_data)
+  return(summary(aov_model))
+}
+
+# Analyze each component
+soybean_responses <- c("Ash", "Protein", "Fat", "Starch", "Fiber", "Sugar")
+
+soybean_anova_results <- lapply(soybean_responses, analyze_soybean)
+names(soybean_anova_results) <- soybean_responses
+
+# Display results
+for (i in 1:length(soybean_responses)) {
+  cat("\n========================================\n")
+  cat("Soybean", soybean_responses[i], "ANOVA Results\n")
+  cat("========================================\n")
+  print(soybean_anova_results[[i]])
+}
+```
+
+#### 4.2.2 Mixed Model Approach for Soybean
+
+```{r}
+# Function to fit mixed model
+fit_mixed_soybean <- function(response) {
+  formula <- as.formula(paste(response, "~ Sites * N * P * V + (1|Replication)"))
+  model <- lmer(formula, data = soybean_data)
+  return(anova(model))
+}
+
+# Fit mixed models
+soybean_mixed_results <- lapply(soybean_responses, fit_mixed_soybean)
+names(soybean_mixed_results) <- soybean_responses
+
+# Display results
+for (i in 1:length(soybean_responses)) {
+  cat("\n========================================\n")
+  cat("Soybean", soybean_responses[i], "Mixed Model Results\n")
+  cat("========================================\n")
+  print(soybean_mixed_results[[i]])
+}
+```
+
+### 4.3 Soil Microbial Data Analysis
+
+#### 4.3.1 Initial Soil Conditions Analysis
+
+```{r}
+# One-way ANOVA for initial conditions
+bacteria_initial_anova <- aov(Bacteria_initial ~ Site, data = soil_initial)
+fungi_initial_anova <- aov(Fungi_initial ~ Site, data = soil_initial)
+
+cat("\n========================================\n")
+```
+
+```{r}
+cat("Initial Bacteria Population ANOVA\n")
+```
+
+```{r}
+cat("========================================\n")
+```
+
+```{r}
+summary(bacteria_initial_anova)
+```
+
+```{r}
+cat("\n========================================\n")
+```
+
+```{r}
+cat("Initial Fungi Population ANOVA\n")
+```
+
+```{r}
+cat("========================================\n")
+```
+
+```{r}
+summary(fungi_initial_anova)
+```
+
+```{r}
+# Post-hoc tests
+TukeyHSD(bacteria_initial_anova)
+```
+
+```{r}
+TukeyHSD(fungi_initial_anova)
+```
+
+#### 4.3.2 Soil Microbial Data - Season 1 Analysis
+
+```{r}
+# Function to analyze season 1 soil data
+analyze_soil_season1 <- function(response) {
+  formula <- as.formula(paste(response, "~ Site * N * P * V + Error(Replication)"))
+  aov_model <- aov(formula, data = soil_season1)
+  return(summary(aov_model))
+}
+
+# Analyze bacteria and fungi
+bacteria_s1_anova <- analyze_soil_season1("Bacteria_S1")
+fungi_s1_anova <- analyze_soil_season1("Fungi_S1")
+
+cat("\n========================================\n")
+```
+
+```{r}
+cat("Season 1 Bacteria Population ANOVA\n")
+```
+
+```{r}
+cat("========================================\n")
+```
+
+```{r}
+print(bacteria_s1_anova)
+```
+
+```{r}
+cat("\n========================================\n")
+```
+
+```{r}
+cat("Season 1 Fungi Population ANOVA\n")
+```
+
+```{r}
+cat("========================================\n")
+```
+
+```{r}
+print(fungi_s1_anova)
+```
+
+#### 4.3.3 Soil Microbial Data - Season 2 Analysis
+
+```{r}
+# Function to analyze season 2 soil data
+analyze_soil_season2 <- function(response) {
+  formula <- as.formula(paste(response, "~ Site * N * P * V + Error(Replication)"))
+  aov_model <- aov(formula, data = soil_season2)
+  return(summary(aov_model))
+}
+
+# Analyze bacteria and fungi
+bacteria_s2_anova <- analyze_soil_season2("Bacteria_S2")
+fungi_s2_anova <- analyze_soil_season2("Fungi_S2")
+
+cat("\n========================================\n")
+```
+
+```{r}
+cat("Season 2 Bacteria Population ANOVA\n")
+```
+
+```{r}
+cat("========================================\n")
+```
+
+```{r}
+print(bacteria_s2_anova)
+```
+
+```{r}
+cat("\n========================================\n")
+```
+
+```{r}
+cat("Season 2 Fungi Population ANOVA\n")
+```
+
+```{r}
+cat("========================================\n")
+```
+
+```{r}
+print(fungi_s2_anova)
+```
+
+#### 4.3.4 Soil Microbial Mixed Models
+
+```{r}
+# Function for soil mixed models
+fit_mixed_soil <- function(response, data) {
+  formula <- as.formula(paste(response, "~ Site * N * P * V + (1|Replication)"))
+  model <- lmer(formula, data = data)
+  return(anova(model))
+}
+
+# Season 1 mixed models
+bacteria_s1_mixed <- fit_mixed_soil("Bacteria_S1", soil_season1)
+fungi_s1_mixed <- fit_mixed_soil("Fungi_S1", soil_season1)
+
+cat("\n========================================\n")
+```
+
+```{r}
+cat("Season 1 Bacteria Mixed Model\n")
+```
+
+```{r}
+cat("========================================\n")
+```
+
+```{r}
+print(bacteria_s1_mixed)
+```
+
+```{r}
+cat("\n========================================\n")
+```
+
+```{r}
+cat("Season 1 Fungi Mixed Model\n")
+```
+
+```{r}
+cat("========================================\n")
+```
+
+```{r}
+print(fungi_s1_mixed)
+```
+
+```{r}
+# Season 2 mixed models
+bacteria_s2_mixed <- fit_mixed_soil("Bacteria_S2", soil_season2)
+fungi_s2_mixed <- fit_mixed_soil("Fungi_S2", soil_season2)
+
+cat("\n========================================\n")
+```
+
+```{r}
+cat("Season 2 Bacteria Mixed Model\n")
+```
+
+```{r}
+cat("========================================\n")
+```
+
+```{r}
+print(bacteria_s2_mixed)
+```
+
+```{r}
+cat("\n========================================\n")
+```
+
+```{r}
+cat("Season 2 Fungi Mixed Model\n")
+```
+
+```{r}
+cat("========================================\n")
+```
+
+```{r}
+print(fungi_s2_mixed)
+```
+
+## 5. Interaction Plots
+
+### 5.1 Maize Interaction Plots
+
+```{r}
+# Function to create interaction plots
+plot_interactions <- function(data, response, title) {
+  # N x P interaction
+  p1 <- ggplot(data, aes(x = N, y = .data[[response]], color = P, group = P)) +
+    stat_summary(fun = mean, geom = "point", size = 3) +
+    stat_summary(fun = mean, geom = "line") +
+    facet_wrap(~Sites) +
+    theme_minimal() +
+    ggtitle(paste(title, "- N x P Interaction"))
+
+  # N x V interaction
+  p2 <- ggplot(data, aes(x = N, y = .data[[response]], color = V, group = V)) +
+    stat_summary(fun = mean, geom = "point", size = 3) +
+    stat_summary(fun = mean, geom = "line") +
+    facet_wrap(~Sites) +
+    theme_minimal() +
+    ggtitle(paste(title, "- N x V Interaction"))
+
+  # P x V interaction
+  p3 <- ggplot(data, aes(x = P, y = .data[[response]], color = V, group = V)) +
+    stat_summary(fun = mean, geom = "point", size = 3) +
+    stat_summary(fun = mean, geom = "line") +
+    facet_wrap(~Sites) +
+    theme_minimal() +
+    ggtitle(paste(title, "- P x V Interaction"))
+  
+  return(list(NxP = p1, NxV = p2, PxV = p3))
+}
+
+# Maize Protein interactions
+maize_protein_plots <- plot_interactions(maize_data, "Protein", "Maize Protein")
+print(maize_protein_plots$NxP)
+```
+
+```{r}
+print(maize_protein_plots$NxV)
+```
+
+```{r}
+print(maize_protein_plots$PxV)
+```
+
+### 5.2 Soybean Interaction Plots
+
+```{r}
+# Soybean Protein interactions
+soybean_protein_plots <- plot_interactions(soybean_data, "Protein", "Soybean Protein")
+print(soybean_protein_plots$NxP)
+```
+
+```{r}
+print(soybean_protein_plots$NxV)
+```
+
+```{r}
+print(soybean_protein_plots$PxV)
+```
+
+## 6. Correlation Analysis
+
+### 6.1 Maize-Soil Microbial Correlations
+
+```{r}
+# Combine maize and soil data
+maize_soil <- maize_data %>%
+  left_join(soil_season1, by = c("Sites" = "Site", "Replication", "N", "P", "V")) %>%
+  left_join(soil_season2, by = c("Sites" = "Site", "Replication", "N", "P", "V"))
+
+# Correlation matrix
+maize_soil_cor <- maize_soil %>%
+  dplyr::select(Ash, Protein, Fat, Starch, Fiber, Sugar,
+                Bacteria_S1, Fungi_S1, Bacteria_S2, Fungi_S2) %>%
+  cor(use = "complete.obs")
+
+corrplot(maize_soil_cor,
+         method = "color",
+         type = "upper",
+         addCoef.col = "black",
+         number.cex = 0.5,   # smaller numbers (avoids crowding)
+         tl.cex = 0.7,       # smaller axis labels
+         tl.col = "black",
+         tl.srt = 45,
+         title = "Maize - Soil Microbial Correlations",
+         mar = c(0, 0, 3, 0))
+```
+
+### 6.2 Soybean-Soil Microbial Correlations
+
+```{r}
+# Combine soybean and soil data
+soybean_soil <- soybean_data %>%
+  left_join(soil_season1, by = c("Sites" = "Site", "Replication", "N", "P", "V")) %>%
+  left_join(soil_season2, by = c("Sites" = "Site", "Replication", "N", "P", "V"))
+
+# Correlation matrix
+soybean_soil_cor <- soybean_soil %>%
+  dplyr::select(Ash, Protein, Fat, Starch, Fiber, Sugar,
+                Bacteria_S1, Fungi_S1, Bacteria_S2, Fungi_S2) %>%
+  cor(use = "complete.obs")
+
+corrplot(soybean_soil_cor,
+         method = "color",
+         type = "upper",
+         addCoef.col = "black",
+         number.cex = 0.5,   # smaller correlation values
+         tl.cex = 0.7,       # smaller labels
+         tl.col = "black",
+         tl.srt = 45,
+         title = "Soybean - Soil Microbial Correlations",
+         mar = c(0, 0, 3, 0))
+```
+
+## 7. Summary Tables
+
+### 7.1 Maize Summary Statistics
+
+```{r}
+library(knitr)
+```
+
+```{r}
+maize_summary <- maize_data %>%
+  group_by(Sites) %>%
+  summarise(
+    Ash_mean = mean(Ash), Ash_sd = sd(Ash),
+    Protein_mean = mean(Protein), Protein_sd = sd(Protein),
+    Fat_mean = mean(Fat), Fat_sd = sd(Fat),
+    Starch_mean = mean(Starch), Starch_sd = sd(Starch),
+    Fiber_mean = mean(Fiber), Fiber_sd = sd(Fiber),
+    Sugar_mean = mean(Sugar), Sugar_sd = sd(Sugar)
+  )
+
+kable(maize_summary, caption = "Maize Proximate Composition Summary by Site",
+      digits = 2)
+```
+
+### 7.2 Soybean Summary Statistics
+
+```{r}
+soybean_summary <- soybean_data %>%
+  group_by(Sites) %>%
+  summarise(
+    Ash_mean = mean(Ash), Ash_sd = sd(Ash),
+    Protein_mean = mean(Protein), Protein_sd = sd(Protein),
+    Fat_mean = mean(Fat), Fat_sd = sd(Fat),
+    Starch_mean = mean(Starch), Starch_sd = sd(Starch),
+    Fiber_mean = mean(Fiber), Fiber_sd = sd(Fiber),
+    Sugar_mean = mean(Sugar), Sugar_sd = sd(Sugar)
+  )
+
+kable(soybean_summary, caption = "Soybean Proximate Composition Summary by Site",
+      digits = 2)
+```
