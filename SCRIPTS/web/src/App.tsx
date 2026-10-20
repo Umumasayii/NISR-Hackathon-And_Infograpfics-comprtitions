@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { HashRouter, NavLink, Route, Routes, useLocation, Link } from 'react-router-dom';
 import {
   BookOpen, LayoutDashboard, ChartColumn, Compass, House, MapPinned, IdCard, CloudSunRain, Table, Sprout, Droplets, Users, Brain, Trophy,
@@ -69,11 +69,15 @@ function Shell() {
     window.addEventListener('si-open-filters', open);
     return () => window.removeEventListener('si-open-filters', open);
   }, []);
+  // the filter drawer takes the focus when it opens and gives it back when it closes
+  const side = useRef<HTMLElement>(null);
   useEffect(() => {
     if (!drawer) return;
+    const back = document.activeElement as HTMLElement | null;
+    side.current?.querySelector<HTMLElement>('button, select, input')?.focus();
     const k = (e: KeyboardEvent) => e.key === 'Escape' && setDrawer(false);
     window.addEventListener('keydown', k);
-    return () => window.removeEventListener('keydown', k);
+    return () => { window.removeEventListener('keydown', k); back?.focus?.(); };
   }, [drawer]);
   const page = Object.values(PAGES).find((p) => p.path === loc.pathname);
   useEffect(() => { document.title = page && page.path !== '/' ? `${tr(page.key)} · SmartIrrigate Rwanda` : 'SmartIrrigate Rwanda'; }, [page, tr]);
@@ -87,7 +91,8 @@ function Shell() {
       <div className={`shell ${docked ? 'docked' : ''}`}>
         {showFilters && (
           <>
-            <aside className={`sidebar ${drawer ? 'open' : ''}`} aria-label={tr('filters')} aria-hidden={!docked && !drawer}>
+            <aside ref={side} className={`sidebar ${drawer ? 'open' : ''}`} aria-label={tr('filters')} aria-hidden={!docked && !drawer}
+              {...(drawer && !docked ? { role: 'dialog', 'aria-modal': true } : {})}>
               <FilterPanel onDone={() => setDrawer(false)} pinned={pinned} onPin={() => setPinned(!pinned)} />
             </aside>
             {drawer && <div className="scrim" onClick={() => setDrawer(false)} />}
@@ -102,6 +107,7 @@ function Shell() {
             <Route path="*" element={<div className="card pad"><p>{tr('not_found')}</p><Link to="/">{tr('go_home')}</Link></div>} />
           </Routes>
           <footer className="app-footer">
+            <p className="disclaimer">{tr('disclaimer')}{D.meta.interim ? ` ${tr('interim_note')}` : ''}</p>
             <span>{tr('footer_by')}</span><span>{'·'}</span>
             <Link to="/methods">{tr('footer_see_sources')}</Link><span>{'·'}</span>
             <span>{tr('built')} {D.meta.built} {'·'} v {__SITE_VERSION__}</span>

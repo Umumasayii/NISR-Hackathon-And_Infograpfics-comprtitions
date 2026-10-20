@@ -1,6 +1,11 @@
 # ============================================================================
 # SMARTIRRIGATE RWANDA | OFFICIAL NISR FIGURES FROM THE PUBLISHED TABLES
 #
+# RETIRED (audit 2026-10-20): not run by 09_Run_All.R and not read by 07. The app's
+# statistics cover 2019-2025 only, and published figures are now read cell by cell,
+# with their table, sheet and cell, by SCRIPTS/14_Official_Reference.R. Kept for the
+# record; its output is not used anywhere.
+#
 # Reads the "Tables_<year> Season <A|B>.xlsx" workbooks NISR publishes with
 # each Seasonal Agricultural Survey report and turns every table into one
 # long, tidy table. The dashboard uses these official numbers as published.

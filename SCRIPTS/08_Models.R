@@ -57,22 +57,55 @@ rf_fit  <- ranger::ranger(fml, data = train |> mutate(irrigated = factor(irrigat
                           probability = TRUE, num.trees = 300, min.node.size = 50,
                           case.weights = train$w, importance = "permutation", seed = 2026)
 
-auc <- function(y, p, w = rep(1, length(y))) {     # weighted Mann-Whitney AUC
-  o <- order(p); y <- y[o]; w <- w[o]
-  pos <- w * (y == 1); neg <- w * (y == 0)
-  sum(pos * (cumsum(neg) - neg / 2)) / (sum(pos) * sum(neg))
+# Weighted Mann-Whitney AUC with ties counted as 1/2. Rows are grouped by predicted
+# value first: within a tie group every positive-negative pair scores 0.5 whatever
+# the row order (the earlier version scored a tied pair 0 or 1 depending on order).
+auc <- function(y, p, w = rep(1, length(y))) {
+  g <- tibble(p, pos = w * (y == 1), neg = w * (y == 0)) |>
+    group_by(p) |> summarise(pos = sum(pos), neg = sum(neg), .groups = "drop") |> arrange(p)
+  neg_below <- cumsum(g$neg) - g$neg
+  sum(g$pos * (neg_below + g$neg / 2)) / (sum(g$pos) * sum(g$neg))
+}
+# Weighted average precision (area under the precision-recall curve, step version);
+# tied predictions enter together. Its no-skill value is the positive share.
+avg_precision <- function(y, p, w = rep(1, length(y))) {
+  g <- tibble(p, pos = w * (y == 1), all = w) |>
+    group_by(p) |> summarise(pos = sum(pos), all = sum(all), .groups = "drop") |> arrange(desc(p))
+  tp <- cumsum(g$pos); pp <- cumsum(g$all)
+  sum((tp / pp) * g$pos) / sum(g$pos)
+}
+# The plots with the top 10% of predicted values (by weight): what share of them is
+# irrigated, and what share of all irrigated plots they hold (ties enter together)
+top_k <- function(y, p, w, k = 0.10) {
+  o <- order(-p); cw <- cumsum(w[o]) / sum(w); cut <- p[o][which(cw >= k)[1]]
+  sel <- p >= cut
+  c(precision = sum(w[sel] * y[sel]) / sum(w[sel]), recall = sum(w[sel] * y[sel]) / sum(w * y), share = sum(w[sel]) / sum(w))
 }
 test$p_glm <- predict(glm_fit, newdata = test, type = "response")
 test$p_rf  <- predict(rf_fit, data = test)$predictions[, "1"]
-metrics <- function(d, p) tibble(
-  auc = auc(d$irrigated, d[[p]], d$weight),
-  brier = sum(d$weight * (d[[p]] - d$irrigated)^2) / sum(d$weight),
-  observed_pct = 100 * sum(d$weight * d$irrigated) / sum(d$weight),
-  predicted_pct = 100 * sum(d$weight * d[[p]]) / sum(d$weight),
-  n = nrow(d))
+# Baselines: the training-period share of irrigated plots used as a constant
+# prediction (a prospective baseline) and the test share (descriptive baseline).
+prev_train <- sum(train$weight * train$irrigated) / sum(train$weight)
+metrics <- function(d, p) {
+  q_test <- sum(d$weight * d$irrigated) / sum(d$weight)
+  tk <- top_k(d$irrigated, d[[p]], d$weight)
+  tibble(
+    auc = auc(d$irrigated, d[[p]], d$weight),
+    avg_precision = avg_precision(d$irrigated, d[[p]], d$weight),
+    avg_precision_baseline = q_test,
+    brier = sum(d$weight * (d[[p]] - d$irrigated)^2) / sum(d$weight),
+    brier_baseline_train = sum(d$weight * (prev_train - d$irrigated)^2) / sum(d$weight),
+    brier_baseline_test = q_test * (1 - q_test),
+    top10_precision_pct = 100 * tk[["precision"]], top10_recall_pct = 100 * tk[["recall"]],
+    top10_lift = tk[["precision"]] / q_test,
+    observed_pct = 100 * q_test,
+    predicted_pct = 100 * sum(d$weight * d[[p]]) / sum(d$weight),
+    n = nrow(d))
+}
 perf <- bind_rows(metrics(test, "p_glm") |> mutate(model = "Logistic regression"),
                   metrics(test, "p_rf")  |> mutate(model = "Random forest")) |>
-  mutate(validation = "Out-of-time: trained 2020-2023, tested 2024-2025")
+  mutate(validation = "Out-of-time: trained 2020-2023, tested 2024-2025",
+         auc_method = "weighted Mann-Whitney, ties = 1/2 (fixed 2026-10-20)")
 
 calibration <- test |>
   mutate(bin = ntile(p_glm, 10)) |>
@@ -162,6 +195,12 @@ yield_adj <- map_dfr(crops, \(cn) tryCatch(fit_crop(cn), error = \(e) { message(
                                TRUE ~ "No clear difference"))
 save_app(list(table = yield_adj,
               controls = "inorganic & organic fertiliser, improved seed (unknown kept as its own group), crop area, district, year-season",
+              # what the two numbers are (they are different estimands): raw_pct compares
+              # weighted harvest / weighted area (ratio of sums); adjusted_pct is exp(b) - 1
+              # from a survey-weighted regression of log(yield per plot)
+              estimands = c(raw = "ratio of weighted sums: sum(harvest) / sum(area), irrigated vs rain-fed",
+                            adjusted = "exp(coefficient) - 1 from a survey-weighted log(yield) regression"),
+              eligibility = "harvest > 0, crop area known, yield inside the 1st-99th percentile of its crop-season; seasons with < 80% crop-area coverage left out; Seasons A+B",
               excluded_seasons = read_csv(file.path(dir_master, "season_quality.csv"), show_col_types = FALSE) |>
                 filter(!yield_usable) |> transmute(season = paste0(sas_year, sas_season), area_coverage_pct)),
          "model_yield")
