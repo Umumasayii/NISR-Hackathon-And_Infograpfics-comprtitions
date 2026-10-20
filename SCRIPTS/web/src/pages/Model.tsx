@@ -64,16 +64,22 @@ export default function Model() {
   const lim = Math.max(...M.potential.map((r) => Math.abs(r.gap_pts)));
   const potFig = useMemo(() => choropleth(geo, M.potential.map((r) => ({ district: r.district_std, value: r.gap_pts,
     hover: `<b>${r.district_std}</b><br>${tr('observed')}: ${fmtPct(r.observed_pct)}<br>${tr('predicted')}: ${fmtPct(r.predicted_pct)}<br>${tr('gap')}: ${r.gap_pts > 0 ? '+' : ''}${fmtNum(r.gap_pts, 1)} pts` })),
-  { label: tr('gap_pts'), colorscale: divGap, zmin: -lim, zmax: lim, selected: f.areaLevel !== 'national' ? f.districts : undefined }), [geo, M, f, tr, lim]);
+  { noData: tr('no_estimate'), label: tr('gap_pts'), colorscale: divGap, zmin: -lim, zmax: lim, selected: f.areaLevel !== 'national' ? f.districts : undefined }), [geo, M, f, tr, lim]);
   const potTop = [...M.potential].sort((a, b) => b.gap_pts - a.gap_pts).slice(0, 4).map((r) => r.district_std);
+
+  // the score of always guessing the share of irrigated plots: a model must beat this
+  const prev = glm.observed_pct / 100;
+  const brierBase = glm.brier_baseline_test ?? prev * (1 - prev);
 
   return (
     <>
       <FiltersUsed used={['area']} />
       <Callout icon={FlaskConical}>{tr('model_caveat', fmtNum(M.n_train), fmtNum(M.n_test))}</Callout>
       <KpiRow>
-        <Kpi label={tr('k_auc')} value={glm.auc.toFixed(3)} icon={Target} color={brand.green} foot={tr('k_auc_sub', rf ? rf.auc.toFixed(3) : '–')} />
-        <Kpi label={tr('k_brier')} value={glm.brier.toFixed(4)} icon={ChartLine} color={brand.blue} foot={tr('k_brier_sub')} />
+        <Kpi label={tr('k_auc')} value={glm.auc.toFixed(3)} icon={Target} color={brand.green} foot={tr('k_auc_sub', rf ? rf.auc.toFixed(3) : '–')}
+          hint={tr(glm.auc_method ? 'k_auc_note' : 'k_auc_note_old')} />
+        <Kpi label={tr('k_brier')} value={glm.brier.toFixed(4)} icon={ChartLine} color={brand.blue} foot={tr('k_brier_vs', brierBase.toFixed(4))}
+          hint={tr('k_brier_note', fmtPct(glm.observed_pct, 2))} />
         <Kpi label={tr('k_obs_pred')} value={`${fmtPct(glm.observed_pct)} / ${fmtPct(glm.predicted_pct)}`} icon={Scale} color="#6A4C93" foot={tr('k_obs_pred_sub')} />
         <Kpi label={tr('k_validation')} value={'2024–2025'} icon={CalendarCheck} color="#B07A1C" foot={tr('k_validation_sub')} />
       </KpiRow>

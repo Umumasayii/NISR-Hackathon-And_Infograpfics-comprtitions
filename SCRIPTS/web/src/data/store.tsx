@@ -22,6 +22,21 @@ function revive(x: unknown): unknown {
   return x;
 }
 
+// Statistics end with 2025 (SAS 2019-2025, AHS 2017-2024): a later season or survey
+// round in a data file is dropped here, whatever the file holds.
+const LAST_YEAR = 2025;
+function inScope(x: unknown): unknown {
+  if (Array.isArray(x)) {
+    const out = x.map(inScope);
+    return out.filter((r) => !(r && typeof r === 'object' && !Array.isArray(r) && ['sas_year', 'year'].some((k) => {
+      const v = (r as Record<string, unknown>)[k];
+      return typeof v === 'number' && v > LAST_YEAR;
+    })));
+  }
+  if (x && typeof x === 'object') return Object.fromEntries(Object.entries(x as Record<string, unknown>).map(([k, v]) => [k, inScope(v)]));
+  return x;
+}
+
 export interface Loaded { D: AppData; geo: GeoJSON; dict: I18n; dataSource: string }
 
 export async function loadAll(): Promise<Loaded> {
@@ -31,7 +46,7 @@ export async function loadAll(): Promise<Loaded> {
     get('app_data.json').then((r) => r.json()), get('districts.json').then((r) => r.json()),
     get('i18n.json').then((r) => r.json()), get('data_source.md').then((r) => r.text()).catch(() => ''),
   ]);
-  const D = revive(raw) as AppData;
+  const D = inScope(revive(raw)) as AppData;
   // same guards as the Shiny app: never show "Other (specify)" categories
   const isOther = (s: string | null) => !!s && /^other|specify|unclassified/i.test(s);
   D.crop = D.crop.filter((r) => !isOther(r.crop_name) && !isOther(r.crop_group));
@@ -44,7 +59,7 @@ export interface Selection { years: number[]; seasons: Season[]; provinces: stri
 
 interface Ctx extends Loaded {
   lang: Lang; setLang: (l: Lang) => void; tr: Tr;
-  YEARS: number[]; PUB_YEARS: number[]; CROP_GRPS: string[]; ALL_CROPS: string[]; ALL_D: string[]; ALL_P: string[];
+  YEARS: number[]; CROP_GRPS: string[]; ALL_CROPS: string[]; ALL_D: string[]; ALL_P: string[];
   sel: Selection; setSel: (s: Partial<Selection>) => void; resetSel: () => void;
   /** a click on any map selects that district only */
   pickDistrict: (d: string) => void;
@@ -68,12 +83,11 @@ export function AppProvider({ data, children }: { data: Loaded; children: ReactN
 
   const consts = useMemo(() => {
     const YEARS = uniq(D.est.map((r) => r.sas_year)).sort();
-    const PUB_YEARS = uniq(D.est.filter((r) => r.source === 'nisr').map((r) => r.sas_year)).sort();
     const CROP_GRPS = uniq(D.crop.map((r) => r.crop_group).filter(Boolean)).sort();
     const ALL_CROPS = uniq(D.crop.map((r) => r.crop_name)).sort();
     const ALL_D = D.lookup.map((r) => r.district);
     const ALL_P = uniq(D.lookup.map((r) => r.province)).sort();
-    return { YEARS, PUB_YEARS, CROP_GRPS, ALL_CROPS, ALL_D, ALL_P };
+    return { YEARS, CROP_GRPS, ALL_CROPS, ALL_D, ALL_P };
   }, [D]);
   const { YEARS, CROP_GRPS, ALL_CROPS, ALL_D, ALL_P } = consts;
 

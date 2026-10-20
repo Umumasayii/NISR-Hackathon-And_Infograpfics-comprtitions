@@ -41,8 +41,8 @@ if (!dir.exists(file.path(hackathon_folder, "SAS"))) {
   }
 }
 
-# If you use another location, uncomment and edit this example:
-hackathon_folder <- "C:\\Users\\branc\\OneDrive\\Documenti\\Hackathon"
+# Another location: set it once with Sys.setenv(HACKATHON_ROOT = "path/to/Hackathon")
+hackathon_folder <- Sys.getenv("HACKATHON_ROOT", hackathon_folder)
 
 if (!dir.exists(file.path(hackathon_folder, "SAS"))) {
   stop(
