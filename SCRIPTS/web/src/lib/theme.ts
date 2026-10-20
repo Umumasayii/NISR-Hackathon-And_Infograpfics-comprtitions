@@ -12,7 +12,8 @@ export const colRainfed = '#858F8A';
 export const colMuted = '#C3CBC7';
 export const seasonCols: Record<string, string> = { A: '#0F7044', B: '#1976B9', C: '#B07A1C' };
 export const provinceCols: Record<string, string> = { East: '#0F7044', Kigali: '#6A4C93', North: '#1976B9', South: '#B07A1C', West: '#B65F47' };
-export const relCols: Record<string, string> = { Good: '#0F7044', 'Use with caution': '#B07A1C', Unreliable: '#B65F47', Published: '#1976B9' };
+// reliability badge text: darker shades so 11px text keeps at least 4.5:1 contrast on white
+export const relCols: Record<string, string> = { Good: '#0F7044', 'Use with caution': '#7A5410', Unreliable: '#963F2C', Published: '#155F96', 'Not assessed': '#4E5955' };
 
 type Scale = [number, string][];
 export const seqGreen: Scale = [[0, '#EAF4EE'], [0.5, '#5FA97F'], [1, '#0B4F30']];

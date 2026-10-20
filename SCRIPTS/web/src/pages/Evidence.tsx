@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Scale, Sprout, Wheat, ChartLine, MapPin, ChartNoAxesColumnIncreasing } from 'lucide-react';
 import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
-import { Callout, ChartCard, FiltersUsed, Grid, RelBadge, Select } from '../components/ui';
+import { Callout, ChartCard, FiltersUsed, Grid, RelBadge, Select, relLabel } from '../components/ui';
+import type { Prov } from '../lib/sources';
 import { Plot, simpleLines, std, type Fig } from '../components/Plot';
 import { cropsFor, groupBy, sum, wm } from '../lib/stats';
 import { fmtNum } from '../lib/format';
@@ -27,7 +28,9 @@ export default function Evidence() {
         ...d.map((r) => ({ type: 'scatter', mode: 'lines', x: [r.adjusted_low, r.adjusted_high], y: [r.crop_name, r.crop_name], line: { color: col(r), width: 2.5 }, hoverinfo: 'skip', showlegend: false })),
         { type: 'scatter', mode: 'markers', name: tr('raw_diff'), x: d.map((r) => r.raw_pct), y: d.map((r) => r.crop_name), marker: { symbol: 'circle-open', size: 10, color: brand.grey, line: { width: 2 } },
           text: d.map((r) => `${r.crop_name}<br>${tr('raw_diff')}: ${fmtNum(r.raw_pct, 0)}%`), hoverinfo: 'text' },
-        { type: 'scatter', mode: 'markers', name: tr('adj_diff'), x: d.map((r) => r.adjusted_pct), y: d.map((r) => r.crop_name), marker: { size: 11, color: d.map(col) },
+        { type: 'scatter', mode: 'markers', name: tr('adj_diff'), x: d.map((r) => r.adjusted_pct), y: d.map((r) => r.crop_name),
+          // direction shown by shape too: right = higher, left = lower, open = interval includes no difference
+          marker: { size: 11, color: d.map(col), symbol: d.map((r) => (r.adjusted_low > 0 ? 'triangle-right' : r.adjusted_high < 0 ? 'triangle-left' : 'diamond-open')) },
           text: d.map((r) => `<b>${r.crop_name}</b><br>${tr('adj_diff')}: ${fmtNum(r.adjusted_pct, 0)}% (${fmtNum(r.adjusted_low, 0)} to ${fmtNum(r.adjusted_high, 0)})<br>n = ${fmtNum(r.n)} · ${tr('n_irrigated')} ${fmtNum(r.n_irrigated)}`), hoverinfo: 'text' },
       ] as Data[],
       layout: std({ x: tr('x_yield_diff'), yaxis: { title: { text: '' }, categoryorder: 'array', categoryarray: d.map((r) => r.crop_name), tickmode: 'array', tickvals: d.map((r) => r.crop_name), automargin: true },
@@ -93,13 +96,29 @@ export default function Evidence() {
     };
   }, [yarea, tr]);
   const yOk = yarea.filter((r) => r.nIrr >= 10 && Number.isFinite(r.irr) && Number.isFinite(r.rain));
+  const sv = (note: string): Prov => ({ unit: tr('u_kgha'), period: '2019–2025', kind: 'survey', src: ['sas_micro'], note });
+  type Y = { irrigation: string; estimate: number; ci_low?: number | null; ci_high?: number | null; n: number; reliability: string };
+  const yCols = (first: { label: string; get: (r: never) => string | number | null }) => [
+    first, { label: tr('irrigation'), get: (r: Y) => tr(r.irrigation === 'Irrigated' ? 'irrigated' : 'rainfed') },
+    { label: 'kg/ha', get: (r: Y) => fmtNum(r.estimate), num: true },
+    { label: '95% CI', get: (r: Y) => (r.ci_low == null ? null : `${fmtNum(r.ci_low)}–${fmtNum(r.ci_high)}`), num: true },
+    { label: 'n', get: (r: Y) => fmtNum(r.n), num: true }, { label: tr('quality'), get: (r: Y) => relLabel(tr, r.reliability) },
+  ];
 
   return (
     <>
       <FiltersUsed used={['years', 'seasons', 'area', 'crop']} />
       <Callout icon={Scale}>{tr('evidence_caveat')}</Callout>
       <ChartCard title={tr('c_forest')} icon={Sprout}
-        means={<>{tr('m_forest', pos.length, MY.length, pos.length ? pos.map((r) => `${r.crop_name} (+${fmtNum(r.adjusted_pct, 0)}%)`).join(', ') : '–', MY.length - pos.length - neg.length)} {tr('m_forest_controls', D.model_yield.controls)}</>}>
+        means={<>{tr('m_forest', pos.length, MY.length, pos.length ? pos.map((r) => `${r.crop_name} (+${fmtNum(r.adjusted_pct, 0)}%)`).join(', ') : '–', MY.length - pos.length - neg.length)} {tr('m_forest_controls', D.model_yield.controls)}</>}
+        prov={{ unit: tr('u_yield_diff'), period: '2019–2025', kind: 'model', src: ['model', 'sas_micro'], note: `${tr('n_assoc')} ${tr('n_yield_excl')}` }}
+        table={{ name: 'yield_gap_adjusted', rows: MY.filter((r) => scope.has(r.crop_name)).sort((a, b) => b.adjusted_pct - a.adjusted_pct), cols: [
+          { label: tr('crop'), get: (r: (typeof MY)[number]) => r.crop_name },
+          { label: tr('raw_diff'), get: (r: (typeof MY)[number]) => `${fmtNum(r.raw_pct, 0)}%`, num: true },
+          { label: tr('adj_diff'), get: (r: (typeof MY)[number]) => `${fmtNum(r.adjusted_pct, 0)}%`, num: true },
+          { label: '95% CI', get: (r: (typeof MY)[number]) => `${fmtNum(r.adjusted_low, 0)}% to ${fmtNum(r.adjusted_high, 0)}%`, num: true },
+          { label: 'n', get: (r: (typeof MY)[number]) => fmtNum(r.n), num: true },
+        ] }}>
         <Plot fig={forestFig} height={400} empty={tr('no_adjusted')} />
       </ChartCard>
       <div style={{ height: 16 }} />
@@ -114,19 +133,37 @@ export default function Evidence() {
           </div>
         </section>
         <ChartCard title={tr('c_dumbbell')} icon={Scale}
-          means={mi && mr ? <>{tr(!((mi.ci_low > mr.ci_high) || (mi.ci_high < mr.ci_low)) ? 'm_dumb_overlap' : 'm_dumb_diff', crop, fmtNum(mi.estimate), fmtNum(mr.estimate))} <RelBadge r={mi.reliability} /></> : null}>
+          means={mi && mr ? <>{tr(!((mi.ci_low > mr.ci_high) || (mi.ci_high < mr.ci_low)) ? 'm_dumb_overlap' : 'm_dumb_diff', crop, fmtNum(mi.estimate), fmtNum(mr.estimate))} <RelBadge r={mi.reliability} /></> : null}
+          prov={sv(`${tr('n_assoc')} ${tr('n_yield_excl')}`)}
+          table={{ name: `yield_${crop}`, rows: dumb, cols: yCols({ label: tr('season'), get: (r: { st: string }) => r.st }) }}>
           <Plot fig={dumbFig} height={260} empty={tr('no_data')} />
         </ChartCard>
         <ChartCard title={tr('c_ladder')} icon={ChartNoAxesColumnIncreasing}
-          means={ladOk.length >= 2 ? tr('m_ladder', crop, fmtNum(ladOk[0].estimate), fmtNum(ladOk[ladOk.length - 1].estimate), ladOk[ladOk.length - 1].modern_inputs_n!) : null}>
+          means={ladOk.length >= 2 ? tr('m_ladder', crop, fmtNum(ladOk[0].estimate), fmtNum(ladOk[ladOk.length - 1].estimate), ladOk[ladOk.length - 1].modern_inputs_n!) : null}
+          prov={sv(tr('n_assoc'))}
+          table={{ name: `yield_by_inputs_${crop}`, rows: ladder, cols: [
+            { label: tr('x_modern_inputs'), get: (r: (typeof ladder)[number]) => r.modern_inputs_n ?? null, num: true },
+            { label: 'kg/ha', get: (r: (typeof ladder)[number]) => fmtNum(r.estimate), num: true },
+            { label: 'n', get: (r: (typeof ladder)[number]) => fmtNum(r.n), num: true },
+            { label: tr('quality'), get: (r: (typeof ladder)[number]) => relLabel(tr, r.reliability) },
+          ] }}>
           <Plot fig={ladderFig} height={260} empty={tr('no_data')} />
         </ChartCard>
       </Grid>
       <Grid cols="1fr 1fr">
-        <ChartCard title={tr('c_yield_year')} icon={ChartLine} means={yrsBoth.length ? tr('m_byyear', yrsBoth.filter((x) => x.i! > x.r!).length, yrsBoth.length, crop) : null}>
+        <ChartCard title={tr('c_yield_year')} icon={ChartLine} means={yrsBoth.length ? tr('m_byyear', yrsBoth.filter((x) => x.i! > x.r!).length, yrsBoth.length, crop) : null}
+          prov={sv(`${tr('n_assoc')} ${tr('n_yield_excl')}`)}
+          table={{ name: `yield_by_year_${crop}`, rows: [...byYearD].filter((r) => f.years.includes(r.sas_year!)).sort((a, b) => a.sas_year! - b.sas_year!), cols: yCols({ label: tr('year'), get: (r: { sas_year?: number }) => r.sas_year ?? null }) }}>
           <Plot fig={byYearFig} height={300} empty={tr('no_data')} />
         </ChartCard>
-        <ChartCard title={tr('c_yield_area')} icon={MapPin} means={yOk.length ? tr('m_yarea', crop, f.area, yOk.filter((r) => r.irr > r.rain).length, yOk.length) : tr('m_yarea_few', crop, f.area)}>
+        <ChartCard title={tr('c_yield_area')} icon={MapPin} means={yOk.length ? tr('m_yarea', crop, f.area, yOk.filter((r) => r.irr > r.rain).length, yOk.length) : tr('m_yarea_few', crop, f.area)}
+          prov={sv(`${tr('n_assoc')} ${tr('n_yield_excl')} ${tr('n_yarea_min')}`)}
+          table={{ name: `yield_area_${crop}`, rows: yarea, cols: [
+            { label: tr('year'), get: (r: (typeof yarea)[number]) => r.y },
+            { label: `${tr('rainfed')} kg/ha`, get: (r: (typeof yarea)[number]) => fmtNum(r.rain), num: true },
+            { label: `${tr('irrigated')} kg/ha`, get: (r: (typeof yarea)[number]) => (r.nIrr >= 10 ? fmtNum(r.irr) : null), num: true },
+            { label: `n ${tr('irrigated')}`, get: (r: (typeof yarea)[number]) => fmtNum(r.nIrr), num: true },
+          ] }}>
           <Plot fig={yareaFig} height={300} empty={tr('no_data')} />
         </ChartCard>
       </Grid>

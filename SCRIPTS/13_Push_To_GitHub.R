@@ -40,7 +40,13 @@ push_project <- function(msg = NULL, root = Sys.getenv("HACKATHON_ROOT", "."), m
     size <- file.size(file.path(repo, keep))
     big  <- keep[!is.na(size) & size > max_mb * 1e6]
     if (length(big)) message("Skipped (over ", max_mb, " MB, GitHub refuses them): ", paste(big, collapse = ", "))
-    add <- setdiff(keep, big)
+    # second line of defence after .gitignore: unit-level survey files and secrets are never
+    # committed, even if someone edits .gitignore (aggregates in SCRIPTS/app/data are fine)
+    private <- keep[grepl("\\.(dta|sav|sas7bdat|zip|RData|Rhistory)$|(^|/)\\.Renviron$|(^|/)\\.env$|\\.(pem|key)$", keep, ignore.case = TRUE) |
+                    grepl("^DATA/(SAS|processed|Agriculture Household Survey)/", keep) |
+                    (grepl("^DATA/", keep) & grepl("\\.rds$", keep, ignore.case = TRUE))]
+    if (length(private)) message("Never committed (microdata or secrets): ", paste(private, collapse = ", "))
+    add <- setdiff(keep, c(big, private))
     if (length(add))  gert::git_add(add, repo = repo)
     if (length(gone)) gert::git_rm(gone, repo = repo)
   }
