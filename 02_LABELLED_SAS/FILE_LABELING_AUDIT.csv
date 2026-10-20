@@ -1,0 +1,112 @@
+"year","season","module","source_file","rows_before","rows_after","columns_before","columns_after","categorical_columns_decoded","extra_original_code_columns","observed_values_without_dictionary_label"
+"2019","A","crop_screening","rwa-sas-seasonA-Screening.sav",46854,46854,24,37,13,13,0
+"2019","A","crop_production","rwa-sas-seasonA_Crop production.sav",32906,32906,49,65,16,16,0
+"2019","A","fertilizers_pesticides","rwa-sas-SeasonA_PartIII_Fertilizers_Pesticides.sav",18786,18786,28,42,14,14,0
+"2019","A","agricultural_practices","rwa-sas-SeasonA_PartIV_Agricultural practice.sav",19805,19805,34,54,20,20,9
+"2019","A","land_tenure","rwa-sas-SeasonA_PartV_Land Tenure.sav",63292,63292,17,26,9,9,43
+"2019","B","crop_screening","rwa-sas-seasonB-Screening.sav",43411,43411,24,37,13,13,0
+"2019","B","crop_production","rwa-sas-seasonB_Crop production.sav",30493,30493,49,65,16,16,0
+"2019","B","fertilizers_pesticides","rwa-sas-SeasonB_PartIII_Fertilizers_Pesticides.sav",17637,17637,28,42,14,14,959
+"2019","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.sav",19222,19222,34,54,20,20,7
+"2019","B","land_tenure","rwa-sas-SeasonB_PartV_Land Tenure.sav",61548,61548,17,26,9,9,52
+"2019","C","crop_screening","rwa-sas-seasonC-Screening.sav",8311,8311,24,37,13,13,0
+"2019","C","crop_production","rwa-sas-seasonC_Crop production.sav",1667,1667,49,65,16,16,0
+"2019","C","fertilizers_pesticides","rwa-sas-SeasonC_PartIII_Fertilizers_Pesticides.sav",1832,1832,27,40,13,13,0
+"2019","C","agricultural_practices","rwa-sas-SeasonC_PartIV_Agricultural practice.sav",1731,1731,33,52,19,19,1
+"2019","C","land_tenure","rwa-sas-SeasonC_PartV_Land Tenure.sav",5400,5400,16,24,8,8,2
+"2020","A","crop_screening","rwa-sas-seasonA-Screening_crops.dta",53419,53419,20,29,9,9,0
+"2020","A","crop_production","rwa-sas-seasonA_Crop production.dta",41313,41313,66,82,16,16,0
+"2020","A","fertilizers_pesticides","rwa-sas-SeasonA_PartIII_Fertilizers_Pesticides.dta",21023,21023,42,62,20,20,0
+"2020","A","agricultural_practices","rwa-sas-SeasonA_PartIV_Agricultural practice.dta",16830,16830,47,64,17,17,0
+"2020","A","agroforestry_screening","rwa-sas-seasonA_Screening_Agroforestry.dta",27564,27564,11,18,7,7,0
+"2020","A","erosion_land_consolidation","rwa-sas-seasonA_Screening_Antierosion_land consolidation.dta",30078,30078,13,21,8,8,0
+"2020","B","crop_screening","rwa-sas-seasonB-Screening_crops.dta",48696,48696,20,29,9,9,0
+"2020","B","crop_production","rwa-sas-seasonB_Crop production.dta",35773,35773,66,82,16,16,0
+"2020","B","fertilizers_pesticides","rwa-sas-SeasonB_PartIII_Fertilizers_Pesticides.dta",18936,18936,42,62,20,20,0
+"2020","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.dta",16398,16398,48,65,17,17,0
+"2020","B","agroforestry_screening","rwa-sas-seasonB_Screening_Agroforestry.dta",29526,29526,11,18,7,7,0
+"2020","B","erosion_land_consolidation","rwa-sas-seasonB_Screening_Antierosion_land consolidation.dta",29822,29822,13,21,8,8,0
+"2020","C","crop_screening","rwa-sas-seasonC-Screening_crops.dta",10897,10897,20,29,9,9,0
+"2020","C","crop_production","rwa-sas-seasonC_Crop production.dta",4283,4283,67,83,16,16,0
+"2020","C","fertilizers_pesticides","rwa-sas-SeasonC_PartIII_Fertilizers_Pesticides.dta",5618,5618,42,62,20,20,0
+"2020","C","agricultural_practices","rwa-sas-SeasonC_PartIV_Agricultural practice.dta",3251,3251,48,65,17,17,0
+"2020","C","agroforestry_screening","rwa-sas-seasonC_Screening_Agroforestry.dta",5057,5057,11,18,7,7,0
+"2020","C","erosion_land_consolidation","rwa-sas-seasonC_Screening_Antierosion_land consolidation.dta",7945,7945,14,22,8,8,0
+"2021","A","crop_screening","rwa-sas-seasonA-Screening_crops.dta",52873,52873,21,31,10,10,0
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta",41634,41634,70,87,17,17,41634
+"2021","A","fertilizers_pesticides","rwa-sas-SeasonA_PartIII_Fertilizers_Pesticides.dta",22314,22314,43,63,20,20,0
+"2021","A","agricultural_practices","rwa-sas-SeasonA_PartIV_Agricultural practice.dta",17342,17342,56,78,22,22,0
+"2021","A","agroforestry_screening","rwa-sas-seasonA_Screening_Agroforestry.dta",30596,30596,12,19,7,7,0
+"2021","A","erosion_land_consolidation","rwa-sas-seasonA_Screening_Antierosion_land consolidation.dta",33890,33890,13,21,8,8,0
+"2021","B","crop_screening","rwa-sas-seasonB-Screening_crops.dta",49348,49348,21,31,10,10,2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta",35869,35869,69,86,17,17,65781
+"2021","B","fertilizers_pesticides","rwa-sas-SeasonB_PartIII_Fertilizers_Pesticides.dta",20431,20431,43,63,20,20,0
+"2021","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.dta",19333,19333,55,77,22,22,0
+"2021","B","agroforestry_screening","rwa-sas-seasonB_Screening_Agroforestry.dta",30122,30122,12,19,7,7,7
+"2021","B","erosion_land_consolidation","rwa-sas-seasonB_Screening_Antierosion_land consolidation.dta",36257,36257,13,21,8,8,0
+"2021","C","crop_screening","rwa-sas-seasonC-Screening_crops.dta",10495,10495,19,29,10,10,0
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta",3416,3416,67,83,16,16,3416
+"2021","C","fertilizers_pesticides","rwa-sas-SeasonC_PartIII_Fertilizers_Pesticides.dta",4838,4838,39,57,18,18,0
+"2021","C","agricultural_practices","rwa-sas-SeasonC_PartIV_Agricultural practice.dta",2779,2779,49,69,20,20,0
+"2021","C","agroforestry_screening","rwa-sas-seasonC_Screening_Agroforestry.dta",5063,5063,12,19,7,7,0
+"2021","C","erosion_land_consolidation","rwa-sas-seasonC_Screening_Antierosion_land consolidation.dta",5668,5668,13,21,8,8,0
+"2022","A","crop_screening","rwa-sas-seasonA-Screening_crops.dta",52487,52487,30,30,0,0,0
+"2022","A","crop_production","rwa-sas-seasonA_Crop production.dta",41589,41589,101,109,8,8,0
+"2022","A","fertilizers_pesticides","rwa-sas-SeasonA_PartIII_Fertilizers_Pesticides.dta",24279,24279,45,65,20,20,2
+"2022","A","agricultural_practices","rwa-sas-SeasonA_PartIV_Agricultural practice.dta",17376,17376,60,78,18,18,0
+"2022","A","agroforestry_screening","rwa-sas-seasonA_Screening_Agroforestry.dta",34477,34477,15,16,1,1,0
+"2022","A","erosion_land_consolidation","rwa-sas-seasonA_Screening_Antierosion_land consolidation.dta",35362,35362,16,17,1,1,0
+"2022","B","crop_screening","rwa-sas-seasonB-Screening_crops.dta",47308,47308,30,32,2,2,0
+"2022","B","crop_production","rwa-sas-seasonB_Crop production.dta",36005,36005,101,109,8,8,1
+"2022","B","fertilizers_pesticides","rwa-sas-SeasonB_PartIII_Fertilizers_Pesticides.dta",21432,21432,45,50,5,5,0
+"2022","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.dta",16883,16883,59,64,5,5,0
+"2022","B","agroforestry_screening","rwa-sas-seasonB_Screening_Agroforestry.dta",33192,33192,15,16,1,1,218
+"2022","B","erosion_land_consolidation","rwa-sas-seasonB_Screening_Antierosion_land consolidation.dta",34483,34483,16,17,1,1,0
+"2022","C","crop_screening","rwa-sas-seasonC-Screening_crops.dta",12067,12067,28,31,3,3,0
+"2022","C","crop_production","rwa-sas-seasonC_Crop production.dta",5818,5818,101,109,8,8,0
+"2022","C","fertilizers_pesticides","rwa-sas-SeasonC_PartIII_Fertilizers_Pesticides.dta",11242,11242,41,44,3,3,0
+"2022","C","agricultural_practices","rwa-sas-SeasonC_PartIV_Agricultural practice.dta",4926,4926,53,58,5,5,0
+"2022","C","agroforestry_screening","rwa-sas-seasonC_Screening_Agroforestry.dta",4937,4937,20,21,1,1,0
+"2022","C","erosion_land_consolidation","rwa-sas-seasonC_Screening_Antierosion_land consolidation.dta",4937,4937,18,19,1,1,0
+"2023","A","crop_screening","rwa-sas-seasonA-Screening_crops.dta",53691,53691,30,32,2,2,48134
+"2023","A","crop_production","rwa-sas-seasonA_Crop production.dta",39038,39038,103,104,1,1,0
+"2023","A","fertilizers_pesticides","rwa-sas-SeasonA_PartIII_Fertilizers_Pesticides.dta",16895,16895,87,88,1,1,0
+"2023","A","agricultural_practices","rwa-sas-SeasonA_PartIV_Agricultural practice.dta",16830,16830,56,57,1,1,0
+"2023","A","agroforestry_screening","rwa-sas-seasonA_Screening_Agroforestry.dta",31778,31778,15,16,1,1,0
+"2023","A","erosion_land_consolidation","rwa-sas-seasonA_Screening_Antierosion_land consolidation.dta",34765,34765,16,17,1,1,0
+"2023","B","crop_screening","rwa-sas-seasonB-Screening_crops.dta",49337,49337,30,33,3,3,47027
+"2023","B","crop_production","rwa-sas-seasonB_Crop production.dta",36546,36546,103,110,7,7,0
+"2023","B","fertilizers_pesticides","rwa-sas-SeasonB_PartIII_Fertilizers_Pesticides.dta",16864,16864,84,90,6,6,0
+"2023","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.dta",16864,16864,54,59,5,5,16864
+"2023","B","agroforestry_screening","rwa-sas-seasonB_Screening_Agroforestry.dta",26391,26391,15,17,2,2,0
+"2023","B","erosion_land_consolidation","rwa-sas-seasonB_Screening_Antierosion_land consolidation.dta",29371,29371,16,18,2,2,0
+"2023","C","crop_screening","rwa-sas-seasonC-Screening_crops.dta",10305,10305,28,30,2,2,5423
+"2023","C","crop_production","rwa-sas-seasonC_Crop production.dta",3566,3566,88,97,9,9,2500
+"2023","C","fertilizers_pesticides","rwa-sas-SeasonC_PartIII_Fertilizers_Pesticides.dta",2983,2983,84,97,13,13,0
+"2023","C","agricultural_practices","rwa-sas-SeasonC_PartIV_Agricultural practice.dta",2983,2983,53,69,16,16,0
+"2023","C","agroforestry_screening","rwa-sas-seasonC_Screening_Agroforestry.dta",4930,4930,18,19,1,1,0
+"2023","C","erosion_land_consolidation","rwa-sas-seasonC_Screening_Antierosion_land consolidation.dta",4930,4930,17,18,1,1,0
+"2024","A","fertilizers_pesticides","Rwa_raw_fertilizer_pesticideA2024.dta",22105,22105,63,70,7,7,0
+"2024","A","agricultural_practices","Rwa_raw_SeasonA2024_Agricultural_practice.dta",17506,17506,58,65,7,7,0
+"2024","A","crop_production","Rwa_raw_SeasonA2024_Production.dta",39330,39330,95,103,8,8,39333
+"2024","A","crop_screening","Rwa_raw_SeasonA2024_Screening.dta",54382,54382,45,48,3,3,0
+"2024","B","fertilizers_pesticides","Rwa_raw_fertilizer_pesticideB2024.dta",19965,19965,63,64,1,1,0
+"2024","B","agricultural_practices","Rwa_raw_SeasonB2024_Agricultural_practice.dta",17261,17261,52,53,1,1,0
+"2024","B","crop_production","Rwa_raw_SeasonB2024_Production.dta",35584,35584,97,100,3,3,35584
+"2024","B","crop_screening","Rwa_raw_SeasonB2024_Screening.dta",28562,28562,45,48,3,3,0
+"2024","C","fertilizers_pesticides","Rwa_raw_fertilizer_pesticideC2024.dta",2307,2307,60,61,1,1,0
+"2024","C","agricultural_practices","Rwa_raw_SeasonC2024_Agricultural_practice.dta",1632,1632,47,49,2,2,0
+"2024","C","crop_production","Rwa_raw_SeasonC2024_Production.dta",1949,1949,96,99,3,3,1949
+"2024","C","crop_screening","Rwa_raw_SeasonC2024_Screening.dta",8195,8195,41,43,2,2,0
+"2025","A","fertilizers_pesticides","Rwa_raw_fertilizer_pesticideA2025.dta",17062,17062,80,80,0,0,0
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta",17062,17062,59,63,4,4,67161
+"2025","A","crop_production","Rwa_raw_SeasonA2025_Production.dta",34369,34369,101,102,1,1,1
+"2025","A","crop_screening","Rwa_raw_SeasonA2025_Screening.dta",52569,52569,51,53,2,2,45766
+"2025","B","fertilizers_pesticides","Rwa_raw_fertilizer_pesticideB2025.dta",17100,17100,93,93,0,0,0
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta",17100,17100,55,59,4,4,67897
+"2025","B","crop_production","Rwa_raw_SeasonB2025_Production.dta",32920,32920,101,102,1,1,0
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta",50537,50537,54,59,5,5,92334
+"2025","C","fertilizers_pesticides","Rwa_raw_fertilizer_pesticideC2025.dta",1667,1667,85,86,1,1,0
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta",1667,1667,47,50,3,3,1512
+"2025","C","crop_production","Rwa_raw_SeasonC2025_Production.dta",1884,1884,98,101,3,3,1884
+"2025","C","crop_screening","Rwa_raw_SeasonC2025_Screening.dta",8412,8412,40,44,4,4,0

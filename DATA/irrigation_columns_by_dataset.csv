@@ -1,0 +1,41 @@
+module,readable_variable,n_seasons,seasons,original_codes,question_label
+agri_prac,irrigation_technique,21,"2019A, 2019B, 2019C, 2020A, 2020B, 2020C, 2021A, 2021B, 2021C, 2022A, 2022B, 2022C, 2023A, 2023B, 2023C, 2024A, 2024B, 2024C, 2025A, 2025B, 2025C","s4q14, s4q15, s4q16",4.14 What is irrigation technique used on this plot? | 4.15 What is irrigation technique used on this plot? | 4.15 What is main irrigation technique used on this plot? | 4.16 What is irrigation technique used on this plot?
+agri_prac,irrigation_tool,21,"2019A, 2019B, 2019C, 2020A, 2020B, 2020C, 2021A, 2021B, 2021C, 2022A, 2022B, 2022C, 2023A, 2023B, 2023C, 2024A, 2024B, 2024C, 2025A, 2025B, 2025C","s4q16, s4q16_1, s4q17, s4q171, s4q18_1",4.16 What is the irrigation tool have you used? | 4.16 What is the irrigation tool you have used? | 4.17 What is the irrigation tool have you used? | 4.18 What is the irrigation tool have you used?(tool1)
+agri_prac,irrigation_water_source,21,"2019A, 2019B, 2019C, 2020A, 2020B, 2020C, 2021A, 2021B, 2021C, 2022A, 2022B, 2022C, 2023A, 2023B, 2023C, 2024A, 2024B, 2024C, 2025A, 2025B, 2025C","s4q14, s4q15, s4q15_1, s4q16, s4q161, s4q17_1",4.14 What is the source of water for irrigation? | 4.15 What is the source of water for irrigation? | 4.16 What is the source of water for irrigation? | 4.17 What is the source of water for irrigation?(source1)
+agri_prac,plot_irrigated_this_season,21,"2019A, 2019B, 2019C, 2020A, 2020B, 2020C, 2021A, 2021B, 2021C, 2022A, 2022B, 2022C, 2023A, 2023B, 2023C, 2024A, 2024B, 2024C, 2025A, 2025B, 2025C","s4q13, s4q14, s4q15",4.13 Has this plot been irrigated during this agricultural season? | 4.13 Have you irrigated your plot during this season? | 4.14 Has this plot been irrigated during this agricultural season? | 4.15 Has this plot been irrigated during this agricultural season?
+agri_prac,irrigation_cost_rwf,20,"2019A, 2019B, 2019C, 2020A, 2020B, 2020C, 2021A, 2021B, 2021C, 2022A, 2022B, 2022C, 2023B, 2023C, 2024A, 2024B, 2024C, 2025A, 2025B, 2025C","s4q17, s4q18, s4q19",4.17 Total cost of irrigation? | 4.17 What is the cost spent for irrigation activities? (Rwf) | 4.18 What is the cost spent for irrigation activities? (Rwf) | 4.19 What is the cost spent for irrigation activities? (Rwf)
+agri_prac,irrigation_any_plot_this_season,18,"2020A, 2020B, 2020C, 2021A, 2021B, 2021C, 2022A, 2022B, 2022C, 2023A, 2023B, 2023C, 2024A, 2024B, 2024C, 2025A, 2025B, 2025C","s4q12, s4q13, s4q14",4.12 Did you practice irrigation in any of your plots during this agricultural s | 4.13 Did you practice irrigation in any of your plots during this agricultural s | 4.14 Did you practice irrigation in any of your plots during this agricultural s
+agri_prac,irrigation_tool_s4q18_2,9,"2022A, 2022B, 2022C, 2023A, 2023B, 2023C, 2024A, 2024B, 2024C",s4q18_2,4.18 What is the irrigation tool have you used?(tool2)
+agri_prac,irrigation_tool_s4q18_3,9,"2022A, 2022B, 2022C, 2023A, 2023B, 2023C, 2024A, 2024B, 2024C",s4q18_3,4.18 What is the irrigation tool have you used?(tool3)
+agri_prac,irrigation_water_source_s4q17_2,9,"2022A, 2022B, 2022C, 2023A, 2023B, 2023C, 2024A, 2024B, 2024C",s4q17_2,4.17 What is the source of water for irrigation?(source2)
+agri_prac,irrigation_water_source_s4q17_3,9,"2022A, 2022B, 2022C, 2023A, 2023B, 2023C, 2024A, 2024B, 2024C",s4q17_3,4.17 What is the source of water for irrigation?(source3)
+agri_prac,irrigation_tool_s4q16_2,6,"2020A, 2020B, 2020C, 2021A, 2021B, 2021C",s4q16_2,4.16 What is the irrigation tool have you used?
+agri_prac,irrigation_tool_s4q16_3,6,"2020A, 2020B, 2020C, 2021A, 2021B, 2021C",s4q16_3,4.16 What is the irrigation tool have you used?
+agri_prac,irrigation_tool_s4q18_4,6,"2022A, 2022B, 2022C, 2023A, 2023B, 2024B",s4q18_4,4.18 What is the irrigation tool have you used?(tool4)
+agri_prac,irrigation_tool_s4q18_o,6,"2022A, 2022B, 2022C, 2023A, 2023B, 2023C",s4q18_o,4.18 What is the irrigation tool have you used?
+agri_prac,irrigation_water_source_s4q15_2,6,"2020A, 2020B, 2020C, 2021A, 2021B, 2021C",s4q15_2,4.15 What is the source of water for irrigation?
+agri_prac,irrigation_water_source_s4q17_o,6,"2022A, 2022B, 2022C, 2023A, 2023B, 2023C",s4q17_o,4.17 What is the source of water for irrigation?
+agri_prac,irrigation_water_source_s4q15_3,4,"2020B, 2020C, 2021A, 2021B",s4q15_3,4.15 What is the source of water for irrigation?
+agri_prac,irrigation_tool_s4q16_1,3,"2021A, 2021B, 2021C",s4q16_1,4.16 What is the irrigation tool have you used?
+agri_prac,irrigation_tool_s4q16_4,3,"2021A, 2021B, 2021C",s4q16_4,4.16 What is the irrigation tool have you used?
+agri_prac,irrigation_water_source_s4q15_1,3,"2021A, 2021B, 2021C",s4q15_1,4.15 What is the source of water for irrigation?
+agri_prac,main_irrigated_crop,3,"2019A, 2019B, 2019C",s4q18,4.18 What was the main crop to irrigate?
+agri_prac,irrigation_tool_s4q17_1,2,"2025A, 2025B",s4q17_1,4.17 What is the irrigation tool have you used?
+agri_prac,irrigation_tool_s4q17_2,2,"2025A, 2025B",s4q17_2,4.17 What is the irrigation tool have you used?
+agri_prac,irrigation_tool_s4q17_3,2,"2025A, 2025B",s4q17_3,4.17 What is the irrigation tool have you used?
+agri_prac,irrigation_tool_s4q17_4,2,"2025A, 2025B",s4q17_4,4.17 What is the irrigation tool have you used?
+agri_prac,irrigation_tool_s4q17_other,2,"2025A, 2025B",s4q17_Other,4.17 What is the irrigation tool have you used?
+agri_prac,irrigation_water_source_s4q16_1,2,"2025A, 2025B",s4q16_1,4.16 What is the source of water for irrigation?
+agri_prac,irrigation_water_source_s4q16_2,2,"2025A, 2025B",s4q16_2,4.16 What is the source of water for irrigation?
+agri_prac,irrigation_water_source_s4q16_3,2,"2025A, 2025B",s4q16_3,4.16 What is the source of water for irrigation?
+agri_prac,irrigation_water_source_s4q16_other,2,"2025A, 2025B",s4q16_Other,4.16 What is the source of water for irrigation?
+agri_prac,irrigation_tool_s4q16_5,1,2021A,s4q16_5,4.16 What is the irrigation tool have you used?
+agri_prac,irrigation_tool_s4q172,1,2025C,s4q172,4.17 What is the irrigation tool have you used?
+agri_prac,irrigation_tool_s4q173,1,2025C,s4q173,4.17 What is the irrigation tool have you used?
+agri_prac,irrigation_tool_s4q174,1,2025C,s4q174,4.17 What is the irrigation tool have you used?
+agri_prac,irrigation_tool_s4q17_5,1,2025A,s4q17_5,4.17 What is the irrigation tool have you used?
+agri_prac,irrigation_tool_s4q18_5,1,2023A,s4q18_5,4.18 What is the irrigation tool have you used?(tool5)
+agri_prac,irrigation_water_source_s4q162,1,2025C,s4q162,4.16 What is the source of water for irrigation?
+agri_prac,irrigation_water_source_s4q17_4,1,2022A,s4q17_4,4.17 What is the source of water for irrigation?(source4)
+crop_prod,plot_irrigated_this_season,8,"2023A, 2023B, 2024A, 2024B, 2024C, 2025A, 2025B, 2025C","s4q14, s4q15",4.14 Has this plot been irrigated during this agricultural season? | 4.15 Has this plot been irrigated during this agricultural season?
+crop_prod,irrigation_any_plot_this_season,6,"2024A, 2024B, 2024C, 2025A, 2025B, 2025C","s4q13, s4q14",4.13 Practiced irrigation in any of your plots during this agricultural season | 4.14 Did you practice irrigation in any of your plots during this agricultural s

@@ -1,0 +1,27 @@
+# R session files
+.Rproj.user
+.Rhistory
+.RData
+.RDataTmp*
+.Ruserdata
+
+# Secrets and credentials
+.Renviron
+.env
+*.pem
+*.key
+rsconnect/**/*.json
+**/rsconnect/accounts/
+
+# NISR survey microdata (never public)
+DATA/SAS/
+DATA/Agriculture Household Survey/
+DATA/processed/
+02_LABELLED_SAS/SAS_*/
+SAS.zip
+*.sas7bdat
+*.dta
+*.sav
+
+# Large archives (GitHub limit is 100 MB per file)
+*.zip

@@ -91,7 +91,7 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
 
     bench_line <- function() {
       b <- D$meta$benchmarks
-      if (is.null(b) || f()$area_level != "national") return(NULL)
+      if (is.null(b) || f()$area_level != "national" || 2026 %in% PUB_YEARS) return(NULL)
       v <- b$value[b$key == "nisr_2026a_farmers"]
       if (!length(v)) NULL else div(class = "st-bench", tr("k_any_bench", fmt_pct(v)))
     }
@@ -99,15 +99,25 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
       irr <- yearly("irrigated"); mod <- yearly("irrig_modern"); anyf <- yearly("irrig_any_farmer")
       fert <- yearly("inorganic_fert")
       sc <- yearly("irrigated", seasons = "C")
-      tot <- totals_for(f()) |> filter(sas_season != "C") |> group_by(sas_year) |>
+      tot_all <- totals_for(f()) |> filter(sas_season != "C") |> group_by(sas_year) |>
         # areas: average per main season (seasons A and B farm the same land, so adding them double counts);
         # harvests: added up over the seasons
         summarise(ha = mean(irrigated_area_ha, na.rm = TRUE), t = sum(production_t, na.rm = TRUE),
                   cult = mean(cultivated_area_ha, na.rm = TRUE), .groups = "drop") |> arrange(sas_year)
+      # NISR does not publish the area of plots that report irrigation: that tile stays on the survey years
+      tot <- tot_all |> filter(is.finite(ha))
+      pub_t <- totals_for(f()) |> filter(sas_season != "C", sas_year %in% PUB_YEARS)
       ya <- D$model_yield$table |> filter(crop_name == "Maize")
       lst <- function(d, v = "estimate") if (nrow(d)) tail(d[[v]], 1) else NA
-      dlt <- function(d, v = "estimate") if (nrow(d) >= 2) tail(d[[v]], 1) - d[[v]][1] else NA
-      yr <- function(d) if (nrow(d)) paste0(tail(d$sas_year, 1), " \u00B7 ") else ""
+      latest_pub <- function(d) nrow(d) > 0 && "source" %in% names(d) && tail(d$source, 1) == "nisr"
+      # change since the first year: survey years only (a published season is not compared with them)
+      dlt <- function(d, v = "estimate") {
+        if (latest_pub(d)) return(NA)
+        if (nrow(d) >= 2) tail(d[[v]], 1) - d[[v]][1] else NA
+      }
+      yr <- function(d) if (!nrow(d)) "" else if (latest_pub(d))
+        tagList(span(class = "st-pub", fontawesome::fa("building-columns"), " ", tr("k_pub_line", tail(d$sas_year, 1), tail(d$seasons, 1))), " ")
+        else paste0(tail(d$sas_year, 1), " \u00B7 ")
       since <- function(d) if (nrow(d)) tr("k_pts_since", d$sas_year[1]) else ""
       tagList(
         tile_row(
@@ -117,14 +127,18 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
                     tagList(yr(tot), tr("k_area_sub2", fmt_pct(100 * lst(tot, "ha") / lst(tot, "cult")))),
                     num = round(lst(tot, "ha")), suffix = " ha"),
           stat_tile(tr("k_modern"), fmt_pct(lst(mod)), "gears", "#B07A1C", dlt(mod), TRUE, mod$estimate,
-                    tagList(yr(mod), tr("k_modern_sub2"), " ", rel_badge(lst(mod, "rel"), tr)), num = lst(mod), suffix = "%", decimals = 1),
+                    tagList(yr(mod), tr("k_modern_sub2"), " ", if (!latest_pub(mod)) rel_badge(lst(mod, "rel"), tr)),
+                    num = lst(mod), suffix = "%", decimals = 1),
           stat_tile(tr("ind_irrig_any_farmer"), fmt_pct(lst(anyf)), "user-check", brand$green, dlt(anyf), TRUE, anyf$estimate,
                     tagList(yr(anyf), tr("k_any_sub"), bench_line()), num = lst(anyf), suffix = "%", decimals = 1)),
         tile_row(
           stat_tile(tr("ind_inorganic_fert"), fmt_pct(lst(fert)), "flask", "#6A4C93", dlt(fert), TRUE, fert$estimate,
                     tagList(yr(fert), tr("k_fert_sub")), num = lst(fert), suffix = "%", decimals = 1),
-          stat_tile(tr("k_production"), paste(fmt_num(lst(tot, "t") / 1000), "kt"), "wheat-awn", "#B07A1C", NULL, TRUE, tot$t,
-                    tagList(yr(tot), tr("k_production_sub")), num = round(lst(tot, "t") / 1000), suffix = " kt"),
+          stat_tile(tr("k_production"), paste(fmt_num(lst(tot_all, "t") / 1000), "kt"), "wheat-awn", "#B07A1C", NULL, TRUE, tot_all$t,
+                    tagList(if (nrow(tot_all) && tail(tot_all$sas_year, 1) %in% pub_t$sas_year)
+                              span(class = "st-pub", fontawesome::fa("building-columns"), " ", tr("k_pub_prod", tail(tot_all$sas_year, 1)))
+                            else yr(tot_all), " ", tr("k_production_sub")),
+                    num = round(lst(tot_all, "t") / 1000), suffix = " kt"),
           stat_tile(tr("k_season_c"), fmt_pct(lst(sc)), "sun", brand$terracotta, dlt(sc), TRUE, sc$estimate,
                     tagList(yr(sc), tr("k_season_c_sub")), num = lst(sc), suffix = "%", decimals = 1),
           stat_tile(tr("k_maize"), paste0("+", fmt_num(ya$adjusted_pct, 0), "%"), "seedling", brand$green, NULL, TRUE, NULL,
@@ -137,8 +151,8 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
       e <- trend_d(); validate(need(nrow(e) > 0, tr("no_data")))
       p <- plot_ly()
       for (s in intersect(c("A", "B", "C"), unique(e$sas_season))) {
-        d <- e |> filter(sas_season == s) |> arrange(sas_year)
-        p <- p |>
+        d <- e |> filter(sas_season == s, source == "survey") |> arrange(sas_year)
+        if (nrow(d)) p <- p |>
           add_trace(data = d, x = ~sas_year, y = ~estimate, type = "scatter", mode = "lines+markers",
                     name = tr(paste0("season_", tolower(s))),
                     line = list(color = season_cols[[s]], width = 3, shape = "spline", smoothing = 0.5),
@@ -146,11 +160,19 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
                     text = ~paste0(sas_year, sas_season, ": <b>", fmt_pct(estimate), "</b> (95% CI ", fmt_pct(ci_low), "\u2013",
                                    fmt_pct(ci_high), ") \u00B7 n = ", fmt_num(n)),
                     hoverinfo = "text")
+        # NISR published seasons: their own marker, not joined to the survey line
+        pb <- e |> filter(sas_season == s, source == "nisr") |> arrange(sas_year)
+        if (nrow(pb)) p <- p |>
+          add_trace(data = pb, x = ~sas_year, y = ~estimate, type = "scatter", mode = "markers",
+                    name = paste0(tr(paste0("season_", tolower(s))), " \u00B7 ", tr("pub_short")),
+                    marker = list(size = 11, symbol = "diamond", color = season_cols[[s]], line = list(color = "#fff", width = 2)),
+                    text = ~paste0(sas_year, sas_season, ": <b>", fmt_pct(estimate), "</b> \u00B7 ", tr("pub_hover")),
+                    hoverinfo = "text")
       }
       plotly_std(p, y = tr(paste0("ind_", input$trend_ind %||% "irrigated")), dtick = 1) |> layout(hovermode = "x unified") |> simple_lines()
     })
     output$trend_means <- renderUI({
-      e <- trend_d() |> filter(sas_season != "C") |> arrange(sas_year)
+      e <- trend_d() |> filter(sas_season != "C", source == "survey") |> arrange(sas_year)
       if (nrow(e) < 2) return(NULL)
       a <- e |> slice(1); b <- e |> slice(n())
       sig <- b$ci_low > a$ci_high || b$ci_high < a$ci_low
@@ -161,7 +183,8 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
 
     inputs_d <- reactive({
       ind <- c("irrigated", "inorganic_fert", "organic_fert", "pesticide", "anti_erosion", "mechanised", "agroforestry", "land_consolidated")
-      e <- est_for(f(), ind, seasons = intersect(f()$seasons, c("A", "B")) %||% "A")
+      # one survey season set, so every bar has the same definition and year
+      e <- est_for(f(), ind, seasons = intersect(f()$seasons, c("A", "B")) %||% "A") |> filter(source == "survey")
       if (!nrow(e)) return(e)
       ly <- max(e$sas_year)
       e |> filter(sas_year == ly) |> group_by(indicator) |>

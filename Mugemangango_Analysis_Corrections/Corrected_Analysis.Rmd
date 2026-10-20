@@ -1,0 +1,1290 @@
+---
+title: "Vermicompost and Mineral Fertilizers: Soil Microorganisms and Grain Composition"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    self_contained: true
+    code_folding: hide
+header-includes:
+  - |
+    <style>
+      body, p, li, table, div, h1, h2, h3, h4 {
+        font-family: "Times New Roman", Times, serif !important;
+        font-size: 12pt;
+      }
+      h1, h2, h3, h4 { font-weight: 600; }
+      .figure { text-align: center; }
+      table { margin-left: auto; margin-right: auto; }
+    </style>
+---
+
+# About this analysis
+
+This report uses the four supplied workbooks for maize composition, soybean composition, and soil biological measurements from two seasons. Keep the four Excel files in the same folder as this R Markdown file before knitting it.
+
+The workbooks label the treatment factors as N, P, and V, with levels 1, 2, and 3. The analysis keeps those codes because the workbooks do not provide a treatment-rate legend. In graphs and tables, the codes are not translated into fertilizer amounts.
+
+The two seasonal soil workbooks have matching Site, Replication, N, P, and V keys. The seasonal model treats each matched key as the same plot measured twice. Please confirm this assumption against the field records.
+
+# 1. Setup
+
+Install any missing packages once in R with:
+
+```{r setup}
+required_packages <- c(
+  "readxl", "dplyr", "tidyr", "stringr", "ggplot2",
+  "lme4", "lmerTest", "emmeans", "knitr", "scales"
+)
+
+missing_packages <- required_packages[
+  !vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)
+]
+
+if (length(missing_packages) > 0) {
+  stop(
+    "Install these R packages before knitting: ",
+    paste(missing_packages, collapse = ", "),
+    ". You can use install.packages(c(",
+    paste(sprintf('"%s"', missing_packages), collapse = ", "),
+    "))."
+  )
+}
+
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(lme4)
+library(lmerTest)
+library(emmeans)
+library(knitr)
+
+options(contrasts = c("contr.sum", "contr.poly"))
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = TRUE,
+  fig.align = "center",
+  dpi = 300,
+  fig.retina = 2,
+  out.width = "95%"
+)
+
+theme_set(
+  theme_minimal(base_size = 12, base_family = "Times New Roman") +
+    theme(
+      plot.title = element_text(face = "bold", hjust = 0.5),
+      axis.title = element_text(size = 12),
+      axis.text = element_text(size = 11, colour = "black"),
+      strip.text = element_text(size = 11, face = "bold"),
+      legend.title = element_text(size = 11),
+      legend.text = element_text(size = 10)
+    )
+)
+```
+
+# 2. Read and check the workbooks
+
+The import helper removes empty trailing Excel columns and cleans column names. It also gives a clear message if a workbook or sheet cannot be found.
+
+```{r import-data}
+data_dir <- "."
+
+read_source <- function(file_name, sheet_name) {
+  file_path <- file.path(data_dir, file_name)
+
+  if (!file.exists(file_path)) {
+    stop("Could not find ", file_name,
+         ". Put this workbook in the same folder as the R Markdown file.")
+  }
+
+  data <- readxl::read_excel(file_path, sheet = sheet_name)
+
+  # Excel sometimes includes empty columns after the actual data.
+  keep_columns <- !grepl("^\\.\\.\\.", names(data))
+  data <- data[, keep_columns, drop = FALSE]
+
+  # Turn headings such as "Site!" and "Crude protein (%)" into stable names.
+  names(data) <- names(data) |>
+    stringr::str_to_lower() |>
+    stringr::str_replace_all("[^a-z0-9]+", "_") |>
+    stringr::str_replace_all("^_|_$", "")
+
+  data
+}
+
+maize_raw <- read_source(
+  "Rev_maize proximate composition (1).xlsx",
+  "Maize data bothsites"
+)
+
+soybean_raw <- read_source(
+  "Rev_soybean proximate composition.xlsx",
+  "soya data bothsites"
+)
+
+soil_s1_raw <- read_source(
+  "Rev_soil biological 1st season (1).xlsx",
+  "microorganisms 1st season"
+)
+
+soil_s2_raw <- read_source(
+  "Rev_soil biological 2nd season.xlsx",
+  "Sheet1"
+)
+
+maize <- maize_raw |>
+  rename(
+    site = sites,
+    protein = crude_protein,
+    fat = crude_fat,
+    starch = crude_starch,
+    fiber = crude_fiber
+  )
+
+soybean <- soybean_raw |>
+  rename(
+    site = sites,
+    protein = crude_protein,
+    fat = crude_fat,
+    starch = crude_starch,
+    fiber = crude_fiber
+  )
+
+soil_s1 <- soil_s1_raw |>
+  rename(
+    bacteria = bacteria_population_x106,
+    fungi = fungi_population_x104
+  )
+
+soil_s2 <- soil_s2_raw |>
+  rename(
+    bacteria = bacteria_population_x106,
+    fungi = fungi_population_x104
+  )
+
+prepare_factors <- function(data) {
+  data |>
+    mutate(
+      site = factor(site),
+      replication = factor(replication),
+      n = factor(as.character(n), levels = c("1", "2", "3")),
+      p = factor(as.character(p), levels = c("1", "2", "3")),
+      v = factor(as.character(v), levels = c("1", "2", "3"))
+    )
+}
+
+maize <- prepare_factors(maize)
+soybean <- prepare_factors(soybean)
+soil_s1 <- prepare_factors(soil_s1)
+soil_s2 <- prepare_factors(soil_s2)
+
+plot_keys <- c("site", "replication", "n", "p", "v")
+maize_traits <- c("protein", "fat", "starch", "fiber")
+microbe_traits <- c("bacteria", "fungi")
+
+required_columns <- list(
+  maize = c(plot_keys, maize_traits),
+  soybean = c(plot_keys, maize_traits),
+  season_1 = c(plot_keys, microbe_traits),
+  season_2 = c(plot_keys, microbe_traits)
+)
+
+data_sets <- list(
+  maize = maize,
+  soybean = soybean,
+  season_1 = soil_s1,
+  season_2 = soil_s2
+)
+
+for (data_name in names(data_sets)) {
+  missing_columns <- setdiff(
+    required_columns[[data_name]],
+    names(data_sets[[data_name]])
+  )
+
+  if (length(missing_columns) > 0) {
+    stop(
+      "The ", data_name, " workbook is missing expected columns: ",
+      paste(missing_columns, collapse = ", ")
+    )
+  }
+}
+
+has_duplicate_keys <- function(data) {
+  data |>
+    count(across(all_of(plot_keys)), name = "key_count") |>
+    filter(key_count > 1) |>
+    nrow() > 0
+}
+
+for (data_name in names(data_sets)) {
+  if (has_duplicate_keys(data_sets[[data_name]])) {
+    stop("Duplicate Site/Replication/N/P/V keys were found in ", data_name, ".")
+  }
+}
+
+key_signature <- function(data) {
+  data |>
+    transmute(
+      site = as.character(site),
+      replication = as.character(replication),
+      n = as.character(n),
+      p = as.character(p),
+      v = as.character(v)
+    ) |>
+    arrange(site, replication, n, p, v)
+}
+
+reference_keys <- key_signature(maize)
+
+for (data_name in c("soybean", "season_1", "season_2")) {
+  if (!isTRUE(all.equal(
+    reference_keys,
+    key_signature(data_sets[[data_name]]),
+    check.attributes = FALSE
+  ))) {
+    stop(
+      "The plot/treatment keys in ", data_name,
+      " do not match the maize workbook. Check the source workbooks before joining."
+    )
+  }
+}
+
+data_overview <- bind_rows(lapply(names(data_sets), function(data_name) {
+  data <- data_sets[[data_name]]
+  data.frame(
+    data_set = data_name,
+    rows = nrow(data),
+    duplicate_keys = has_duplicate_keys(data),
+    rows_with_missing_values = sum(!complete.cases(data))
+  )
+}))
+
+kable(
+  data_overview,
+  caption = "Workbook row counts and basic data checks",
+  digits = 0
+)
+```
+
+All four workbooks should have unique and matching plot/treatment keys. A stop message means the source files need to be checked before any joined analysis is interpreted.
+
+```{r missing-value-checks}
+missing_value_table <- bind_rows(lapply(names(data_sets), function(data_name) {
+  data <- data_sets[[data_name]]
+  data.frame(
+    data_set = data_name,
+    variable = names(data),
+    missing_values = vapply(data, function(x) sum(is.na(x)), integer(1))
+  )
+}))
+
+kable(
+  missing_value_table,
+  caption = "Missing values by workbook and variable",
+  digits = 0
+)
+
+site_counts <- maize |>
+  count(site, name = "plots")
+
+kable(site_counts, caption = "Maize records by site")
+```
+
+# 3. Descriptive summaries
+
+The summaries below describe the observations in the workbooks. They do not replace the factorial mixed models, which account for the treatment structure.
+
+```{r soybean-protein-check}
+# Values under 20% are flagged for source checking. They are not changed here.
+soybean_protein_flag <- soybean |>
+  filter(protein < 20) |>
+  select(site, replication, n, p, v, protein)
+
+kable(
+  soybean_protein_flag,
+  caption = "Soybean protein values to verify against the source records",
+  digits = 3
+)
+```
+
+The protein screen is a data-quality flag, not a claim that the entries are wrong. The primary analysis below keeps every value as recorded. A separate sensitivity analysis shows what changes if the flagged rows are omitted; do not treat that sensitivity analysis as a correction.
+
+```{r descriptive-tables}
+trait_labels <- c(
+  protein = "Crude protein (%)",
+  fat = "Crude fat (%)",
+  starch = "Crude starch (%)",
+  fiber = "Crude fiber (%)"
+)
+
+summarise_traits <- function(data, traits) {
+  data |>
+    pivot_longer(
+      cols = all_of(traits),
+      names_to = "trait",
+      values_to = "value"
+    ) |>
+    group_by(site, trait) |>
+    summarise(
+      n = sum(!is.na(value)),
+      mean = mean(value, na.rm = TRUE),
+      sd = sd(value, na.rm = TRUE),
+      minimum = min(value, na.rm = TRUE),
+      maximum = max(value, na.rm = TRUE),
+      .groups = "drop"
+    ) |>
+    mutate(trait = unname(trait_labels[trait]))
+}
+
+maize_summary <- summarise_traits(maize, maize_traits)
+soybean_summary <- summarise_traits(soybean, maize_traits)
+
+kable(
+  maize_summary,
+  caption = "Maize composition by site (mean and standard deviation)",
+  digits = 2
+)
+
+kable(
+  soybean_summary,
+  caption = "Soybean composition by site (mean and standard deviation)",
+  digits = 2
+)
+```
+
+```{r composition-figures, fig.width=10, fig.height=6}
+plot_composition <- function(data, traits, crop_name) {
+  data |>
+    pivot_longer(
+      cols = all_of(traits),
+      names_to = "trait",
+      values_to = "value"
+    ) |>
+    mutate(trait = factor(
+      trait,
+      levels = names(trait_labels),
+      labels = unname(trait_labels)
+    )) |>
+    ggplot(aes(x = site, y = value, fill = site)) +
+    geom_boxplot(width = 0.65, outlier.alpha = 0.55) +
+    facet_wrap(~ trait, scales = "free_y", ncol = 2) +
+    scale_fill_brewer(palette = "Set2") +
+    labs(
+      title = paste(crop_name, "grain composition by site"),
+      subtitle = "Treatment levels are pooled in this descriptive figure",
+      x = "Site",
+      y = "Composition (%)",
+      fill = "Site"
+    ) +
+    theme(legend.position = "none")
+}
+
+plot_composition(maize, maize_traits, "Maize")
+plot_composition(soybean, maize_traits, "Soybean")
+```
+
+# 4. Grain composition mixed-effects models
+
+Site, N, P, V, and all their interactions are fixed effects. Replication is treated as a random block nested within site, written as (1 | site:replication). This accounts for the three replications within each of the two sites.
+
+Type III tests use sum-to-zero contrasts. A significant interaction means the treatment response depends on another factor, so interpret treatment comparisons within the relevant site and treatment combination rather than reading the main effect alone.
+
+```{r fit-grain-models}
+fit_grain_model <- function(data, response) {
+  model_formula <- as.formula(
+    paste(
+      response,
+      "~ site * n * p * v + (1 | site:replication)"
+    )
+  )
+
+  lmerTest::lmer(
+    model_formula,
+    data = data,
+    REML = TRUE
+  )
+}
+
+maize_models <- setNames(
+  lapply(maize_traits, function(response) {
+    fit_grain_model(maize, response)
+  }),
+  maize_traits
+)
+
+soybean_models <- setNames(
+  lapply(maize_traits, function(response) {
+    fit_grain_model(soybean, response)
+  }),
+  maize_traits
+)
+
+fixed_effect_table <- function(model, response, data_name) {
+  tests <- as.data.frame(
+    lmerTest::anova(model, type = 3, ddf = "Satterthwaite")
+  )
+
+  tests$effect <- rownames(tests)
+  tests$response <- response
+  tests$data_set <- data_name
+
+  tests |>
+    select(data_set, response, effect, everything())
+}
+
+maize_fixed_effects <- bind_rows(lapply(names(maize_models), function(response) {
+  fixed_effect_table(maize_models[[response]], response, "Maize")
+}))
+
+soybean_fixed_effects <- bind_rows(lapply(names(soybean_models), function(response) {
+  fixed_effect_table(soybean_models[[response]], response, "Soybean")
+}))
+
+kable(
+  maize_fixed_effects,
+  caption = "Type III mixed-model tests for maize composition",
+  digits = 4
+)
+
+kable(
+  soybean_fixed_effects,
+  caption = "Type III mixed-model tests for soybean composition",
+  digits = 4
+)
+```
+
+For each response, a p-value below 0.05 is evidence that the corresponding model term is associated with a difference in the measured outcome. Statistical significance alone does not show whether the difference is large enough to matter in practice.
+
+```{r grain-variance-components}
+variance_table <- function(models, data_name) {
+  bind_rows(lapply(names(models), function(response) {
+    components <- as.data.frame(lme4::VarCorr(models[[response]]))
+    components |>
+      transmute(
+        data_set = data_name,
+        response = response,
+        random_group = grp,
+        variance = vcov,
+        standard_deviation = sdcor
+      )
+  }))
+}
+
+grain_variance_components <- bind_rows(
+  variance_table(maize_models, "Maize"),
+  variance_table(soybean_models, "Soybean")
+)
+
+kable(
+  grain_variance_components,
+  caption = "Random-block and residual variance components",
+  digits = 4
+)
+```
+
+The variance table shows how much model variation is assigned to blocks within site and to residual error. The residual row is the variation not explained by the fixed effects or random block term.
+
+```{r grain-posthoc}
+grain_pairwise <- function(model, response, crop_name) {
+  treatment_factors <- c("n", "p", "v")
+
+  bind_rows(lapply(treatment_factors, function(treatment_factor) {
+    conditioning_factors <- setdiff(
+      c("site", "n", "p", "v"),
+      treatment_factor
+    )
+
+    pairwise_formula <- as.formula(paste(
+      "pairwise ~", treatment_factor, "|",
+      paste(conditioning_factors, collapse = "*")
+    ))
+
+    result <- emmeans::emmeans(
+      model,
+      pairwise_formula,
+      adjust = "tukey"
+    )
+
+    contrast_table <- as.data.frame(result$contrasts)
+
+    for (factor_name in c("site", "n", "p", "v")) {
+      if (!factor_name %in% names(contrast_table)) {
+        contrast_table[[factor_name]] <- "levels compared in contrast"
+      } else {
+        contrast_table[[factor_name]] <- as.character(
+          contrast_table[[factor_name]]
+        )
+      }
+    }
+
+    contrast_table |>
+      mutate(
+        crop = crop_name,
+        response = response,
+        factor_compared = treatment_factor
+      )
+  }))
+}
+
+maize_pairwise <- bind_rows(lapply(names(maize_models), function(response) {
+  grain_pairwise(maize_models[[response]], response, "Maize")
+}))
+
+soybean_pairwise <- bind_rows(lapply(names(soybean_models), function(response) {
+  grain_pairwise(soybean_models[[response]], response, "Soybean")
+}))
+
+significant_grain_pairs <- bind_rows(
+  maize_pairwise,
+  soybean_pairwise
+) |>
+  filter(p.value < 0.05) |>
+  select(
+    crop, response, factor_compared, site, n, p, v,
+    contrast, estimate, SE, df, p.value
+  )
+
+if (nrow(significant_grain_pairs) > 0) {
+  kable(
+    significant_grain_pairs,
+    caption = "Treatment comparisons with Tukey-adjusted p < 0.05",
+    digits = 4
+  )
+} else {
+  cat("No conditional treatment comparison had a Tukey-adjusted p-value below 0.05.")
+}
+```
+
+These are conditional comparisons: each treatment factor is compared while holding site and the other treatment codes fixed. The p-values are Tukey-adjusted within each set of comparisons.
+
+# 5. Soybean protein sensitivity analysis
+
+The two flagged values remain in the primary model. This second model omits them only to show how sensitive the protein results are to those entries. Confirm the values against the original laboratory or field records before deciding which analysis should be reported.
+
+```{r soybean-protein-sensitivity}
+soybean_protein_sensitivity <- soybean |>
+  filter(protein >= 20)
+
+protein_sensitivity_model <- fit_grain_model(
+  soybean_protein_sensitivity,
+  "protein"
+)
+
+protein_all_effects <- fixed_effect_table(
+  soybean_models$protein,
+  "protein: all values as recorded",
+  "Soybean"
+)
+
+protein_sensitivity_effects <- fixed_effect_table(
+  protein_sensitivity_model,
+  "protein: flagged rows omitted for sensitivity only",
+  "Soybean"
+)
+
+protein_sensitivity_table <- bind_rows(
+  protein_all_effects,
+  protein_sensitivity_effects
+)
+
+kable(
+  protein_sensitivity_table,
+  caption = "Soybean protein model comparison",
+  digits = 4
+)
+
+protein_sensitivity_variance <- variance_table(
+  list(protein_sensitivity = protein_sensitivity_model),
+  "Soybean sensitivity"
+)
+
+kable(
+  protein_sensitivity_variance,
+  caption = "Variance components for the sensitivity model",
+  digits = 4
+)
+```
+
+# 6. Grain-model diagnostics
+
+Use these plots to look for broad residual patterns and departures from a straight-line pattern in the normal Q-Q plots. They are visual checks, not automatic pass/fail tests.
+
+```{r grain-diagnostic-helper}
+collect_residuals <- function(models, crop_name) {
+  bind_rows(lapply(names(models), function(response) {
+    model <- models[[response]]
+
+    data.frame(
+      crop = crop_name,
+      response = response,
+      fitted = fitted(model),
+      residual = residuals(model)
+    )
+  }))
+}
+
+grain_residuals <- bind_rows(
+  collect_residuals(maize_models, "Maize"),
+  collect_residuals(soybean_models, "Soybean")
+)
+
+ggplot(grain_residuals, aes(x = fitted, y = residual)) +
+  geom_point(alpha = 0.55) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "firebrick") +
+  facet_grid(response ~ crop, scales = "free") +
+  labs(
+    title = "Grain-model residuals versus fitted values",
+    x = "Fitted value",
+    y = "Residual"
+  )
+```
+
+```{r grain-qq-plots}
+ggplot(grain_residuals, aes(sample = residual)) +
+  stat_qq(alpha = 0.55) +
+  stat_qq_line(colour = "firebrick") +
+  facet_grid(response ~ crop, scales = "free") +
+  labs(
+    title = "Normal Q-Q plots for grain-model residuals",
+    x = "Theoretical quantile",
+    y = "Residual quantile"
+  )
+```
+
+# 7. Correlation analysis
+
+The heatmaps use Spearman correlation coefficients. Each plotted association includes its coefficient; a star indicates a Benjamini–Hochberg adjusted p-value below 0.05. The tables report the coefficient, pairwise sample size, raw p-value, and adjusted p-value.
+
+These are exploratory associations. Site and treatment patterns can contribute to a correlation, so a correlation does not show that one measurement caused another. The p-values do not adjust for the experimental block structure; interpret them as descriptive evidence, alongside the treatment models, rather than as a separate causal test.
+
+For Figures 1 and 2, p-values are adjusted across the unique correlations within that figure. For Figure 3, adjustment is across all crop, season, and microbial comparisons displayed. In every heatmap, * marks adjusted p < 0.05, ** marks adjusted p < 0.01, and *** marks adjusted p < 0.001.
+
+```{r correlation-functions}
+correlation_test <- function(data, x_name, y_name) {
+  pair_data <- data |>
+    select(all_of(c(x_name, y_name))) |>
+    filter(complete.cases(.))
+
+  if (
+    nrow(pair_data) < 3 ||
+    length(unique(pair_data[[x_name]])) < 2 ||
+    length(unique(pair_data[[y_name]])) < 2
+  ) {
+    return(data.frame(
+      x = x_name,
+      y = y_name,
+      rho = NA_real_,
+      p.value = NA_real_,
+      n = nrow(pair_data)
+    ))
+  }
+
+  test <- suppressWarnings(
+    cor.test(
+      pair_data[[x_name]],
+      pair_data[[y_name]],
+      method = "spearman",
+      exact = FALSE
+    )
+  )
+
+  data.frame(
+    x = x_name,
+    y = y_name,
+    rho = unname(test$estimate),
+    p.value = test$p.value,
+    n = nrow(pair_data)
+  )
+}
+
+self_correlations <- function(data, variables) {
+  pairs <- utils::combn(variables, 2, simplify = FALSE)
+
+  tests <- bind_rows(lapply(pairs, function(pair) {
+    correlation_test(data, pair[1], pair[2])
+  })) |>
+    mutate(p_adjusted = p.adjust(p.value, method = "BH"))
+
+  reverse_tests <- tests
+  reverse_tests$x <- tests$y
+  reverse_tests$y <- tests$x
+
+  diagonal <- data.frame(
+    x = variables,
+    y = variables,
+    rho = 1,
+    p.value = NA_real_,
+    n = nrow(data),
+    p_adjusted = NA_real_
+  )
+
+  full_matrix <- bind_rows(
+    tests,
+    reverse_tests,
+    diagonal
+  )
+
+  list(tests = tests, matrix = full_matrix)
+}
+
+cross_correlations <- function(data, x_variables, y_variables, panel_name) {
+  pairs <- expand.grid(
+    x = x_variables,
+    y = y_variables,
+    stringsAsFactors = FALSE
+  )
+
+  bind_rows(lapply(seq_len(nrow(pairs)), function(i) {
+    correlation_test(data, pairs$x[i], pairs$y[i])
+  })) |>
+    mutate(panel = panel_name)
+}
+
+correlation_stars <- function(p_adjusted) {
+  case_when(
+    is.na(p_adjusted) ~ "",
+    p_adjusted < 0.001 ~ "***",
+    p_adjusted < 0.01 ~ "**",
+    p_adjusted < 0.05 ~ "*",
+    TRUE ~ ""
+  )
+}
+
+correlation_heatmap <- function(data, x_labels, y_labels, title) {
+  plot_data <- data |>
+    mutate(
+      x_label = factor(
+        unname(x_labels[x]),
+        levels = unname(x_labels[names(x_labels)])
+      ),
+      y_label = factor(
+        unname(y_labels[y]),
+        levels = rev(unname(y_labels[names(y_labels)]))
+      ),
+      stars = correlation_stars(p_adjusted),
+      cell_label = paste0(sprintf("%.2f", rho), stars)
+    )
+
+  ggplot(plot_data, aes(x = x_label, y = y_label, fill = rho)) +
+    geom_tile(colour = "white", linewidth = 0.7) +
+    geom_text(aes(label = cell_label), size = 3.6) +
+    scale_fill_gradient2(
+      low = "#2166AC",
+      mid = "#F7F7F7",
+      high = "#B2182B",
+      midpoint = 0,
+      limits = c(-1, 1),
+      breaks = seq(-1, 1, by = 0.5),
+      oob = scales::squish,
+      name = "Spearman rho"
+    ) +
+    coord_fixed() +
+    labs(title = title, x = NULL, y = NULL) +
+    theme(
+      axis.text.x = element_text(angle = 35, hjust = 1, size = 11),
+      axis.text.y = element_text(size = 11),
+      legend.position = "right"
+    )
+}
+```
+
+## Figure 1. Maize proximate composition correlations
+
+```{r maize-correlations, fig.width=8, fig.height=7}
+grain_labels <- c(
+  protein = "Protein (%)",
+  fat = "Fat (%)",
+  starch = "Starch (%)",
+  fiber = "Fiber (%)"
+)
+
+maize_correlations <- self_correlations(maize, maize_traits)
+
+maize_heatmap <- correlation_heatmap(
+  maize_correlations$matrix,
+  grain_labels,
+  grain_labels,
+  "Figure 1. Maize composition correlations"
+)
+
+maize_heatmap
+
+dir.create("analysis_figures", showWarnings = FALSE)
+ggsave(
+  "analysis_figures/Figure_1_maize_correlations.png",
+  plot = maize_heatmap,
+  width = 8,
+  height = 7,
+  units = "in",
+  dpi = 600
+)
+
+kable(
+  maize_correlations$tests |>
+    mutate(
+      x = unname(grain_labels[x]),
+      y = unname(grain_labels[y])
+    ) |>
+    select(x, y, rho, n, p.value, p_adjusted),
+  caption = "Maize correlation coefficients and adjusted p-values",
+  digits = 4
+)
+```
+
+## Figure 2. Soybean proximate composition correlations
+
+```{r soybean-correlations, fig.width=8, fig.height=7}
+soybean_correlations <- self_correlations(soybean, maize_traits)
+
+soybean_heatmap <- correlation_heatmap(
+  soybean_correlations$matrix,
+  grain_labels,
+  grain_labels,
+  "Figure 2. Soybean composition correlations"
+)
+
+soybean_heatmap
+
+ggsave(
+  "analysis_figures/Figure_2_soybean_correlations.png",
+  plot = soybean_heatmap,
+  width = 8,
+  height = 7,
+  units = "in",
+  dpi = 600
+)
+
+kable(
+  soybean_correlations$tests |>
+    mutate(
+      x = unname(grain_labels[x]),
+      y = unname(grain_labels[y])
+    ) |>
+    select(x, y, rho, n, p.value, p_adjusted),
+  caption = "Soybean correlation coefficients and adjusted p-values",
+  digits = 4
+)
+```
+
+## Figure 3. Grain composition and soil microorganisms
+
+The four panels compare each crop with microbial populations in each season. The same color scale is used in Figures 1–3. BH adjustment for Figure 3 is applied across all crop, season, and microbial associations shown in that figure.
+
+```{r prepare-crop-microbe-correlations}
+soil_wide <- soil_s1 |>
+  select(
+    all_of(plot_keys),
+    bacteria_s1 = bacteria,
+    fungi_s1 = fungi
+  ) |>
+  inner_join(
+    soil_s2 |>
+      select(
+        all_of(plot_keys),
+        bacteria_s2 = bacteria,
+        fungi_s2 = fungi
+      ),
+    by = plot_keys
+  )
+
+maize_soil <- maize |>
+  inner_join(soil_wide, by = plot_keys)
+
+soybean_soil <- soybean |>
+  inner_join(soil_wide, by = plot_keys)
+
+microbe_labels <- c(
+  bacteria_s1 = "Bacteria S1 (×10⁶)",
+  fungi_s1 = "Fungi S1 (×10⁴)",
+  bacteria_s2 = "Bacteria S2 (×10⁶)",
+  fungi_s2 = "Fungi S2 (×10⁴)"
+)
+
+cross_correlation_tests <- bind_rows(
+  cross_correlations(
+    maize_soil, maize_traits,
+    names(microbe_labels)[1:2],
+    "Maize - Season 1"
+  ),
+  cross_correlations(
+    maize_soil, maize_traits,
+    names(microbe_labels)[3:4],
+    "Maize - Season 2"
+  ),
+  cross_correlations(
+    soybean_soil, maize_traits,
+    names(microbe_labels)[1:2],
+    "Soybean - Season 1"
+  ),
+  cross_correlations(
+    soybean_soil, maize_traits,
+    names(microbe_labels)[3:4],
+    "Soybean - Season 2"
+  )
+) |>
+  mutate(p_adjusted = p.adjust(p.value, method = "BH"))
+
+cross_correlation_plot_data <- cross_correlation_tests |>
+  mutate(
+    x_label = factor(
+      unname(grain_labels[x]),
+      levels = unname(grain_labels[maize_traits])
+    ),
+    y_label = factor(
+      unname(microbe_labels[y]),
+      levels = rev(unname(microbe_labels))
+    ),
+    panel = factor(
+      panel,
+      levels = c(
+        "Maize - Season 1", "Maize - Season 2",
+        "Soybean - Season 1", "Soybean - Season 2"
+      )
+    ),
+    stars = correlation_stars(p_adjusted),
+    cell_label = paste0(sprintf("%.2f", rho), stars)
+  )
+```
+
+```{r figure-3, fig.width=12, fig.height=9}
+crop_microbe_heatmap <- ggplot(
+  cross_correlation_plot_data,
+  aes(x = x_label, y = y_label, fill = rho)
+) +
+  geom_tile(colour = "white", linewidth = 0.7) +
+  geom_text(aes(label = cell_label), size = 3.2) +
+  facet_wrap(~ panel, nrow = 2) +
+  scale_fill_gradient2(
+    low = "#2166AC",
+    mid = "#F7F7F7",
+    high = "#B2182B",
+    midpoint = 0,
+    limits = c(-1, 1),
+    breaks = seq(-1, 1, by = 0.5),
+    oob = scales::squish,
+    name = "Spearman rho"
+  ) +
+  labs(
+    title = "Figure 3. Grain composition and soil microbial correlations",
+    x = NULL,
+    y = NULL
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 40, hjust = 1, size = 10),
+    axis.text.y = element_text(size = 10),
+    strip.text = element_text(size = 11, face = "bold")
+  )
+
+crop_microbe_heatmap
+
+ggsave(
+  "analysis_figures/Figure_3_crop_microbe_correlations.png",
+  plot = crop_microbe_heatmap,
+  width = 12,
+  height = 9,
+  units = "in",
+  dpi = 600
+)
+
+kable(
+  cross_correlation_tests |>
+    mutate(
+      x = unname(grain_labels[x]),
+      y = unname(microbe_labels[y])
+    ) |>
+    select(panel, x, y, rho, n, p.value, p_adjusted),
+  caption = "Crop-microbe correlation coefficients and adjusted p-values",
+  digits = 4
+)
+```
+
+A star marks an adjusted p-value below 0.05; three stars mark an adjusted p-value below 0.001. Coefficient size and direction still matter: a small coefficient is a weak association even when its p-value is small, and a non-significant coefficient should not be described as a confirmed relationship.
+
+# 8. Soil microbial dynamics across the two seasons
+
+The microbial values are positive in the supplied workbooks, so the models use log10 population values to reduce right-skew and stabilize the spread. Estimates from these models are converted back to geometric means and ratios for interpretation. The population units remain the workbook units: bacteria ×10⁶ and fungi ×10⁴.
+
+The repeated-measures model includes Season, Site, N, P, V, and their interactions as fixed effects. It has a random intercept for block within site and a random intercept for plot, written as (1 | site:replication) + (1 | plot_id). The plot term accounts for the same matched plot being measured in both seasons.
+
+```{r prepare-seasonal-data}
+soil_s1_long <- soil_s1 |>
+  select(all_of(plot_keys), all_of(microbe_traits)) |>
+  mutate(season = "Season 1")
+
+soil_s2_long <- soil_s2 |>
+  select(all_of(plot_keys), all_of(microbe_traits)) |>
+  mutate(season = "Season 2")
+
+soil_long <- bind_rows(soil_s1_long, soil_s2_long) |>
+  mutate(
+    season = factor(season, levels = c("Season 1", "Season 2")),
+    plot_id = interaction(
+      site, replication, n, p, v,
+      drop = TRUE,
+      sep = "_"
+    )
+  ) |>
+  pivot_longer(
+    cols = all_of(microbe_traits),
+    names_to = "microbe",
+    values_to = "population"
+  ) |>
+  mutate(
+    microbe = factor(microbe, levels = c("bacteria", "fungi")),
+    log10_population = log10(population)
+  )
+
+if (any(!is.finite(soil_long$log10_population))) {
+  stop(
+    "A microbial population is zero, negative, or missing. ",
+    "Check the source values before using the log10 model."
+  )
+}
+
+microbe_summary <- soil_long |>
+  group_by(site, season, microbe) |>
+  summarise(
+    n = sum(!is.na(population)),
+    mean = mean(population, na.rm = TRUE),
+    sd = sd(population, na.rm = TRUE),
+    minimum = min(population, na.rm = TRUE),
+    maximum = max(population, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  mutate(
+    microbe = recode(
+      microbe,
+      bacteria = "Bacteria population (×10⁶)",
+      fungi = "Fungi population (×10⁴)"
+    )
+  )
+
+kable(
+  microbe_summary,
+  caption = "Microbial population summaries by site and season",
+  digits = 3
+)
+```
+
+```{r seasonal-figure, fig.width=10, fig.height=7}
+season_plot_summary <- soil_long |>
+  group_by(site, season, v, microbe) |>
+  summarise(
+    mean_population = mean(population, na.rm = TRUE),
+    se = sd(population, na.rm = TRUE) / sqrt(sum(!is.na(population))),
+    n = sum(!is.na(population)),
+    .groups = "drop"
+  ) |>
+  mutate(
+    microbe_label = recode(
+      microbe,
+      bacteria = "Bacteria population (×10⁶)",
+      fungi = "Fungi population (×10⁴)"
+    )
+  )
+
+season_plot <- ggplot(
+  season_plot_summary,
+  aes(
+    x = season,
+    y = mean_population,
+    colour = v,
+    group = v
+  )
+) +
+  geom_line(linewidth = 0.7) +
+  geom_point(size = 2.6) +
+  geom_errorbar(
+    aes(
+      ymin = mean_population - se,
+      ymax = mean_population + se
+    ),
+    width = 0.08
+  ) +
+  facet_grid(microbe_label ~ site, scales = "free_y") +
+  scale_colour_brewer(
+    palette = "Dark2",
+    name = "V treatment code"
+  ) +
+  labs(
+    title = "Soil microbial populations across seasons",
+    subtitle = "Means ± SE by V code, averaged over N and P; model tests retain all factors",
+    x = "Season",
+    y = "Population as recorded in the workbook"
+  )
+
+season_plot
+
+dir.create("analysis_figures", showWarnings = FALSE)
+ggsave(
+  "analysis_figures/Figure_4_soil_seasonal_dynamics.png",
+  plot = season_plot,
+  width = 10,
+  height = 7,
+  units = "in",
+  dpi = 600
+)
+```
+
+The figure shows descriptive means by V code, averaging over N and P. The mixed model below retains N, P, and their interactions, so use the model results for treatment inference.
+
+```{r fit-seasonal-models}
+fit_microbe_model <- function(data, microbe_name) {
+  microbe_data <- data |>
+    filter(microbe == microbe_name)
+
+  lmerTest::lmer(
+    log10_population ~ season * site * n * p * v +
+      (1 | site:replication) +
+      (1 | plot_id),
+    data = microbe_data,
+    REML = TRUE
+  )
+}
+
+microbe_models <- setNames(
+  lapply(microbe_traits, function(microbe_name) {
+    fit_microbe_model(soil_long, microbe_name)
+  }),
+  microbe_traits
+)
+
+microbe_fixed_effects <- bind_rows(lapply(names(microbe_models), function(microbe_name) {
+  fixed_effect_table(
+    microbe_models[[microbe_name]],
+    microbe_name,
+    "Soil microorganisms"
+  )
+}))
+
+kable(
+  microbe_fixed_effects,
+  caption = "Type III mixed-model tests for microbial population dynamics",
+  digits = 4
+)
+
+season_terms <- microbe_fixed_effects |>
+  filter(stringr::str_detect(effect, "season"))
+
+kable(
+  season_terms,
+  caption = "Season and season-by-factor terms",
+  digits = 4
+)
+```
+
+A season-by-treatment interaction is evidence that the seasonal change differs across treatment levels or sites. Interpret those interactions using the treatment-specific contrasts and estimates below. A non-significant p-value means the data did not provide clear evidence of a difference; it does not prove the treatments are identical.
+
+```{r seasonal-contrasts}
+seasonal_contrasts <- bind_rows(lapply(names(microbe_models), function(microbe_name) {
+  model <- microbe_models[[microbe_name]]
+
+  season_means <- emmeans::emmeans(
+    model,
+    ~ season | site * n * p * v
+  )
+
+  contrast_grid <- emmeans::contrast(
+      season_means,
+      method = "pairwise",
+      by = c("site", "n", "p", "v")
+    )
+
+  contrasts <- as.data.frame(
+    summary(
+      contrast_grid,
+      infer = c(TRUE, TRUE),
+      adjust = "none"
+    )
+  )
+
+  contrasts |>
+    mutate(
+      microbe = microbe_name,
+      ratio_season1_to_season2 = 10^estimate,
+      ratio_lower = 10^lower.CL,
+      ratio_upper = 10^upper.CL,
+      p_adjusted_BH = p.adjust(p.value, method = "BH")
+    ) |>
+    select(
+      microbe, site, n, p, v, contrast,
+      ratio_season1_to_season2, ratio_lower, ratio_upper,
+      p.value, p_adjusted_BH
+    )
+}))
+
+kable(
+  seasonal_contrasts,
+  caption = paste(
+    "Within-site and within-treatment seasonal contrasts.",
+    "Ratios above 1 indicate a higher geometric mean in Season 1.",
+    "BH adjustment is applied across the treatment combinations for each organism."
+  ),
+  digits = 4
+)
+```
+
+The ratios compare Season 1 with Season 2 on the original population scale. A ratio above 1 means the estimated geometric mean was higher in Season 1; a ratio below 1 means it was higher in Season 2. Use the BH-adjusted p-value and confidence interval together when describing a seasonal change.
+
+The confidence intervals shown are unadjusted 95% intervals; the p-values are adjusted across treatment combinations for each organism.
+
+```{r seasonal-variance}
+microbe_variance_components <- variance_table(
+  microbe_models,
+  "Soil microorganisms"
+)
+
+kable(
+  microbe_variance_components,
+  caption = "Random plot, block, and residual variance components for microbial models",
+  digits = 4
+)
+```
+
+```{r seasonal-diagnostics}
+microbe_residuals <- collect_residuals(
+  microbe_models,
+  "Soil microorganisms"
+)
+
+ggplot(microbe_residuals, aes(x = fitted, y = residual)) +
+  geom_point(alpha = 0.55) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "firebrick") +
+  facet_wrap(~ response, scales = "free") +
+  labs(
+    title = "Microbial-model residuals versus fitted values",
+    x = "Fitted log10 population",
+    y = "Residual"
+  )
+
+ggplot(microbe_residuals, aes(sample = residual)) +
+  stat_qq(alpha = 0.55) +
+  stat_qq_line(colour = "firebrick") +
+  facet_wrap(~ response, scales = "free") +
+  labs(
+    title = "Normal Q-Q plots for microbial-model residuals",
+    x = "Theoretical quantile",
+    y = "Residual quantile"
+  )
+```
+
+# 9. Interpretation and limits
+
+- Keep fertilizer factors N, P, and V labeled by the workbook codes unless the study’s treatment-rate key is available.
+- Interpret significant interactions with conditional comparisons and estimated means. Do not describe a main effect on its own when a relevant interaction changes the response.
+- The seasonal model assumes that matching Site, Replication, N, P, and V rows refer to the same plots across seasons. Confirm that assumption from the field records.
+- Recommendations are limited to the two observed sites, Nyagatare and Tonga, and the study conditions. Broader recommendations need evidence from additional sites and seasons.
+- Treat the two low soybean protein entries as unresolved until the source records are checked. The primary results retain them; the sensitivity results show their possible influence.
+- Correlation results are associations and do not establish that a microbial population caused a change in grain composition.
+
+# 10. Reproducibility details
+
+```{r session-info}
+sessionInfo()
+```

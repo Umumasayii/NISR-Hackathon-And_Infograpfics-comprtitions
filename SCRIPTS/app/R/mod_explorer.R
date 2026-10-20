@@ -22,8 +22,7 @@ mod_explorer_ui <- function(id, tr) {
          card_header(div(class = "d-flex justify-content-between align-items-center",
                          span(tr("c_table")),
                          downloadButton(ns("dl"), tr("download_csv"), class = "btn-sm btn-outline-primary"))),
-         card_body(DT::DTOutput(ns("table"))),
-         card_footer(div(class = "source", tr("src_table")))))
+         card_body(DT::DTOutput(ns("table")))))
 }
 
 mod_explorer_server <- function(id, f, tr) {

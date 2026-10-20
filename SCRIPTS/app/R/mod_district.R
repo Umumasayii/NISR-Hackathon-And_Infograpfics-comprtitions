@@ -30,7 +30,7 @@ mod_district_server <- function(id, f, tr, set_district) {
     seas <- reactive(intersect(f()$seasons, c("A", "B")) %||% c("A", "B"))
     agg <- function(lv, ar, inds, years = f()$years) D$est |>
       filter(level == lv, area == ar, indicator %in% inds, sas_year %in% years, sas_season %in% seas()) |>
-      group_by(indicator) |> summarise(v = weighted.mean(estimate, wsum), lo = weighted.mean(ci_low, wsum), hi = weighted.mean(ci_high, wsum),
+      survey_first() |> group_by(indicator) |> summarise(v = weighted.mean(estimate, wsum), lo = weighted.mean(ci_low, wsum), hi = weighted.mean(ci_high, wsum),
                                        n = sum(n), rel = names(sort(table(reliability), decreasing = TRUE))[1], .groups = "drop")
     sc <- reactive(D$screen$table |> filter(district_std == dist()))
     nd <- reactive(D$rain$district |> filter(district_std == dist()))

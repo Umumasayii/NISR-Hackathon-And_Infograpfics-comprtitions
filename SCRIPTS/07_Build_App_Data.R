@@ -4,6 +4,8 @@
 #
 # INPUT : DATA/processed/master/*.rds  (from SCRIPTS/06_Merge_Master_Data.R)
 #         DATA/processed/selection/irr_districts.rds (GADM level 2)
+#         DATA/processed/official/nisr_published*.csv (from SCRIPTS/11; NISR published
+#         figures replace our estimates where both exist, section 10)
 # OUTPUT: SCRIPTS/app/data/*.rds   (aggregates only - no microdata leave R)
 #
 # Every estimate carries: estimate, 95% CI, unweighted n, number of segments
@@ -263,6 +265,129 @@ if (file.exists(ahs_file)) {
     built = ahs$built), "ahs")
 } else message("AHS aggregates skipped: run 10_AHS_Preparation.R first")
 
+# ---- 10. NISR PUBLISHED FIGURES (published figures win) ----------------------
+# User decision 2026-10-17: where NISR publishes the same indicator for the same
+# season and area, the app shows the published figure (the survey estimate is kept
+# beside it). SAS 2026 Seasons A and B come only from the published tables (there is
+# no 2026 microdata). Files built by SCRIPTS/11_NISR_Published_Tables.R.
+# Same definition as ours: farmers irrigating (Table 31/29), plots with inorganic or
+# organic fertiliser or pesticide (Tables 25/24/29 and 23/22/27, plot columns),
+# drip + sprinkler + pivot among irrigated plots (Table 32/30), cultivated area,
+# production by crop. NISR's farmer-level erosion, machines and agroforestry figures
+# measure something else than our plot-level shares, so they are not used.
+dir_off  <- file.path(dir_root, "DATA", "processed", "official")
+pub_file <- file.path(dir_off, "nisr_published.csv")
+pub_meta <- NULL
+if (file.exists(pub_file)) {
+  message("10 NISR published figures")
+  rd  <- function(x) readRDS(file.path(dir_app_data, paste0(x, ".rds")))
+  pub <- read_csv(pub_file, show_col_types = FALSE) |>
+    filter(farmer_type %in% c("All", NA), !is.na(value)) |>
+    mutate(sas_year = as.integer(sas_year), tab = str_extract(nisr_table, "^[0-9]{4}[ABC] Table ?[0-9]+"))
+  all_tab <- read_csv(file.path(dir_off, "nisr_published_all_tables.csv"), show_col_types = FALSE)
+
+  # -- percentages for est_plot ------------------------------------------------
+  modern <- all_tab |>
+    filter(str_detect(table_title, regex("types of irrigation", ignore_case = TRUE))) |>
+    group_by(sas_year, sas_season, level, area, nisr_table) |>
+    summarise(all = sum(value, na.rm = TRUE),
+              value = sum(value[category %in% c("Drip irrigation", "Sprinkler irrigation", "Pivot irrigation")], na.rm = TRUE),
+              .groups = "drop") |>
+    filter(all > 0) |>          # no irrigated plot in the sample (Musanze 2026B)
+    transmute(indicator = "irrig_modern", sas_year = as.integer(sas_year), sas_season, level, area, value,
+              tab = paste0(sas_year, sas_season, " ", nisr_table))
+  pct <- bind_rows(pub |> filter(indicator %in% c("irrig_any_farmer", "inorganic_fert", "organic_fert", "pesticide")) |>
+                     select(indicator, sas_year, sas_season, level, area, value, tab), modern)
+  est <- rd("est_plot") |> mutate(source = "survey", survey_estimate = estimate, nisr_table = NA_character_)
+  # weight used only to combine several districts or seasons: the survey's weighted
+  # count for the same area and season in the latest survey year
+  w_proxy <- est |> filter(source == "survey") |> group_by(level, area, indicator, sas_season) |>
+    slice_max(sas_year, n = 1, with_ties = FALSE) |> ungroup() |> select(level, area, indicator, sas_season, w = wsum)
+  key <- c("level", "area", "indicator", "sas_year", "sas_season")
+  hit <- inner_join(est |> select(all_of(key)), pct, by = key)              # same season: replace
+  est <- est |> left_join(hit |> select(all_of(key), value, tab), by = key) |>
+    mutate(replaced = !is.na(value),
+           estimate = coalesce(value, estimate), nisr_table = coalesce(tab, nisr_table),
+           source = if_else(replaced, "nisr", source),
+           across(c(se, ci_low, ci_high, cv), \(x) if_else(replaced, NA_real_, x)),
+           reliability = if_else(replaced, "Published", reliability)) |>
+    select(-value, -tab, -replaced)
+  new_pct <- anti_join(pct, hit, by = key) |> left_join(w_proxy, by = c("level", "area", "indicator", "sas_season")) |>
+    transmute(level, area, sas_year, sas_season, indicator, estimate = value, se = NA_real_, ci_low = NA_real_,
+              ci_high = NA_real_, n = NA_integer_, n_psu = NA_integer_, wsum = w, cv = NA_real_,
+              reliability = "Published", source = "nisr", survey_estimate = NA_real_, nisr_table = tab)
+  save_app(bind_rows(est, new_pct) |> arrange(level, area, indicator, sas_year, sas_season), "est_plot")
+
+  # -- crop production (and cultivated area) -----------------------------------
+  # NISR crop names -> ours. "Bean" is bush + climbing, the group rows are subtotals,
+  # "Other ..." rows are never shown as crops (they still count in the totals).
+  crop_map <- tribble(~nisr, ~crop_name, ~crop_group,
+    "Vegetables", "Vegetables (all)", "Vegetables", "Fruits", "Fruits (all)", "Fruits",
+    "Fodder crops", "Fodder crops", "Fodder", "Yams & Taro", "Yams & taro", "Roots & tubers")
+  our_groups <- distinct(rd("crop_season"), crop_name, crop_group)
+  prod <- pub |> filter(indicator == "production_t") |>
+    mutate(district_std = if_else(level == "national", "Rwanda", area))
+  prod_total <- prod |>      # all crops = the five group rows + fodder + other crops
+    filter(crop_group | crop_name %in% c("Fodder crops", "Other crops")) |>
+    group_by(level, area, sas_year, sas_season) |> summarise(production_t = sum(value), .groups = "drop")
+  prod_crop <- prod |> filter(!crop_group, !crop_name %in% c("Bean", "Other crops", "Other cereals")) |>
+    left_join(crop_map, by = c("crop_name" = "nisr"), suffix = c("", ".m")) |>
+    mutate(crop_name = coalesce(crop_name.m, crop_name)) |>
+    left_join(our_groups, by = "crop_name", suffix = c("", ".o")) |>
+    mutate(crop_group = coalesce(crop_group.m, crop_group.o)) |>
+    select(level, district_std, crop_group, crop_name, sas_year, sas_season, production_t = value)
+
+  fix_crops <- function(d, lv) {
+    p <- prod_crop |> filter(level == lv) |> select(-level)
+    if (lv == "national") { d$district_std <- "Rwanda" }
+    k <- c("district_std", "crop_name", "sas_year", "sas_season")
+    d <- d |> mutate(production_survey_t = production_t) |>
+      left_join(p |> select(all_of(k), pub_t = production_t), by = k) |>
+      mutate(production_source = if_else(is.na(pub_t), "survey", "nisr"), production_t = coalesce(pub_t, production_t)) |>
+      select(-pub_t)
+    d <- bind_rows(d, anti_join(p, d, by = k) |> mutate(production_source = "nisr"))
+    if (lv == "national") d$district_std <- NULL
+    d
+  }
+  crop_nat <- rd("crop_season")
+  align <- crop_nat |> inner_join(prod_crop |> filter(level == "national"), by = c("crop_name", "sas_year", "sas_season"),
+                                  suffix = c("", ".pub")) |>
+    transmute(season = paste0(sas_year, sas_season), crop_name, survey_t = production_t, published_t = production_t.pub,
+              survey_vs_published_pct = round(100 * (survey_t / published_t - 1), 1))
+  save_app(fix_crops(crop_nat, "national"), "crop_season")
+  save_app(fix_crops(rd("crop_district_season"), "district"), "crop_district_season")
+
+  tot <- rd("totals") |> mutate(production_survey_t = production_t, cultivated_survey_ha = cultivated_area_ha)
+  tpub <- prod_total |>
+    full_join(pub |> filter(indicator == "cultivated_area_ha") |> select(level, area, sas_year, sas_season, cult = value),
+              by = c("level", "area", "sas_year", "sas_season")) |>
+    full_join(pub |> filter(indicator == "modern_irrig_area_ha") |> select(level, area, sas_year, sas_season, modern_irrig_area_ha = value),
+              by = c("level", "area", "sas_year", "sas_season"))
+  k <- c("level", "area", "sas_year", "sas_season")
+  tot <- tot |> left_join(tpub, by = k, suffix = c("", ".pub")) |>
+    mutate(production_t = coalesce(production_t.pub, production_t), cultivated_area_ha = coalesce(cult, cultivated_area_ha),
+           # the share keeps the survey's own denominator when only production is published
+           totals_source = if_else(is.na(production_t.pub) & is.na(cult), "survey", "nisr")) |>
+    select(-production_t.pub, -cult)
+  tot_new <- anti_join(tpub, tot, by = k) |>
+    left_join(district_lookup |> select(area = district, province.l = province), by = "area") |>
+    transmute(level, area, province = if_else(level == "district", province.l, NA_character_),
+              sas_year, sas_season, cultivated_area_ha = cult, production_t, modern_irrig_area_ha, totals_source = "nisr")
+  save_app(bind_rows(tot, tot_new) |> arrange(level, area, sas_year, sas_season), "totals")
+
+  pub_meta <- list(
+    seasons = sort(unique(paste0(pub$sas_year, pub$sas_season))),
+    indicators = c("irrig_any_farmer", "inorganic_fert", "organic_fert", "pesticide", "irrig_modern",
+                   "cultivated_area_ha", "production_t"),
+    est_replaced = nrow(hit), est_added = nrow(new_pct),
+    production_alignment = align,
+    totals_alignment = tot |> filter(totals_source == "nisr", !is.na(production_survey_t)) |>
+      transmute(level, area, season = paste0(sas_year, sas_season), survey_t = production_survey_t,
+                published_t = production_t, survey_vs_published_pct = round(100 * (survey_t / published_t - 1), 1)),
+    headline = pub |> filter(level == "national", is.na(crop_name)) |>
+      select(indicator, sas_year, sas_season, value, unit, nisr_table))
+} else message("10 skipped: no ", pub_file, " (run SCRIPTS/11_NISR_Published_Tables.R)")
+
 skip <- if (file.exists(file.path(dir_master, "skip_pattern_audit.csv")))
   read_csv(file.path(dir_master, "skip_pattern_audit.csv"), show_col_types = FALSE) else tibble()
 joins <- if (file.exists(file.path(dir_master, "master_join_log.csv")))
@@ -271,7 +396,7 @@ save_app(list(
   built = format(Sys.time(), "%Y-%m-%d %H:%M"),
   team = "NiyoIshimwe",
   sources = tibble(
-    source = c("NISR Seasonal Agricultural Survey (SAS) 2019-2025, Seasons A/B/C",
+    source = c("NISR Seasonal Agricultural Survey (SAS) 2019-2025, Seasons A/B/C, and the published SAS 2026 A/B tables",
                "CHIRPS v2 monthly rainfall by district, 1981-2025",
                "GADM 4.1 district boundaries (level 2)",
                "NISR Agricultural Household Survey (AHS) 2017, 2020, 2024"),
@@ -293,6 +418,7 @@ save_app(list(
     url = c("https://statistics.gov.rw/statistical-publications/agriculture-environment/seasonal-agricultural-survey-season-2026",
             rep("https://www.minecofin.gov.rw/fileadmin/user_upload/Minecofin/Publications/STRATEGIES/NST_2/NST2_2024-2029_Abridged.pdf", 3),
             "https://www.minagri.gov.rw/fileadmin/user_upload/Minagri/Publications/Annual_Reports/Annual_report_2024-2025_Final.pdf")),
+  published = pub_meta,
   skip_audit = skip, join_log = joins), "meta")
 
 message(sprintf("Done in %.1f min. Files in %s:", as.numeric(difftime(Sys.time(), t0, units = "mins")), dir_app_data))

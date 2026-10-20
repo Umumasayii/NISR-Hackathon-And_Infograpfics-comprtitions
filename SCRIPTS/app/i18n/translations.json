@@ -1425,9 +1425,9 @@
   "rw": "Itsinda"
  },
  "sources": {
-  "en": "Sources",
-  "fr": "Sources",
-  "rw": "Inkomoko"
+  "en": "Data sources",
+  "fr": "Sources des données",
+  "rw": "Inkomoko y'imibare"
  },
  "source": {
   "en": "Source",
@@ -1620,9 +1620,9 @@
   "rw": "Kuhira kugezweho"
  },
  "kd_irrig_modern": {
-  "en": "Irrigated plots using pumps, pivots/machines or channels ÷ irrigated plots, %.",
-  "fr": "Pompes, pivots ou canaux ÷ parcelles irriguées.",
-  "rw": "Pompe, imashini cyangwa imiyoboro ÷ imirima yuhirwa."
+  "en": "Irrigated plots using a motorised pump or machine, drip, sprinkler or pivot ÷ irrigated plots, %. For 2026: drip + sprinkler + pivot from the NISR published tables.",
+  "fr": "Parcelles irriguées avec pompe motorisée ou machine, goutte-à-goutte, aspersion ou pivot ÷ parcelles irriguées, %. 2026 : goutte-à-goutte + aspersion + pivot des tableaux publiés du NISR.",
+  "rw": "Imirima yuhirwa ikoresha pompe ya moteri cyangwa imashini, ibitonyanga, kuminjagira cyangwa pivot ÷ imirima yuhirwa, %. 2026: ibitonyanga + kuminjagira + pivot biva mu mbonerahamwe za NISR."
  },
  "kd_irrigated_area_ha_n": {
   "en": "Area of plots that report irrigation",
@@ -1745,9 +1745,9 @@
   "rw": "Ifishi y'akarere"
  },
  "hero_m1": {
-  "en": "21 survey seasons, 2019–2025",
-  "fr": "21 saisons d'enquête, 2019–2025",
-  "rw": "Ibihembwe 21, 2019–2025"
+  "en": "21 survey seasons 2019–2025 + NISR 2026 A, B",
+  "fr": "21 saisons d'enquête 2019–2025 + NISR 2026 A, B",
+  "rw": "Ibihembwe 21, 2019–2025 + NISR 2026 A, B"
  },
  "hero_m2": {
   "en": "Seasons A, B and C",
@@ -2858,6 +2858,96 @@
   "en": "Not shown for %s: crop areas were recorded for too few plots.",
   "fr": "Non affiché pour %s : surfaces connues pour trop peu de parcelles.",
   "rw": "Ntibigaragazwa kuri %s: ubuso bwanditswe ku mirima mike cyane."
+ },
+ "footer_see_sources": {
+  "en": "Data sources: see Methods",
+  "fr": "Sources des données : voir Méthodes",
+  "rw": "Inkomoko y'imibare: reba Uburyo"
+ },
+ "rb_published": {
+  "en": "NISR published",
+  "fr": "Publié par le NISR",
+  "rw": "Byatangajwe na NISR"
+ },
+ "rel_published": {
+  "en": "Official figure from the NISR published SAS tables. It replaces our own estimate where both exist.",
+  "fr": "Chiffre officiel des tableaux publiés de l'EAS du NISR. Il remplace notre estimation quand les deux existent.",
+  "rw": "Umubare wemewe uva mu mbonerahamwe za SAS zatangajwe na NISR. Usimbura igereranya ryacu iyo byombi bihari."
+ },
+ "pub_short": {
+  "en": "NISR published",
+  "fr": "publié NISR",
+  "rw": "NISR yatangaje"
+ },
+ "pub_hover": {
+  "en": "NISR published figure",
+  "fr": "chiffre publié par le NISR",
+  "rw": "umubare watangajwe na NISR"
+ },
+ "k_pub_line": {
+  "en": "NISR %s: %s",
+  "fr": "NISR %s : %s",
+  "rw": "NISR %s: %s"
+ },
+ "k_pub_prod": {
+  "en": "NISR %s published",
+  "fr": "NISR %s, publié",
+  "rw": "NISR %s yatangaje"
+ },
+ "indicator": {
+  "en": "Indicator",
+  "fr": "Indicateur",
+  "rw": "Igipimo"
+ },
+ "pub_title": {
+  "en": "NISR published figures used in the app",
+  "fr": "Chiffres publiés par le NISR utilisés dans l'application",
+  "rw": "Imibare yatangajwe na NISR ikoreshwa muri porogaramu"
+ },
+ "pub_note": {
+  "en": "Where NISR publishes the same figure for the same season and area, the app shows the published figure. SAS 2026 Seasons A and B come only from the published tables. NISR's farmer-level figures for erosion control, machines and agroforestry measure something different from our plot-level shares, so they are not mixed in. Modern tools for 2026 = drip, sprinkler and pivot among irrigated plots (NISR also counts surface and flood irrigation as modern: 66.4% in 2026A).",
+  "fr": "Lorsque le NISR publie le même chiffre pour la même saison et la même zone, l'application affiche le chiffre publié. Les saisons A et B 2026 viennent uniquement des tableaux publiés. Les chiffres du NISR par agriculteur pour la lutte antiérosive, les machines et l'agroforesterie mesurent autre chose que nos parts de parcelles : ils ne sont pas mélangés. Outils modernes 2026 = goutte-à-goutte, aspersion et pivot parmi les parcelles irriguées (le NISR compte aussi l'irrigation de surface et par submersion : 66,4 % en 2026A).",
+  "rw": "Iyo NISR itangaje umubare umwe ku gihembwe kimwe n'ahantu hamwe, porogaramu yerekana uwo mubare watangajwe. Ibihembwe A na B bya 2026 biva gusa mu mbonerahamwe zatangajwe. Imibare ya NISR ku bahinzi (kurwanya isuri, imashini, amashyamba avanze n'imyaka) ipima ibindi bitandukanye n'imibare yacu y'imirima, ntibivangwa. Ibikoresho bigezweho 2026 = kuvomerera ibitonyanga, kuminjagira na pivot mu mirima yuhirwa (NISR ibara n'kuhira ku butaka no kwuzuza amazi: 66,4% muri 2026A)."
+ },
+ "pub_cultivated": {
+  "en": "Cultivated area",
+  "fr": "Superficie cultivée",
+  "rw": "Ubuso buhingwa"
+ },
+ "pub_modern_area": {
+  "en": "Area under modern irrigation",
+  "fr": "Superficie sous irrigation moderne",
+  "rw": "Ubuso bwuhirwa mu buryo bugezweho"
+ },
+ "pub_align_title": {
+  "en": "Harvest: survey estimate and NISR published figure",
+  "fr": "Récolte : estimation de l'enquête et chiffre publié",
+  "rw": "Umusaruro: igereranya ry'ubushakashatsi n'umubare watangajwe"
+ },
+ "pub_align_note": {
+  "en": "For these seasons the app uses the NISR figure. Our estimate from the microdata is shown for comparison only.",
+  "fr": "Pour ces saisons, l'application utilise le chiffre du NISR. Notre estimation est montrée pour comparaison seulement.",
+  "rw": "Kuri ibi bihembwe porogaramu ikoresha umubare wa NISR. Igereranya ryacu ryerekanwa gusa ngo bigereranywe."
+ },
+ "pub_survey": {
+  "en": "Our survey estimate",
+  "fr": "Notre estimation",
+  "rw": "Igereranya ryacu"
+ },
+ "pub_published": {
+  "en": "NISR published",
+  "fr": "Publié par le NISR",
+  "rw": "Byatangajwe na NISR"
+ },
+ "pub_diff": {
+  "en": "Difference",
+  "fr": "Écart",
+  "rw": "Ikinyuranyo"
+ },
+ "pub_align_crops": {
+  "en": "Crops where our estimate differed by 10%% or more (now replaced): %s.",
+  "fr": "Cultures où notre estimation différait de 10 %% ou plus (remplacée) : %s.",
+  "rw": "Ibihingwa igereranya ryacu ryatandukanyagaho 10%% cyangwa birenga (byasimbuwe): %s."
  },
  "in100": {
   "en": "%s in every 100",

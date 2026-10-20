@@ -4,6 +4,11 @@ downloads <- list(
   priority_screening = function() D$screen$table, need_adoption = function() D$rain$district,
   yield_adjusted = function() D$model_yield$table, model_validation = function() D$model$performance)
 
+# ONE general data source for the whole app: the team writes it in DATA_SOURCE.md
+# (read once at start-up; restart the app after editing it)
+DATA_SOURCE_HTML <- if (file.exists("DATA_SOURCE.md"))
+  HTML(markdown::mark(text = paste(readLines("DATA_SOURCE.md", encoding = "UTF-8", warn = FALSE), collapse = "\n")))
+
 mod_methods_ui <- function(id, tr) {
   ns <- NS(id)
   tagList(
@@ -28,6 +33,8 @@ mod_methods_ui <- function(id, tr) {
         h5(class = "mt-4", tr("join_log")), p(class = "muted", tr("join_log_help")), DT::DTOutput(ns("joins"))),
       nav_panel(tr("t_kpi"), icon = fontawesome::fa("ruler"),
         p(tr("kpi_rule")), uiOutput(ns("kpi_defs")),
+        h5(class = "mt-4", tr("pub_title")), p(class = "muted", tr("pub_note")), uiOutput(ns("pub")),
+        h5(class = "mt-4", tr("pub_align_title")), p(class = "muted", tr("pub_align_note")), uiOutput(ns("pub_align")),
         h5(class = "mt-4", tr("bench_title")), p(class = "muted", tr("bench_note")), uiOutput(ns("bench"))),
       nav_panel(tr("t_ai"), icon = fontawesome::fa("robot"),
         p(tr("ai_text")), tags$ul(lapply(1:4, \(i) tags$li(tr(paste0("ai_", i)))))),
@@ -43,10 +50,13 @@ mod_methods_server <- function(id, f, tr) {
     html_table <- function(d) tags$table(class = "table table-sm table-striped profile-table",
       tags$thead(tags$tr(lapply(names(d), tags$th))),
       tags$tbody(lapply(seq_len(nrow(d)), \(i) tags$tr(lapply(d[i, , drop = TRUE], \(v) tags$td(as.character(v)))))))
-    output$sources <- renderUI(html_table(D$meta$sources |> setNames(c(tr("source"), tr("used_for")))))
+    output$sources <- renderUI(
+      if (!is.null(DATA_SOURCE_HTML)) div(class = "data-source", DATA_SOURCE_HTML) else
+        html_table(D$meta$sources |> setNames(c(tr("source"), tr("used_for")))))
     output$rel_legend <- renderUI(tagList(
       p(rel_badge("Good", tr), " ", tr("rel_good")), p(rel_badge("Use with caution", tr), " ", tr("rel_caution")),
-      p(rel_badge("Unreliable", tr), " ", tr("rel_unreliable"))))
+      p(rel_badge("Unreliable", tr), " ", tr("rel_unreliable")),
+      p(rel_badge("Published", tr), " ", tr("rel_published"))))
     output$skip <- DT::renderDT(DT::datatable(
       D$meta$skip_audit |> select(variable, ys, skip_confirmed, blanks_set_to_no, rows, gate_present_pct, gate_no,
                                   answered_when_gate_no),
@@ -63,6 +73,29 @@ mod_methods_server <- function(id, f, tr) {
       html_table(q |> transmute(s = paste0(sas_year, sas_season), p = paste0(round(area_coverage_pct), "%"),
                                 x = if_else(yield_usable, "\u2713", tr("yield_excluded", paste0(sas_year, sas_season)))) |>
                    setNames(c(tr("season"), "%", "")))
+    })
+    # NISR published figures used in the app (they replace our estimate where both exist)
+    output$pub <- renderUI({
+      h <- D$meta$published$headline; if (is.null(h)) return(NULL)
+      nm <- c(irrig_any_farmer = "ind_irrig_any_farmer", inorganic_fert = "ind_inorganic_fert", organic_fert = "ind_organic_fert",
+              pesticide = "ind_pesticide", cultivated_area_ha = "pub_cultivated", modern_irrig_area_ha = "pub_modern_area")
+      h <- h |> filter(indicator %in% names(nm)) |>
+        mutate(v = if_else(unit == "%", fmt_pct(value), paste(fmt_num(value), "ha")), s = paste0(sas_year, sas_season)) |>
+        select(indicator, s, v, nisr_table)
+      m <- D$est |> filter(level == "national", indicator == "irrig_modern", source == "nisr") |>
+        transmute(indicator, s = paste0(sas_year, sas_season), v = fmt_pct(estimate), nisr_table)
+      d <- bind_rows(h, m) |> tidyr::pivot_wider(id_cols = indicator, names_from = s, values_from = v) |>
+        mutate(indicator = sapply(c(nm, irrig_modern = "ind_irrig_modern")[indicator], tr))
+      html_table(d |> rename(!!tr("indicator") := indicator))
+    })
+    output$pub_align <- renderUI({
+      a <- D$meta$published$totals_alignment; if (is.null(a) || !nrow(a)) return(NULL)
+      c <- D$meta$published$production_alignment |> filter(abs(survey_vs_published_pct) >= 10) |> arrange(season, crop_name)
+      tagList(
+        html_table(a |> transmute(s = season, x = paste(fmt_num(survey_t / 1000), "kt"), y = paste(fmt_num(published_t / 1000), "kt"),
+                                  z = paste0(survey_vs_published_pct, "%")) |>
+                     setNames(c(tr("season"), tr("pub_survey"), tr("pub_published"), tr("pub_diff")))),
+        if (nrow(c)) p(class = "muted", tr("pub_align_crops", paste0(c$crop_name, " ", c$season, " (", c$survey_vs_published_pct, "%)", collapse = ", "))))
     })
     output$bench <- renderUI({
       b <- D$meta$benchmarks; if (is.null(b)) return(NULL)
