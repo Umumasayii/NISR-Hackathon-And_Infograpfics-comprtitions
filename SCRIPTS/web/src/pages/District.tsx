@@ -4,7 +4,7 @@ import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
 import { ChartCard, Grid, Kpi, KpiRow, RelBadge, Select } from '../components/ui';
 import { Plot, simpleLines, std, legendBottom, type Fig } from '../components/Plot';
-import { groupBy, mean, median, mode, sum, surveyFirst, wm } from '../lib/stats';
+import { groupBy, mean, median, mode, sum, wm } from '../lib/stats';
 import { fmtNum, fmtPct } from '../lib/format';
 import { brand, catCols } from '../lib/theme';
 
@@ -20,7 +20,7 @@ export default function District() {
   const seas = f.seasons.filter((s) => s !== 'C').length ? f.seasons.filter((s) => s !== 'C') : ['A', 'B'];
   const S = new Set<string>(seas), Y = new Set(f.years);
   const agg = (lv: string, ar: string, inds: string[]) => {
-    const e = surveyFirst(D.est.filter((r) => r.level === lv && r.area === ar && inds.includes(r.indicator) && Y.has(r.sas_year) && S.has(r.sas_season)), (r) => r.indicator);
+    const e = D.est.filter((r) => r.level === lv && r.area === ar && inds.includes(r.indicator) && Y.has(r.sas_year) && S.has(r.sas_season));
     return new Map([...groupBy(e, (r) => r.indicator).entries()].map(([k, g]) => [k, {
       v: wm(g.map((r) => r.estimate), g.map((r) => r.wsum)), n: sum(g.map((r) => r.n)), rel: mode(g.map((r) => r.reliability)),
     }]));
@@ -32,7 +32,9 @@ export default function District() {
     const inds = ['irrigated', 'irrig_modern', 'inorganic_fert', 'anti_erosion'];
     const a = agg('district', dist, inds), r = agg('national', 'Rwanda', inds);
     const tot = [...groupBy(D.totals.filter((x) => x.level === 'district' && x.area === dist && S.has(x.sas_season) && Y.has(x.sas_year)), (x) => String(x.sas_year)).values()]
-      .map((g) => ({ t: sum(g.map((x) => x.production_t)), cult: sum(g.map((x) => x.cultivated_area_ha)) }));
+      // harvests of Seasons A and B add up; land does not: the same fields are farmed in
+      // both seasons, so cultivated land is the average per main season, not A + B
+      .map((g) => ({ t: g.every((x) => x.production_t != null) ? sum(g.map((x) => x.production_t)) : NaN, cult: mean(g.map((x) => x.cultivated_area_ha)) }));
     return { a, r, t: mean(tot.map((x) => x.t)), cult: mean(tot.map((x) => x.cult)) };
   }, [D, dist, f]); // eslint-disable-line
 

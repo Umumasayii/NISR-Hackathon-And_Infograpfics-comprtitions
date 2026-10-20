@@ -81,7 +81,7 @@ export default function Households() {
       layout: std({ barmode: 'group', bargap: 0.22, yaxis: { title: { text: '' }, tickfont: { size: 11 }, categoryorder: 'array', categoryarray: ord }, xaxis: { range: [0, 100], ticksuffix: '%' }, legend: { ...legendBottom(-0.14), traceorder: 'normal' } }),
     };
   })();
-  const pch = [...groupBy(pd, (r) => r.indicator).values()].filter((g) => g.length >= 2).map((g) => { const s = [...g].sort((a, b) => a.year - b.year); return { i: s[0].indicator, a: s[0].estimate, b: s[s.length - 1].estimate }; }).sort((x, y) => (y.b - y.a) - (x.b - x.a))[0];
+  const pch = [...groupBy(pd.filter((r) => !r.series_break && r.year <= 2020), (r) => r.indicator).values()].filter((g) => g.length >= 2).map((g) => { const s = [...g].sort((a, b) => a.year - b.year); return { i: s[0].indicator, a: s[0].estimate, b: s[s.length - 1].estimate }; }).sort((x, y) => (y.b - y.a) - (x.b - x.a))[0];
 
   // ---- services, groups and finance: latest round
   const en = Object.entries(THEMES).flatMap(([t, inds]) => inds.map((i) => { const x = d.filter((r) => r.indicator === i).sort((a, b) => b.year - a.year)[0]; return x ? { ...x, theme: t, lbl: lab('ai_', i) } : null; }))
@@ -124,7 +124,7 @@ export default function Households() {
   const sel = f.areaLevel !== 'national' ? f.districts : [];
   const mapFig: Fig | null = !md.length ? null : choropleth(geo, md.map((r) => ({ district: r.area, value: r.estimate,
     hover: `<b>${r.area}</b> · AHS ${yl(r.year)}<br>${tr(`ai_${mapInd}`)}: ${fmtPct(r.estimate)} (95% CI ${fmtPct(r.ci_low)}–${fmtPct(r.ci_high)})<br>n = ${fmtNum(r.n)} · ${r.reliability}` })),
-  { label: tr('y_pct_hh'), colorscale: seqBlue, selected: sel.length ? sel : undefined });
+  { noData: tr('no_estimate'), label: tr('y_pct_hh'), colorscale: seqBlue, selected: sel.length ? sel : undefined });
   const mdS = [...md].sort((a, b) => a.estimate - b.estimate);
   const rankFig: Fig | null = !mdS.length ? null : {
     data: [{ type: 'bar', orientation: 'h', y: mdS.map((r) => r.area), x: mdS.map((r) => r.estimate), customdata: mdS.map((r) => r.area),
@@ -144,7 +144,7 @@ export default function Households() {
         <InsightGrid>
           <Insight icon={Droplet} color={brand.blue} title={tr('ah_f1_t', in100(v('irrigates', 2024), tr))} text={tr('ah_f1', f.area, fmtPct(v('irrigates', 2024)), fmtPct(v('irrigates', 2017)), fmtPct(v('irrigates', 2020)))} />
           <Insight icon={Users} color="#B07A1C" title={tr('ah_f2_t', fmtNum(mal - fem, 0))} text={tr('ah_f2', fmtPct(fem), fmtPct(mal))} />
-          <Insight icon={Sprout} color={brand.green} title={tr('ah_f3_t')} text={tr('ah_f3', fmtPct(v('improved_seed', 2024), 0), fmtPct(v('inorganic_fert', 2024), 0), fmtPct(v('improved_seed', 2020), 0), fmtPct(v('inorganic_fert', 2020), 0))} />
+          <Insight icon={Sprout} color={brand.green} title={tr('ah_f3_t')} text={tr('ah_f3', fmtPct(v('improved_seed', 2024), 0), fmtPct(v('inorganic_fert', 2024), 0))} />
           <Insight icon={Handshake} color={brand.terracotta} title={tr('ah_f4_t')} text={tr('ah_f4', fmtPct(latest('water_user_coop')), fmtPct(latest('crop_insurance')), fmtPct(latest('coop_member')))} />
         </InsightGrid>
       ) : <p className="muted">{tr('no_data')}</p>}
