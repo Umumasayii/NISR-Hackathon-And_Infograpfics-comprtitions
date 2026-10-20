@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import { TriangleAlert, Droplet, Users, Sprout, Handshake, FlaskConical, Presentation, House, Droplets, MapPinned, ArrowDownWideNarrow } from 'lucide-react';
 import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
-import { ChartCard, FiltersUsed, Grid, Insight, InsightGrid, Kpi, KpiRow, RelBadge, SectionTitle, Select, Callout } from '../components/ui';
+import { ChartCard, FiltersUsed, Grid, Insight, InsightGrid, Kpi, KpiRow, RelBadge, SectionTitle, Select, Callout, relLabel } from '../components/ui';
+import type { Prov } from '../lib/sources';
 import { Plot, choropleth, simpleLines, std, legendBottom, type Fig } from '../components/Plot';
 import { ahsFor, ahsVal, groupBy, in100, mean } from '../lib/stats';
 import { labOr } from '../lib/i18n';
@@ -35,12 +36,22 @@ export default function Households() {
   const [eqDim, setEqDim] = useState('head_sex');
   const [mixDim, setMixDim] = useState('technique');
   const [mapInd, setMapInd] = useState('irrigates');
-  const [mapYear, setMapYear] = useState(2020);
+  const [mapYear, setMapYear] = useState(2024);
   const d = useMemo(() => ahsFor(D, f), [D, f]);
   if (!D.ahs) return <p className="muted">{tr('no_data')}</p>;
   const A = D.ahs;
+  // 2020 has no cluster identifiers, so its intervals would be too narrow: no interval is shown ("Not assessed")
+  const ci = (r: { ci_low?: number | null; ci_high?: number | null; reliability: string }) =>
+    (r.reliability === 'Not assessed' || r.ci_low == null ? '' : ` (95% CI ${fmtPct(r.ci_low)}–${fmtPct(r.ci_high)})`);
   const hover = (r: { estimate: number; ci_low?: number | null; ci_high?: number | null; n: number; reliability: string; year: number }) =>
-    `${fmtPct(r.estimate)} (95% CI ${fmtPct(r.ci_low)}–${fmtPct(r.ci_high)})<br>n = ${fmtNum(r.n)} · ${r.reliability}${r.year === 2024 ? `<br><i>${tr('break_lbl')}</i>` : ''}`;
+    `${fmtPct(r.estimate)}${ci(r)}<br>n = ${fmtNum(r.n)} · ${relLabel(tr, r.reliability)}${r.year === 2024 ? `<br><i>${tr('break_lbl')}</i>` : ''}`;
+  const ap = (unit: string, period = '2017, 2020, 2024'): Prov => ({ unit: tr(unit), period, kind: 'survey', src: ['ahs'], note: tr('n_ahs_break') });
+  type H = { year: number; estimate: number; ci_low?: number | null; ci_high?: number | null; n: number; reliability: string };
+  const hCols = (first: { label: string; get: (r: never) => string | number | null }) => [
+    first, { label: tr('year'), get: (r: H) => yl(r.year) }, { label: '%', get: (r: H) => fmtPct(r.estimate), num: true },
+    { label: '95% CI', get: (r: H) => (ci(r) ? `${fmtPct(r.ci_low)}–${fmtPct(r.ci_high)}` : null), num: true },
+    { label: 'n', get: (r: H) => fmtNum(r.n), num: true }, { label: tr('quality'), get: (r: H) => relLabel(tr, r.reliability) },
+  ];
   const v = (ind: string, y: number) => ahsVal(d, ind, y);
   const latest = (ind: string) => d.filter((r) => r.indicator === ind).sort((a, b) => b.year - a.year)[0]?.estimate;
   const sex = A.equity.filter((r) => r.dimension === 'head_sex' && r.year === 2024);
@@ -50,7 +61,8 @@ export default function Households() {
     const x = d.filter((r) => r.indicator === ind).sort((a, b) => a.year - b.year); if (!x.length) return null;
     const lastR = x[x.length - 1], prev = x.find((r) => r.year === 2020);
     return <Kpi key={ind} label={tr(key)} value={fmtPct(lastR.estimate)} icon={Icon} color={col}
-      foot={<>{prev && lastR.year !== 2020 ? tr('ak_vs2020', yl(lastR.year), fmtPct(prev.estimate)) : tr('ak_round', lastR.year)} <RelBadge r={lastR.reliability} /></>} />;
+      foot={<>{prev && lastR.year !== 2020 ? tr('ak_vs2020', yl(lastR.year), fmtPct(prev.estimate)) : tr('ak_round', lastR.year)} <RelBadge r={lastR.reliability} /></>}
+      prov={ap(lastR.population === 'Irrigating households' ? 'u_pct_irr_hh' : 'u_pct_hh', String(lastR.year))} />;
   };
 
   // ---- trend: 2017-2020 joined, 2024 apart
@@ -81,7 +93,10 @@ export default function Households() {
       layout: std({ barmode: 'group', bargap: 0.22, yaxis: { title: { text: '' }, tickfont: { size: 11 }, categoryorder: 'array', categoryarray: ord }, xaxis: { range: [0, 100], ticksuffix: '%' }, legend: { ...legendBottom(-0.14), traceorder: 'normal' } }),
     };
   })();
-  const pch = [...groupBy(pd, (r) => r.indicator).values()].filter((g) => g.length >= 2).map((g) => { const s = [...g].sort((a, b) => a.year - b.year); return { i: s[0].indicator, a: s[0].estimate, b: s[s.length - 1].estimate }; }).sort((x, y) => (y.b - y.a) - (x.b - x.a))[0];
+  // change only within the comparable rounds (2017 to 2020); 2024 used a new questionnaire
+  const pch = [...groupBy(pd.filter((r) => !r.series_break), (r) => r.indicator).values()].filter((g) => g.some((r) => r.year === 2017) && g.some((r) => r.year === 2020))
+    .map((g) => ({ i: g[0].indicator, a: g.find((r) => r.year === 2017)!.estimate, b: g.find((r) => r.year === 2020)!.estimate }))
+    .sort((x, y) => Math.abs(y.b - y.a) - Math.abs(x.b - x.a))[0];
 
   // ---- services, groups and finance: latest round
   const en = Object.entries(THEMES).flatMap(([t, inds]) => inds.map((i) => { const x = d.filter((r) => r.indicator === i).sort((a, b) => b.year - a.year)[0]; return x ? { ...x, theme: t, lbl: lab('ai_', i) } : null; }))
@@ -123,13 +138,13 @@ export default function Households() {
   const md = A.indicators.filter((r) => r.level === 'district' && r.indicator === mapInd && r.year === mapYear);
   const sel = f.areaLevel !== 'national' ? f.districts : [];
   const mapFig: Fig | null = !md.length ? null : choropleth(geo, md.map((r) => ({ district: r.area, value: r.estimate,
-    hover: `<b>${r.area}</b> · AHS ${yl(r.year)}<br>${tr(`ai_${mapInd}`)}: ${fmtPct(r.estimate)} (95% CI ${fmtPct(r.ci_low)}–${fmtPct(r.ci_high)})<br>n = ${fmtNum(r.n)} · ${r.reliability}` })),
+    hover: `<b>${r.area}</b> · AHS ${yl(r.year)}<br>${tr(`ai_${mapInd}`)}: ${hover(r)}` })),
   { label: tr('y_pct_hh'), colorscale: seqBlue, selected: sel.length ? sel : undefined });
   const mdS = [...md].sort((a, b) => a.estimate - b.estimate);
   const rankFig: Fig | null = !mdS.length ? null : {
     data: [{ type: 'bar', orientation: 'h', y: mdS.map((r) => r.area), x: mdS.map((r) => r.estimate), customdata: mdS.map((r) => r.area),
       marker: { color: mdS.map((r) => (sel.includes(r.area) ? brand.amber : brand.blue)), opacity: mdS.map((r) => (r.reliability === 'Unreliable' ? 0.45 : 1)) },
-      hovertext: mdS.map((r) => `<b>${r.area}</b>: ${fmtPct(r.estimate)} (95% CI ${fmtPct(r.ci_low)}–${fmtPct(r.ci_high)})<br>n = ${fmtNum(r.n)} · ${r.reliability}`), hoverinfo: 'text', textposition: 'none' }],
+      hovertext: mdS.map((r) => `<b>${r.area}</b>: ${hover(r)}`), hoverinfo: 'text', textposition: 'none' }],
     layout: std({ x: tr('y_pct_hh'), legend: false, bargap: 0.25, yaxis: { title: { text: '' }, tickfont: { size: 10.5 }, categoryorder: 'array', categoryarray: mdS.map((r) => r.area) }, xaxis: { ticksuffix: '%' } }),
   };
   const mdD = [...mdS].reverse();
@@ -155,25 +170,38 @@ export default function Households() {
       <Grid cols="1fr 1fr">
         <ChartCard title={tr('ac_trend')} icon={House}
           tools={<Select value={trendInd} onChange={setTrendInd} options={TREND.map((i) => ({ value: i, label: tr(`ai_${i}`) }))} width="100%" />}
-          means={td.length ? tr('am_trend', tr(`ai_${trendInd}`), fmtPct(ahsVal(td, trendInd, 2017)), fmtPct(ahsVal(td, trendInd, 2020)), fmtPct(ahsVal(td, trendInd, 2024))) : null}>
+          means={td.length ? tr('am_trend', tr(`ai_${trendInd}`), fmtPct(ahsVal(td, trendInd, 2017)), fmtPct(ahsVal(td, trendInd, 2020)), fmtPct(ahsVal(td, trendInd, 2024))) : null}
+          prov={ap(td[0]?.population === 'Irrigating households' ? 'u_pct_irr_hh' : 'u_pct_hh')}
+          table={{ name: `ahs_trend_${trendInd}`, rows: td, cols: hCols({ label: tr('src_measure').replace(':', ''), get: () => tr(`ai_${trendInd}`) }) }}>
           <Plot fig={trendFig} height={300} empty={tr('no_data')} />
         </ChartCard>
-        <ChartCard title={tr('ac_practices')} icon={Sprout} means={pch ? tr('am_practices', tr(`ai_${pch.i}`), fmtPct(pch.a, 0), fmtPct(pch.b, 0)) : null}>
+        <ChartCard title={tr('ac_practices')} icon={Sprout} means={pch ? tr('am_practices2', tr(`ai_${pch.i}`), fmtPct(pch.a, 0), fmtPct(pch.b, 0)) : null}
+          prov={ap('u_pct_hh')}
+          table={{ name: 'ahs_practices', rows: [...pd].sort((a, b) => a.indicator.localeCompare(b.indicator) || a.year - b.year), cols: hCols({ label: tr('src_measure').replace(':', ''), get: (r: AhsRow) => lab('ai_', r.indicator) }) }}>
           <Plot fig={pFig} height={352} empty={tr('no_data')} />
         </ChartCard>
       </Grid>
       <Grid cols="1fr 1fr 1fr">
-        <ChartCard title={tr('ac_enablers')} icon={Handshake} means={enD.length >= 2 ? tr('am_enablers', enD[0].lbl, fmtPct(enD[0].estimate, 0), enD[enD.length - 1].lbl, fmtPct(enD[enD.length - 1].estimate)) : null}>
+        <ChartCard title={tr('ac_enablers')} icon={Handshake} means={enD.length >= 2 ? tr('am_enablers', enD[0].lbl, fmtPct(enD[0].estimate, 0), enD[enD.length - 1].lbl, fmtPct(enD[enD.length - 1].estimate)) : null}
+          prov={ap('u_pct_hh', tr('latest_round'))}
+          table={{ name: 'ahs_services', rows: enD, cols: hCols({ label: tr('src_measure').replace(':', ''), get: (r: { lbl: string }) => r.lbl }) }}>
           <Plot fig={enFig} height={420} empty={tr('no_data')} />
         </ChartCard>
         <ChartCard title={tr('ac_equity')} icon={Users}
           tools={<Select value={eqDim} onChange={setEqDim} options={EQ_DIMS.map((x) => ({ value: x, label: tr(`eq_${x}`) }))} width="100%" />}
-          means={eqL.length >= 2 ? tr('am_equity', yl(eqL[0].year), lab('grp_', eqL[0].group), fmtPct(eqL[0].estimate), lab('grp_', eqL[eqL.length - 1].group), fmtPct(eqL[eqL.length - 1].estimate)) : null}>
+          means={eqL.length >= 2 ? tr('am_equity', yl(eqL[0].year), lab('grp_', eqL[0].group), fmtPct(eqL[0].estimate), lab('grp_', eqL[eqL.length - 1].group), fmtPct(eqL[eqL.length - 1].estimate)) : null}
+          prov={ap('u_pct_hh')}
+          table={{ name: `ahs_groups_${eqDim}`, rows: eq.map((r) => ({ ...r, ci_low: r.estimate - 1.96 * r.se, ci_high: r.estimate + 1.96 * r.se })), cols: hCols({ label: tr('group'), get: (r: { group: string }) => lab('grp_', r.group) }) }}>
           <Plot fig={eqFig} height={360} empty={tr('no_data')} />
         </ChartCard>
         <ChartCard title={tr('ac_mix')} icon={Droplets}
           tools={<Select value={mixDim} onChange={setMixDim} options={['technique', 'water_source', 'tool'].map((x) => ({ value: x, label: tr(`mx_${x}`) }))} width="100%" />}
-          means={mxL.length ? tr('am_mix', yl(mxL[0].year), lab('mc_', mxL[0].category), fmtPct(mxL[0].share, 0)) : null}>
+          means={mxL.length ? tr('am_mix', yl(mxL[0].year), lab('mc_', mxL[0].category), fmtPct(mxL[0].share, 0)) : null}
+          prov={{ ...ap('u_pct_irr_hh'), note: `${tr('n_ahs_break')} ${tr('n_named')}` }}
+          table={{ name: `ahs_irrigation_${mixDim}`, rows: [...mx].sort((a, b) => a.year - b.year || b.share - a.share), cols: [
+            { label: tr(`mx_${mixDim}`), get: (r: (typeof mx)[number]) => lab('mc_', r.category) }, { label: tr('year'), get: (r: (typeof mx)[number]) => yl(r.year) },
+            { label: '%', get: (r: (typeof mx)[number]) => fmtPct(r.share), num: true }, { label: 'n', get: (r: (typeof mx)[number]) => fmtNum(r.n), num: true },
+          ] }}>
           <Plot fig={mixFig} height={360} empty={tr('no_data')} />
         </ChartCard>
       </Grid>
@@ -183,10 +211,12 @@ export default function Households() {
             <Select value={mapInd} onChange={setMapInd} options={MAP_INDS.map((i) => ({ value: i, label: tr(`ai_${i}`) }))} />
             <Select value={mapYear} onChange={setMapYear} options={YEARS.map((y) => ({ value: y, label: y === 2024 ? tr('break_lbl') : String(y) }))} />
           </>}
-          means={mdD.length >= 2 ? tr('am_map', yl(mdD[0].year), mdD[0].area, fmtPct(mdD[0].estimate), mdD[mdD.length - 1].area, fmtPct(mdD[mdD.length - 1].estimate)) : null}>
+          means={mdD.length >= 2 ? tr('am_map', yl(mdD[0].year), mdD[0].area, fmtPct(mdD[0].estimate), mdD[mdD.length - 1].area, fmtPct(mdD[mdD.length - 1].estimate)) : null}
+          prov={{ ...ap('u_pct_hh', yl(mapYear)), note: `${tr('n_ahs_break')} ${tr('n_district_small')}` }}
+          table={{ name: `ahs_district_${mapInd}_${mapYear}`, rows: mdD, cols: hCols({ label: tr('district'), get: (r: AhsRow) => r.area }) }}>
           <Plot fig={mapFig} height={400} onClick={pickDistrict} empty={tr('no_data')} />
         </ChartCard>
-        <ChartCard title={tr('ac_rank')} icon={ArrowDownWideNarrow}>
+        <ChartCard title={tr('ac_rank')} icon={ArrowDownWideNarrow} prov={{ ...ap('u_pct_hh', yl(mapYear)), note: `${tr('n_ahs_break')} ${tr('n_district_small')}` }}>
           <Plot fig={rankFig} height={470} onClick={pickDistrict} empty={tr('no_data')} />
         </ChartCard>
       </Grid>

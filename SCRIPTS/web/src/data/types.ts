@@ -1,19 +1,22 @@
 // Shapes of the tables exported by SCRIPTS/12_Export_Web_Data.R (aggregates only).
 export type Season = 'A' | 'B' | 'C';
-export type Reliability = 'Good' | 'Use with caution' | 'Unreliable' | 'Published';
+/** 'Not assessed': no design-based standard error, so no quality label can be given */
+export type Reliability = 'Good' | 'Use with caution' | 'Unreliable' | 'Published' | 'Not assessed';
 export type Level = 'national' | 'province' | 'district' | 'combined';
 
 export interface Est {
   level: Level; area: string; sas_year: number; sas_season: Season; indicator: string;
   estimate: number; se: number | null; ci_low: number | null; ci_high: number | null;
   n: number; wsum: number; cv: number | null; reliability: Reliability; source: 'survey' | 'nisr';
+  /** survey clusters (segments) behind the estimate; survey value and NISR table kept for traceability */
+  n_psu?: number | null; survey_estimate?: number | null; nisr_table?: string | null;
 }
 export interface Totals {
   level: Level; area: string; province: string | null; sas_year: number; sas_season: Season;
   cultivated_area_ha: number | null; irrigated_area_ha: number | null; irrigated_area_pct: number | null;
   production_t: number | null; crop_area_ha: number | null; sold_t: number | null;
   sales_value_mrwf: number | null; n_plots: number | null; n_farmers: number | null;
-  modern_irrig_area_ha: number | null; totals_source: string;
+  modern_irrig_area_ha: number | null; totals_source: string; production_survey_t?: number | null;
 }
 export interface Crop {
   district_std?: string; crop_group: string; crop_name: string; sas_year: number; sas_season: Season;
@@ -21,6 +24,7 @@ export interface Crop {
   yield_rainfed_kg_ha: number | null; n_irrigated_yield: number | null; production_t: number | null;
   crop_area_ha: number | null; sold_t: number | null; sold_share_pct: number | null;
   price_rwf_kg: number | null; sales_value_mrwf: number | null; improved_seed_pct: number | null;
+  production_source?: 'survey' | 'nisr';
 }
 export interface YieldRow {
   crop_group?: string; crop_name: string; season_type?: string; sas_year?: number; irrigation?: 'Irrigated' | 'Rain-fed';
@@ -53,7 +57,7 @@ export interface ScreenRow {
 export interface AhsRow {
   level: Level; area: string; year: number; indicator: string; population: string; estimate: number;
   se: number | null; ci_low: number | null; ci_high: number | null; n: number; wsum: number;
-  cv: number | null; reliability: Reliability; series_break: boolean;
+  cv: number | null; reliability: Reliability; series_break: boolean; n_psu?: number | null;
 }
 export interface AhsEquity { year: number; group: string; estimate: number; se: number; n: number; reliability: Reliability; dimension: string; }
 export interface AhsMix { year: number; dimension: string; category: string; share: number; n: number; }
@@ -93,9 +97,16 @@ export interface AppData {
       production_alignment: { season: string; crop_name: string; survey_t: number; published_t: number; survey_vs_published_pct: number }[];
       totals_alignment: { season: string; survey_t: number; published_t: number; survey_vs_published_pct: number }[];
     };
+    /** official headline figures copied from NISR reports (DATA/NISR_published/nisr_report_headlines.csv) */
+    official?: Official[] | null;
     skip_audit: Record<string, unknown>[]; join_log: Record<string, unknown>[];
   };
   ahs: { indicators: AhsRow[]; equity: AhsEquity[]; irrigation_mix: AhsMix[]; built: string } | null;
+}
+
+export interface Official {
+  indicator: string; sas_year: number; sas_season: Season; level: string; area: string; value: number; unit: string;
+  denominator: string; farmer_type: string; publication: string; table_or_section: string; url: string; accessed: string; note: string | null;
 }
 
 export type I18n = Record<string, Record<string, string>>;

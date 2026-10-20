@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Map as MapIcon, Trophy, CloudSunRain, Droplet, Cog, FlaskConical, Mountain, ThermometerSun, Wheat, Sprout, ChartLine, Target, Scale, CloudRain, Calendar } from 'lucide-react';
 import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
-import { ChartCard, Grid, Kpi, KpiRow, RelBadge, Select } from '../components/ui';
+import { ChartCard, Grid, Kpi, KpiRow, RelBadge, Select, relLabel } from '../components/ui';
+import type { Prov } from '../lib/sources';
 import { Plot, simpleLines, std, legendBottom, type Fig } from '../components/Plot';
 import { groupBy, mean, median, mode, sum, surveyFirst, wm } from '../lib/stats';
 import { fmtNum, fmtPct } from '../lib/format';
@@ -118,9 +119,13 @@ export default function District() {
   const dry = rainD.filter((r) => r.rain_anomaly_pct < -15);
 
   const g = (m: Map<string, { v: number; rel: string | null }>, i: string) => m.get(i)?.v ?? NaN;
+  const per = `${Math.min(...f.years)}–${Math.max(...f.years)}`;
+  const UNITS: Record<string, string> = { irrigated: 'u_pct_plots', irrig_modern: 'u_pct_irr_plots', inorganic_fert: 'u_pct_plots', anti_erosion: 'u_pct_plots' };
+  const sp = (unit: string, note?: string): Prov => ({ unit: tr(unit), period: per, kind: 'survey', src: ['sas_micro'], note: note ?? tr('n_district_small') });
+  const prodPub = D.totals.some((x) => x.level === 'district' && x.area === dist && Y.has(x.sas_year) && S.has(x.sas_season) && x.totals_source === 'nisr');
   const tile = (i: string, Icon: typeof Droplet, col: string) => (
     <Kpi label={tr(`ind_${i}`)} value={fmtPct(g(tiles.a, i))} icon={Icon} color={col} delta={g(tiles.a, i) - g(tiles.r, i)}
-      foot={<>{tr('vs_rwanda', fmtPct(g(tiles.r, i)))} <RelBadge r={tiles.a.get(i)?.rel} /></>} />
+      foot={<>{tr('vs_rwanda', fmtPct(g(tiles.r, i)))} <RelBadge r={tiles.a.get(i)?.rel} /></>} prov={sp(UNITS[i], i === 'irrig_modern' ? tr('n_modern_def') : undefined)} />
   );
   const comps = sc ? COMP.map((c) => ({ c, v: sc[c] })) : [];
   const top = comps.length ? comps.reduce((a, b) => (b.v > a.v ? b : a)) : null, low = comps.length ? comps.reduce((a, b) => (b.v < a.v ? b : a)) : null;
@@ -139,23 +144,55 @@ export default function District() {
         {tile('irrigated', Droplet, brand.blue)}{tile('irrig_modern', Cog, '#B07A1C')}{tile('inorganic_fert', FlaskConical, '#6A4C93')}{tile('anti_erosion', Mountain, brand.green)}
       </KpiRow>
       <KpiRow>
-        <Kpi label={tr('need_score')} value={`${fmtNum(nd?.need_score, 0)}/100`} icon={ThermometerSun} color={brand.terracotta} foot={nd && tr('d_need_sub', fmtNum(nd.rain_normal_ab_mm), nd.dry_seasons_2016_2025)} />
-        <Kpi label={tr('k_production')} value={`${fmtNum(tiles.t / 1000, 1)} kt`} icon={Wheat} color="#B07A1C" foot={tr('d_prod_sub')} />
-        <Kpi label={tr('w_c_scale')} value={`${fmtNum(tiles.cult / 1000, 1)}k ha`} icon={Sprout} color={brand.green} foot={tr('d_area_sub')} />
-        <Kpi label={tr('score')} value={`${fmtNum(sc?.score, 0)}/100`} icon={Trophy} color={brand.blue} foot={sc && tr('d_score_sub', sc.rank, Math.round(sc.rank_p10), Math.round(sc.rank_p90))} />
+        <Kpi label={tr('need_score')} value={`${fmtNum(nd?.need_score, 0)}/100`} icon={ThermometerSun} color={brand.terracotta} foot={nd && tr('d_need_sub', fmtNum(nd.rain_normal_ab_mm), nd.dry_seasons_2016_2025)}
+          prov={{ unit: tr('u_need'), period: '1991–2025', kind: 'derived', src: ['chirps'], note: tr('n_rain') }} />
+        <Kpi label={tr('k_production')} value={`${fmtNum(tiles.t / 1000, 1)} kt`} icon={Wheat} color="#B07A1C" foot={tr('d_prod_sub')}
+          prov={{ unit: tr('u_kt'), period: per, kind: prodPub ? 'mixed' : 'survey', src: prodPub ? ['sas_micro', 'sas2026a', 'sas2026b'] : ['sas_micro'], note: prodPub ? tr('n_prod_mixed') : tr('n_district_small') }} />
+        <Kpi label={tr('w_c_scale')} value={`${fmtNum(tiles.cult / 1000, 1)}k ha`} icon={Sprout} color={brand.green} foot={tr('d_area_sub')}
+          prov={{ unit: tr('u_ha_cult'), period: per, kind: prodPub ? 'mixed' : 'survey', src: prodPub ? ['sas_micro', 'sas2026a', 'sas2026b'] : ['sas_micro'] }} />
+        <Kpi label={tr('score')} value={`${fmtNum(sc?.score, 0)}/100`} icon={Trophy} color={brand.blue} foot={sc && tr('d_score_sub', sc.rank, Math.round(sc.rank_p10), Math.round(sc.rank_p90))}
+          prov={{ unit: tr('u_score'), period: '2023–2025', kind: 'derived', src: ['screen'], note: tr('n_screen') }} />
       </KpiRow>
       <Grid cols="7fr 5fr">
-        <ChartCard title={tr('c_d_trend')} icon={ChartLine} means={trendMeans}><Plot fig={trendFig} height={300} empty={tr('no_data')} /></ChartCard>
-        <ChartCard title={tr('c_d_radar')} icon={Target} means={top && low && tr('m_d_radar', dist, tr(`w_${top.c}`), tr(`w_${low.c}`))}><Plot fig={radarFig} height={300} empty={tr('no_data')} /></ChartCard>
+        <ChartCard title={tr('c_d_trend')} icon={ChartLine} means={trendMeans} prov={sp('u_pct_plots_ab')}
+          table={{ name: `trend_${dist}`, rows: trendD.flatMap((s) => s.d.map((r) => ({ who: s.who, ...r }))), cols: [
+            { label: tr('area'), get: (r: { who: string }) => r.who }, { label: tr('year'), get: (r: { y: number }) => r.y },
+            { label: '%', get: (r: { e: number }) => fmtPct(r.e), num: true }, { label: 'n', get: (r: { n: number }) => fmtNum(r.n), num: true },
+          ] }}><Plot fig={trendFig} height={300} empty={tr('no_data')} /></ChartCard>
+        <ChartCard title={tr('c_d_radar')} icon={Target} means={top && low && tr('m_d_radar', dist, tr(`w_${top.c}`), tr(`w_${low.c}`))}
+          prov={{ unit: tr('u_score'), period: '2023–2025', kind: 'derived', src: ['screen', 'sas_micro', 'chirps'], note: tr('n_screen') }}
+          table={sc ? { name: `screening_parts_${dist}`, rows: [...COMP], cols: [
+            { label: tr('src_measure').replace(':', ''), get: (c: (typeof COMP)[number]) => tr(`w_${c}`) },
+            { label: dist, get: (c: (typeof COMP)[number]) => Math.round(100 * sc[c]), num: true },
+            { label: tr('median_district'), get: (c: (typeof COMP)[number]) => Math.round(100 * median(D.screen.table.map((r) => r[c]))), num: true },
+          ] } : null}><Plot fig={radarFig} height={300} empty={tr('no_data')} /></ChartCard>
       </Grid>
       <Grid cols="1fr 1fr">
-        <ChartCard title={tr('c_d_gap')} icon={Scale} means={gl && tr('m_d_gap', dist, gl.label, fmtNum(gl.gap, 1), gapD[0].label, fmtNum(gapD[0].gap, 1))}><Plot fig={gapFig} height={300} empty={tr('no_data')} /></ChartCard>
+        <ChartCard title={tr('c_d_gap')} icon={Scale} means={gl && tr('m_d_gap', dist, gl.label, fmtNum(gl.gap, 1), gapD[0].label, fmtNum(gapD[0].gap, 1))}
+          prov={sp('u_pct_plots', `${tr('n_district_small')} ${tr('n_irrig_def')}`)}
+          table={{ name: `district_vs_rwanda_${dist}`, rows: [...gapD].reverse(), cols: [
+            { label: tr('src_measure').replace(':', ''), get: (r: (typeof gapD)[number]) => r.label },
+            { label: dist, get: (r: (typeof gapD)[number]) => fmtPct(r.v), num: true }, { label: 'Rwanda', get: (r: (typeof gapD)[number]) => fmtPct(r.nat), num: true },
+            { label: tr('recon_diff'), get: (r: (typeof gapD)[number]) => `${r.gap >= 0 ? '+' : ''}${fmtNum(r.gap, 1)} ${tr('pts')}`, num: true },
+            { label: 'n', get: (r: (typeof gapD)[number]) => fmtNum(r.n), num: true }, { label: tr('quality'), get: (r: (typeof gapD)[number]) => relLabel(tr, r.rel) },
+          ] }}><Plot fig={gapFig} height={300} empty={tr('no_data')} /></ChartCard>
         <ChartCard title={tr('c_d_crops')} icon={Wheat}
-          means={cropsD.length ? (() => { const d = [...cropsD].reverse(); return tr('m_d_crops', dist, d[0].crop, fmtNum(d[0].t / 1000, 1), d.slice(1, 3).map((r) => r.crop).join(', ')); })() : null}>
+          means={cropsD.length ? (() => { const d = [...cropsD].reverse(); return tr('m_d_crops', dist, d[0].crop, fmtNum(d[0].t / 1000, 1), d.slice(1, 3).map((r) => r.crop).join(', ')); })() : null}
+          prov={{ unit: tr('u_kt_year'), period: per, kind: prodPub ? 'mixed' : 'survey', src: prodPub ? ['sas_micro', 'sas2026a', 'sas2026b'] : ['sas_micro'], note: prodPub ? tr('n_prod_mixed') : undefined }}
+          table={{ name: `crops_${dist}`, rows: [...cropsD].reverse(), cols: [
+            { label: tr('crop'), get: (r: (typeof cropsD)[number]) => r.crop }, { label: tr('crop_group'), get: (r: (typeof cropsD)[number]) => r.grp },
+            { label: 'kt', get: (r: (typeof cropsD)[number]) => fmtNum(r.t / 1000, 1), num: true },
+          ] }}>
           <Plot fig={cropsFig} height={300} empty={tr('no_data')} />
         </ChartCard>
       </Grid>
-      <ChartCard title={tr('c_d_rain')} icon={CloudRain} means={rainD.length ? tr('m_d_rain', dist, dry.length, rainD.length, dry.length ? dry.map((r) => `${r.sas_year}${r.sas_season}`).join(', ') : '–') : null}>
+      <ChartCard title={tr('c_d_rain')} icon={CloudRain} means={rainD.length ? tr('m_d_rain', dist, dry.length, rainD.length, dry.length ? dry.map((r) => `${r.sas_year}${r.sas_season}`).join(', ') : '–') : null}
+        prov={{ unit: tr('u_rain'), period: rainD.length ? `${rainD[0].sas_year}–${rainD[rainD.length - 1].sas_year}` : undefined, kind: 'derived', src: ['chirps'], note: tr('n_rain') }}
+        table={{ name: `rain_${dist}`, rows: rainD, cols: [
+          { label: tr('season'), get: (r: (typeof rainD)[number]) => `${r.sas_year}${r.sas_season}` }, { label: 'mm', get: (r: (typeof rainD)[number]) => fmtNum(r.rain_mm), num: true },
+          { label: `${tr('normal')} (mm)`, get: (r: (typeof rainD)[number]) => fmtNum(r.rain_normal_mm), num: true },
+          { label: tr('anomaly'), get: (r: (typeof rainD)[number]) => `${r.rain_anomaly_pct > 0 ? '+' : ''}${fmtNum(r.rain_anomaly_pct, 0)}%`, num: true },
+        ] }}>
         <Plot fig={rainFig} height={250} empty={tr('no_data')} />
       </ChartCard>
     </>
