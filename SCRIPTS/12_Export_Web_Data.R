@@ -8,6 +8,8 @@
 #
 # Run from the Hackathon project root, after 09_Run_All.R:
 #   source("SCRIPTS/12_Export_Web_Data.R")
+# Then pushes every project change to GitHub (13_Push_To_GitHub.R), so the
+# website on Vercel updates; Sys.setenv(SI_AUTO_PUSH = "FALSE") skips that.
 # Writes:
 #   SCRIPTS/web/public/data/app_data.json      every table the pages use
 #   SCRIPTS/web/public/data/districts.json     30 district shapes (GeoJSON)
@@ -127,4 +129,9 @@ if (file.exists(file.path(dir_app, "DATA_SOURCE.md")))
 
 sz <- file.info(list.files(dir_out, full.names = TRUE))$size
 message("Web data written to ", normalizePath(dir_out), " (", round(sum(sz) / 1e6, 1), " MB, built ", meta$built, ")")
-message("Next: in SCRIPTS/web run  npm install  then  npm run dev  (see SCRIPTS/web/README.md)")
+
+# ---- send the new data to GitHub; Vercel then rebuilds the website ----------------
+if (!identical(toupper(Sys.getenv("SI_AUTO_PUSH", "TRUE")), "FALSE")) {
+  source(file.path(dir_root, "SCRIPTS", "13_Push_To_GitHub.R"))
+  push_project(paste("Update web data (built", meta$built, ")"), root = dir_root)
+}

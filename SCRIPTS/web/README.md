@@ -15,7 +15,7 @@ SAS / AHS / NISR tables ──> R pipeline (SCRIPTS/03 … 11) ──> SCRIPTS/a
                                                                 │
                             SCRIPTS/web/public/data/*.json  <───┘  (aggregates only, no microdata)
                                                                 │
-                                   React app (SCRIPTS/web/src) ─┘ ──> static site (GitHub Pages)
+                                   React app (SCRIPTS/web/src) ─┘ ──> website (Vercel)
 ```
 
 R stays the data engine. The web app only reads the weighted estimates the R scripts produce;
@@ -31,7 +31,10 @@ source("SCRIPTS/12_Export_Web_Data.R")
 ```
 
 It writes `app_data.json`, `districts.json`, `i18n.json` (the Shiny translations) and
-`data_source.md` (the one general Data Source) into `SCRIPTS/web/public/data/`. Commit those files.
+`data_source.md` (the one general Data Source) into `SCRIPTS/web/public/data/`, then pushes every
+project change to GitHub with `SCRIPTS/13_Push_To_GitHub.R` (needs the `gert` package). Vercel
+rebuilds the website from `master` a minute or two later. To push other changes on their own:
+`source("SCRIPTS/13_Push_To_GitHub.R"); push_project()`.
 
 ## Run it on your computer
 
@@ -45,14 +48,12 @@ npm run dev        # opens http://localhost:5173
 
 `npm run build` makes the production site in `SCRIPTS/web/dist/`; `npm run preview` serves it.
 
-## Publish it (free) on GitHub Pages
+## The website (Vercel)
 
-1. Push to GitHub (`master`).
-2. On GitHub: **Settings > Pages > Build and deployment > Source: GitHub Actions** (one time).
-3. The workflow `.github/workflows/deploy-web.yml` builds and publishes on every push that
-   changes `SCRIPTS/web`. You can also run it by hand from the **Actions** tab.
-
-The link is `https://<github-user>.github.io/<repo-name>/`.
+Vercel is linked to this repository with **Root Directory `SCRIPTS/web`** and **production branch
+`master`**; `SCRIPTS/web/vercel.json` holds the build settings. Every push to `master` publishes a
+new version of the site, and every pull request gets its own preview link. The GitHub check
+`.github/workflows/web-build.yml` builds the app on each change so a broken build shows up early.
 
 ## Code map
 
