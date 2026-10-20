@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { TriangleAlert, Droplet, Users, Sprout, Handshake, FlaskConical, Presentation, House, Droplets, MapPinned, ArrowDownWideNarrow } from 'lucide-react';
 import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
-import { ChartCard, FiltersUsed, Grid, Insight, InsightGrid, Kpi, KpiRow, RelBadge, SectionTitle, Select } from '../components/ui';
+import { ChartCard, FiltersUsed, Grid, Insight, InsightGrid, Kpi, KpiRow, RelBadge, SectionTitle, Select, Callout } from '../components/ui';
 import { Plot, choropleth, simpleLines, std, legendBottom, type Fig } from '../components/Plot';
 import { ahsFor, ahsVal, groupBy, in100, mean } from '../lib/stats';
 import { labOr } from '../lib/i18n';
@@ -138,7 +138,7 @@ export default function Households() {
     <>
       <SectionTitle title={tr('ahs_t')} sub={tr('ahs_sub')} />
       <FiltersUsed used={['area']} />
-      <div className="callout"><TriangleAlert size={18} className="callout-ic" /><div>{tr('ahs_break')} {tr('ahs_years_note')}</div></div>
+      <Callout icon={TriangleAlert}>{`${tr('ahs_break')} ${tr('ahs_years_note')}`}</Callout>
       <SectionTitle title={tr('ahs_s_findings')} sub={tr('ahs_s_findings_sub')} />
       {d.length ? (
         <InsightGrid>

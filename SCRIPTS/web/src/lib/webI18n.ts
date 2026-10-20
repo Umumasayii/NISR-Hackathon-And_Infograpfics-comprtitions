@@ -15,4 +15,57 @@ export const WEB_I18N: Record<string, Record<string, string>> = {
   pause: { en: 'Pause', fr: 'Pause', rw: 'Hagarara' },
   not_found: { en: 'This page does not exist.', fr: 'Cette page n’existe pas.', rw: 'Iyi paji ntibaho.' },
   go_home: { en: 'Back to the overview', fr: 'Retour à l’aperçu', rw: 'Subira ku ncamake' },
+  tagline: { en: 'Where rain fails, who irrigates, and where to look first.', fr: 'Où la pluie manque, qui irrigue et où regarder en premier.', rw: "Aho imvura ibura, abuhira, n'aho twahera dusura." },
+  pin: { en: 'Keep the filters open', fr: 'Garder les filtres ouverts', rw: 'Gumisha muyunguruzi zifunguye' },
+  unpin: { en: 'Hide the filters', fr: 'Masquer les filtres', rw: 'Hisha muyunguruzi' },
+  more: { en: 'More', fr: 'Plus', rw: 'Ibindi' },
+  less: { en: 'Less', fr: 'Moins', rw: 'Bike' },
+  all_crops: { en: 'All crops', fr: 'Toutes les cultures', rw: 'Ibihingwa byose' },
+  n_crops: { en: '%d crops', fr: '%d cultures', rw: 'Ibihingwa %d' },
+  n_districts: { en: '%d districts', fr: '%d districts', rw: 'Uturere %d' },
+  edit_filters: { en: 'Change the filters', fr: 'Modifier les filtres', rw: 'Hindura muyunguruzi' },
 };
+
+// Wording the web app replaces in the shared translations: shorter steps, and the data
+// provider named once only, in the general Data Source on Methods (user, 2026-10-20).
+export const WEB_OVERRIDE: Record<string, Record<string, string>> = {
+  k_maize: { en: 'Maize harvest when irrigated', fr: 'Récolte de maïs irriguée', rw: "Umusaruro w'ibigori byuhiwe" },
+  k_maize_foot: { en: 'Similar farms compared', fr: 'Fermes semblables comparées', rw: 'Imirima isa igereranyijwe' },
+  k_area: { en: 'Irrigated plot area', fr: 'Surface des parcelles irriguées', rw: "Ubuso bw'imirima yuhiwe" },
+  m_rain_none: { en: 'In %s, none of the %s selected seasons had rain 15%% or more below normal.', fr: 'À %s, aucune des %s saisons choisies n’a eu 15 %% de pluie en moins ou plus.', rw: 'Muri %s, nta gihembwe muri %s byatoranyijwe cyabonye imvura iri munsi ya 15%%.' },
+  main_avg: { en: 'Seasons A+B%s', fr: 'Saisons A+B%s', rw: 'Ibihembwe A+B%s' },
+  act_gap: { en: 'Where rain fails', fr: 'Où la pluie manque', rw: 'Aho imvura ibura' },
+  act_payoff: { en: 'What irrigation adds', fr: 'Ce que l’irrigation apporte', rw: 'Icyo kuhira byongera' },
+  act_action: { en: 'Where to look first', fr: 'Où regarder en premier', rw: 'Aho twahera' },
+  hero_m1: { en: '23 seasons, 2019–2026', fr: '23 saisons, 2019–2026', rw: 'Ibihembwe 23, 2019–2026' },
+  k_any_bench: { en: 'Official figure, Season A 2026: %s of farmers.', fr: 'Chiffre officiel, saison A 2026 : %s des agriculteurs.', rw: "Imibare yemewe, igihembwe A 2026: %s by'abahinzi." },
+  bench_nisr_2026a_farmers: { en: 'Farmers who irrigated (official, 2026A)', fr: 'Agriculteurs ayant irrigué (officiel, 2026A)', rw: 'Abahinzi buhiye (byemewe, 2026A)' },
+  rb_published: { en: 'Official', fr: 'Officiel', rw: 'Byemewe' },
+  pub_published: { en: 'Official', fr: 'Officiel', rw: 'Byemewe' },
+  pub_short: { en: 'official', fr: 'officiel', rw: 'byemewe' },
+  pub_hover: { en: 'official published figure', fr: 'chiffre officiel publié', rw: 'umubare wemewe watangajwe' },
+  k_pub_line: { en: 'Official %s: %s', fr: 'Officiel %s : %s', rw: 'Byemewe %s: %s' },
+  k_pub_prod: { en: 'Official %s', fr: 'Officiel %s', rw: 'Byemewe %s' },
+  rel_published: { en: 'Official published figure. It replaces our own estimate where both exist.', fr: 'Chiffre officiel publié. Il remplace notre estimation quand les deux existent.', rw: 'Umubare wemewe watangajwe. Usimbura igereranya ryacu iyo byombi bihari.' },
+  pub_title: { en: 'Official published figures used on the site', fr: 'Chiffres officiels publiés utilisés sur le site', rw: 'Imibare yemewe yatangajwe ikoreshwa ku rubuga' },
+  pub_note: {
+    en: 'Where an official figure exists for the same season and area, the site shows it. 2026 Seasons A and B come only from the published tables. Official farmer-level figures for erosion control, machines and agroforestry measure something different from our plot-level shares, so they are not mixed in. Modern tools for 2026 = drip, sprinkler and pivot among irrigated plots (the official tables also count surface and flood irrigation as modern: 66.4% in 2026A).',
+    fr: 'Lorsqu’un chiffre officiel existe pour la même saison et la même zone, le site l’affiche. Les saisons A et B 2026 viennent uniquement des tableaux publiés. Les chiffres officiels par agriculteur pour la lutte antiérosive, les machines et l’agroforesterie mesurent autre chose que nos parts de parcelles : ils ne sont pas mélangés. Outils modernes 2026 = goutte-à-goutte, aspersion et pivot parmi les parcelles irriguées (les tableaux officiels comptent aussi l’irrigation de surface et par submersion : 66,4 % en 2026A).',
+    rw: "Iyo hari umubare wemewe ku gihembwe kimwe n'ahantu hamwe, urubuga rwerekana uwo mubare. Ibihembwe A na B bya 2026 biva gusa mu mbonerahamwe zatangajwe. Imibare yemewe ku bahinzi (kurwanya isuri, imashini, amashyamba avanze n'imyaka) ipima ibindi bitandukanye n'imibare yacu y'imirima, ntibivangwa. Ibikoresho bigezweho 2026 = kuvomerera ibitonyanga, kuminjagira na pivot mu mirima yuhirwa (imbonerahamwe zemewe zibara n'kuhira ku butaka no kwuzuza amazi: 66,4% muri 2026A).",
+  },
+  pub_align_title: { en: 'Harvest: our estimate and the official figure', fr: 'Récolte : notre estimation et le chiffre officiel', rw: "Umusaruro: igereranya ryacu n'umubare wemewe" },
+  pub_align_note: { en: 'For these seasons the site uses the official figure. Our estimate is shown for comparison only.', fr: 'Pour ces saisons, le site utilise le chiffre officiel. Notre estimation est montrée pour comparaison seulement.', rw: 'Kuri ibi bihembwe urubuga rukoresha umubare wemewe. Igereranya ryacu ryerekanwa gusa ngo bigereranywe.' },
+  about_text: {
+    en: 'A website in English, Kinyarwanda and French that turns two national farm surveys and 45 years of rainfall into simple facts about irrigation, harvests and the support farmers need.',
+    fr: 'Un site en anglais, kinyarwanda et français qui transforme deux enquêtes agricoles nationales et 45 ans de pluies en faits simples sur l’irrigation, les récoltes et l’appui dont les agriculteurs ont besoin.',
+    rw: "Urubuga mu Cyongereza, Ikinyarwanda n'Igifaransa ruhindura ubushakashatsi bubiri bw'igihugu ku buhinzi n'imyaka 45 y'imvura mu makuru yoroshye ku kuhira, umusaruro n'ubufasha abahinzi bakeneye.",
+  },
+  ai_3: { en: 'All figures come from code run on the survey data; no number was written by AI without computation.', fr: 'Tous les chiffres proviennent du code.', rw: 'Imibare yose ituruka kuri kode.' },
+  ahs_sub: { en: 'Agricultural Household Survey 2017, 2020 and 2024, out of every 100 farm households.', fr: 'Enquête agricole auprès des ménages 2017, 2020 et 2024, sur 100 ménages agricoles.', rw: "Ubushakashatsi ku ngo z'abahinzi 2017, 2020 na 2024, ku ngo 100 z'abahinzi." },
+  kd_irrig_modern: {
+    en: 'Irrigated plots using a motorised pump or machine, drip, sprinkler or pivot ÷ irrigated plots, %. For 2026: drip + sprinkler + pivot from the official published tables.',
+    fr: 'Parcelles irriguées avec pompe motorisée ou machine, goutte-à-goutte, aspersion ou pivot ÷ parcelles irriguées, %. 2026 : goutte-à-goutte + aspersion + pivot des tableaux officiels publiés.',
+    rw: 'Imirima yuhirwa ikoresha pompe ya moteri cyangwa imashini, ibitonyanga, kuminjagira cyangwa pivot ÷ imirima yuhirwa, %. 2026: ibitonyanga + kuminjagira + pivot biva mu mbonerahamwe zemewe.',
+  },
+};
+

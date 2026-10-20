@@ -109,7 +109,7 @@ export default function Evidence() {
           <div className="card-body">
             <Select value={crop} onChange={setCrop} options={D.yield.crops.map((c) => ({ value: c, label: c }))} width="100%" />
             <p className="muted">{pooled[0]?.crop_group}</p>
-            {m ? <><div className="big-number">{m.adjusted_pct > 0 ? '+' : ''}{fmtNum(m.adjusted_pct, 0)}%</div><p className="kpi-sub">{tr('k_adj_sub', fmtNum(m.adjusted_low, 0), fmtNum(m.adjusted_high, 0))}</p></>
+            {m ? <><div className="big-number">{m.adjusted_pct > 0 ? '+' : ''}{fmtNum(m.adjusted_pct, 0)}%</div><p className="kpi-sub" title={tr('k_adj_sub', fmtNum(m.adjusted_low, 0), fmtNum(m.adjusted_high, 0))}>{tr('k_maize_foot')}</p></>
               : <p className="muted">{tr('no_adjusted')}</p>}
           </div>
         </section>

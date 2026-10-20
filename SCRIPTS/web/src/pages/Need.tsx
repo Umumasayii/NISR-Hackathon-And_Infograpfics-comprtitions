@@ -136,7 +136,7 @@ export default function Need() {
           <Plot fig={bubFig} height={370} onClick={pickDistrict} empty={tr('no_data')} />
         </ChartCard>
         <ChartCard title={tr('c_rain_trend')} icon={CloudRain}
-          means={rtSel.length ? tr('m_rain_trend', f.area, below.length, rtSel.length, below.length ? below.map((r) => `${r.y}${r.s}`).join(', ') : '–') : null}>
+          means={!rtSel.length ? null : below.length ? tr('m_rain_trend', f.area, below.length, rtSel.length, below.map((r) => `${r.y}${r.s}`).join(', ')) : tr('m_rain_none', f.area, rtSel.length)}>
           <Plot fig={rtFig} height={400} empty={tr('no_data')} />
         </ChartCard>
       </Grid>
