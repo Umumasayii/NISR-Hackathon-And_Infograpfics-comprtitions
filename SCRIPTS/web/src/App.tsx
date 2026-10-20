@@ -104,7 +104,7 @@ function Shell() {
           <footer className="app-footer">
             <span>{tr('footer_by')}</span><span>{'·'}</span>
             <Link to="/methods">{tr('footer_see_sources')}</Link><span>{'·'}</span>
-            <span>{tr('built')} {D.meta.built}</span>
+            <span>{tr('built')} {D.meta.built} {'·'} v {__SITE_VERSION__}</span>
           </footer>
         </main>
       </div>
