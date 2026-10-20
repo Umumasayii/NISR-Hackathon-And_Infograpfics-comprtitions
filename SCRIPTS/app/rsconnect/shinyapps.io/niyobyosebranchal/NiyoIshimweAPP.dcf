@@ -5,7 +5,7 @@ account: niyobyosebranchal
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 18168283
-bundleId: 12693745
+bundleId: 12698313
 url: https://niyobyosebranchal.shinyapps.io/NiyoIshimweAPP/
 version: 1
 asMultiple: FALSE

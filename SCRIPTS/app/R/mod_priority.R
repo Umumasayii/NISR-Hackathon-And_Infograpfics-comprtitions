@@ -24,7 +24,7 @@ mod_priority_ui <- function(id, tr) {
                    icon = "arrows-up-down"))),
     card(class = "chart-card", full_screen = TRUE, card_header(span(class = "ch-icon", fontawesome::fa("table")), span(tr("c_priority_table")),
                                                                  div(class = "ms-auto", downloadButton(ns("dl"), tr("dl_shortlist"), class = "btn-sm btn-outline-primary"))),
-         card_body(DT::DTOutput(ns("table"))), card_footer(div(class = "source", tr("src_priority")))),
+         card_body(DT::DTOutput(ns("table")))),
     card(class = "chart-card feas-card",
          card_header(span(class = "ch-icon", fontawesome::fa("clipboard-check")), span(tr("feas_title"))),
          card_body(p(tr("feas_intro")),

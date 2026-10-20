@@ -18,16 +18,30 @@ reliability_lab <- function(n, cv) dplyr::case_when(
 # the stratum variances (sum of (W_d / W)^2 * se_d^2).
 combine_est <- function(d, label) {
   if (!nrow(d)) return(d)
+  if (!"source" %in% names(d)) d$source <- "survey"
   d |> group_by(sas_year, sas_season, indicator) |>
     summarise(W = sum(wsum, na.rm = TRUE),
               estimate = sum(wsum * estimate, na.rm = TRUE) / W,
               se = sqrt(sum((wsum / W)^2 * se^2, na.rm = TRUE)),
-              n = sum(n), .groups = "drop") |>
+              n = sum(n), source = if (all(source == "nisr")) "nisr" else "survey", .groups = "drop") |>
     mutate(level = "combined", area = label, wsum = W,
+           # NISR published figures have no margin of error here; several districts
+           # are combined with the survey's weighted counts (see SCRIPTS/07 section 10)
+           se = if_else(source == "nisr", NA_real_, se),
            ci_low = pmax(estimate - 1.96 * se, 0), ci_high = estimate + 1.96 * se,
-           cv = if_else(estimate > 0, se / estimate, NA_real_), reliability = reliability_lab(n, cv)) |>
+           cv = if_else(estimate > 0, se / estimate, NA_real_),
+           reliability = if_else(source == "nisr", "Published", reliability_lab(n, cv))) |>
     select(-W)
 }
+
+# Averages over several years use the survey seasons. A NISR published season
+# (SAS 2026) is used on its own only when the selection has no survey season for
+# that indicator, so two different sources are never averaged together.
+survey_first <- function(d, by = "indicator") {
+  if (!nrow(d) || !"source" %in% names(d)) return(d)
+  d |> group_by(across(all_of(by))) |> filter(if (any(source == "survey")) source == "survey" else TRUE) |> ungroup()
+}
+is_pub <- function(d) "source" %in% names(d) && nrow(d) > 0 && all(d$source == "nisr")
 
 # Survey estimates for the selected area(s), combined into one series
 est_for <- function(f, indicators, years = f$years, seasons = f$seasons) {
@@ -38,10 +52,14 @@ est_for <- function(f, indicators, years = f$years, seasons = f$seasons) {
 
 # Several seasons -> one value per year (weighted by the weighted plot count)
 by_year <- function(d) {
-  if (!nrow(d)) return(tibble(sas_year = integer(), estimate = numeric(), n = integer(), rel = character()))
+  if (!nrow(d)) return(tibble(sas_year = integer(), estimate = numeric(), n = integer(), rel = character(), source = character()))
+  if (!"source" %in% names(d)) d$source <- "survey"
   d |> group_by(sas_year) |>
-    summarise(estimate = weighted.mean(estimate, wsum), n = sum(n),
-              rel = names(sort(table(reliability), decreasing = TRUE))[1], .groups = "drop") |>
+    summarise(seasons = paste0(sas_season, " ", formatC(estimate, format = "f", digits = 1), "%", collapse = " \u00B7 "),
+              estimate = weighted.mean(estimate, wsum), n = sum(n),
+              rel = names(sort(table(reliability), decreasing = TRUE))[1],
+              source = if (all(source == "nisr")) "nisr" else "survey",
+              .groups = "drop") |>
     arrange(sas_year)
 }
 
@@ -55,8 +73,9 @@ totals_for <- function(f) {
   if (f$area_level == "national") return(filter(t, level == "national"))
   t |> filter(level == "district", area %in% f$districts) |>
     group_by(sas_year, sas_season) |>
-    summarise(across(c(cultivated_area_ha, irrigated_area_ha, production_t, crop_area_ha, sold_t, sales_value_mrwf),
-                     \(x) sum(x, na.rm = TRUE)), .groups = "drop") |>
+    summarise(across(any_of(c("cultivated_area_ha", "irrigated_area_ha", "production_t", "crop_area_ha", "sold_t",
+                              "sales_value_mrwf", "modern_irrig_area_ha")),
+                     \(x) if (all(is.na(x))) NA_real_ else sum(x, na.rm = TRUE)), .groups = "drop") |>
     mutate(irrigated_area_pct = 100 * irrigated_area_ha / cultivated_area_ha)
 }
 

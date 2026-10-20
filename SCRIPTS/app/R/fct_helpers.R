@@ -11,7 +11,7 @@ seq_green <- list(c(0, "#EAF4EE"), c(0.5, "#5FA97F"), c(1, "#0B4F30"))
 seq_blue  <- list(c(0, "#E8F1F9"), c(0.5, "#5B9BD0"), c(1, "#0D4C80"))
 seq_amber <- list(c(0, "#FBF3E4"), c(0.5, "#D9A44A"), c(1, "#7A5210"))
 div_rain  <- list(c(0, "#8C5A2B"), c(0.5, "#ECEDE8"), c(1, "#1976B9"))   # dry - normal - wet
-rel_cols  <- c("Good" = "#0F7044", "Use with caution" = "#B07A1C", "Unreliable" = "#B65F47")
+rel_cols  <- c("Good" = "#0F7044", "Use with caution" = "#B07A1C", "Unreliable" = "#B65F47", "Published" = "#1976B9")
 
 # the device's own interface font: Segoe UI on Windows, San Francisco on Mac, Roboto on Android
 FONT_BODY <- "'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
@@ -80,14 +80,15 @@ choropleth <- function(d, geojson, value, label, colorscale = seq_green, unit = 
 # ---- cards -------------------------------------------------------------------------
 # Every chart card: icon + title, chart, an insight line ("What this means") and a
 # source/limitations line (Section 13)
+# source_txt is kept for old calls but no longer shown: one general Data Source
+# section lives on the Methods page (user decision 2026-10-17)
 chart_card <- function(title, output, means_id = NULL, source_txt = NULL, height = NULL, full = TRUE, icon = "chart-column") {
   bslib::card(
     full_screen = full, class = "chart-card",
     bslib::card_header(if (!is.null(icon)) shiny::span(class = "ch-icon", fontawesome::fa(icon)), shiny::span(title)),
     bslib::card_body(output, min_height = height),
-    if (!is.null(means_id) || !is.null(source_txt)) bslib::card_footer(
-      if (!is.null(means_id)) shiny::div(class = "means", fontawesome::fa("lightbulb"), shiny::uiOutput(means_id, inline = TRUE)),
-      if (!is.null(source_txt)) shiny::div(class = "source", fontawesome::fa("circle-info"), " ", source_txt)))
+    if (!is.null(means_id)) bslib::card_footer(
+      shiny::div(class = "means", fontawesome::fa("lightbulb"), shiny::uiOutput(means_id, inline = TRUE))))
 }
 
 # Tiny inline SVG trend line for stat tiles (no JS, crisp at any size)
@@ -141,13 +142,13 @@ plotly_clicked <- function(session, source) {
 }
 rel_badge <- function(r, tr = NULL) {
   if (is.null(r) || is.na(r)) return(NULL)
-  key <- c("Good" = "rb_good", "Use with caution" = "rb_caution", "Unreliable" = "rb_unreliable")[[r]]
+  key <- c("Good" = "rb_good", "Use with caution" = "rb_caution", "Unreliable" = "rb_unreliable", "Published" = "rb_published")[[r]]
   shiny::span(class = "rel-badge", style = paste0("border-color:", rel_cols[[r]], ";color:", rel_cols[[r]]),
               if (is.null(tr)) r else tr(key))
 }
 # plain-text label (for hovers and downloads)
 rel_label <- function(r, tr) {
-  key <- c("Good" = "rb_good", "Use with caution" = "rb_caution", "Unreliable" = "rb_unreliable")
+  key <- c("Good" = "rb_good", "Use with caution" = "rb_caution", "Unreliable" = "rb_unreliable", "Published" = "rb_published")
   vapply(as.character(r), \(x) if (is.na(x) || !x %in% names(key)) "\u2013" else tr(key[[x]]), "", USE.NAMES = FALSE)
 }
 p <- shiny::p

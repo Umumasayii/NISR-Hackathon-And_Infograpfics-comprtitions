@@ -1,0 +1,1162 @@
+"year","season","module","source_file","original_variable","readable_variable","unlabelled_code","frequency"
+"2019","A","agricultural_practices","rwa-sas-SeasonA_PartIV_Agricultural practice.sav","s4q11_2","at_which_stage_of_agriculture_practice_did_you_use_ploughing","19",9
+"2019","A","land_tenure","rwa-sas-SeasonA_PartV_Land Tenure.sav","s5q7","what_are_crops_in_this_plot_that_have_been_chosen_for_production","999",43
+"2019","B","fertilizers_pesticides","rwa-sas-SeasonB_PartIII_Fertilizers_Pesticides.sav","s1q3","stratum","10",959
+"2019","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.sav","s4q16","irrigation_tool","14",1
+"2019","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.sav","s4q16","irrigation_tool","23",1
+"2019","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.sav","s4q16","irrigation_tool","24",2
+"2019","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.sav","s4q16","irrigation_tool","256",3
+"2019","B","land_tenure","rwa-sas-SeasonB_PartV_Land Tenure.sav","s5q7","what_are_crops_in_this_plot_that_have_been_chosen_for_production","999",52
+"2019","C","agricultural_practices","rwa-sas-SeasonC_PartIV_Agricultural practice.sav","s4q16","irrigation_tool","67",1
+"2019","C","land_tenure","rwa-sas-SeasonC_PartV_Land Tenure.sav","s5q7","what_are_crops_in_this_plot_that_have_been_chosen_for_production","999",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","A",618
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AB",66
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ABC",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ABD",6
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ABF",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ABI",5
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AC",51
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ACD",13
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ACE",10
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ACI",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ACK",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ACO",15
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ACP",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AD",234
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ADE",30
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ADF",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ADI",35
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ADJ",12
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ADK",44
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ADM",7
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ADO",7
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ADP",5
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ADQ",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AE",43
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AEI",12
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AEJ",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AEK",5
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AEM",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AEN",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AF",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AH",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AHO",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AI",75
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AIJ",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AIK",10
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AJ",9
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AJK",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AK",24
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AKM",11
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AKN",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AKO",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AKP",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AM",5
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AN",10
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","ANP",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AO",36
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AP",11
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","AQ",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","B",2275
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BC",57
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BCD",13
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BCE",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BCI",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BCJ",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BCK",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BCP",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BD",1034
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BDE",65
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BDF",11
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BDG",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BDH",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BDI",106
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BDJ",73
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BDK",50
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BDM",45
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BDN",9
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BDP",45
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BDQ",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BE",92
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BEF",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BEI",10
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BEJ",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BEK",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BEM",6
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BEP",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BF",31
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BFG",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BFI",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BFJ",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BFN",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BG",10
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BGJ",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BH",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BHP",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BI",357
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BIJ",8
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BIK",21
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BIM",9
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BIN",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BIP",7
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BJ",47
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BJM",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BJP",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BK",72
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BKM",13
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BKN",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BKP",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BM",48
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BMN",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BMP",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BN",19
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BO",7
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BP",83
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BQ",7
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BQI",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","BQJ",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","C",2340
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CD",2053
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CDE",303
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CDG",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CDH",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CDI",164
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CDJ",94
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CDK",103
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CDM",61
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CDN",5
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CDO",17
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CDP",70
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CDQ",6
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CE",400
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CEI",39
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CEJ",5
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CEK",9
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CEM",6
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CEP",9
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CF",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CG",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CH",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CI",232
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CIJ",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CIK",17
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CIM",5
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CIO",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CIP",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CJ",49
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CJK",11
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CJP",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CK",84
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CKP",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CM",57
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CMP",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CN",19
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CNO",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CO",28
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CP",90
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CQ",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","CQP",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","D",8934
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DE",484
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DEF",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DEH",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DEI",64
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DEJ",29
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DEK",28
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DEM",14
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DEP",30
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DEQ",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DF",30
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DFG",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DFI",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DFJ",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DFK",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DFN",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DFP",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DFQ",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DG",9
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DGJ",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DGM",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DGP",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DH",39
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DHI",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DHJ",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DHK",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DHM",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DI",941
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DIJ",68
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DIK",42
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DIM",56
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DIN",7
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DIO",20
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DIP",58
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DJ",1050
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DJK",97
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DJM",23
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DJN",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DJO",13
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DJP",37
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DK",743
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DKM",52
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DKN",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DKO",13
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DKP",33
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DM",615
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DMN",6
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DMO",8
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DMP",41
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DN",51
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DNO",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DNP",6
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DO",251
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DOP",7
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DP",697
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DQ",25
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DQI",6
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DQJ",9
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DQK",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","DQP",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","E",461
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EF",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EG",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EGI",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EH",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EI",54
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EIJ",8
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EIK",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EIP",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EJ",26
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EJK",5
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EJP",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EK",41
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EKM",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EKP",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EM",16
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EP",22
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","EQ",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","F",61
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","FG",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","FHP",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","FI",8
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","FIK",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","FIP",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","FM",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","FN",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","FO",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","FP",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","FQ",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","G",20
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","GI",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","GIK",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","GJ",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","GK",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","GMO",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","GP",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","H",55
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","HI",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","HIK",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","HJ",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","HK",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","HM",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","HO",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","HP",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","HQ",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","I",1368
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","IJ",52
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","IJK",8
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","IJM",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","IJP",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","IK",79
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","IKM",11
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","IM",26
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","IN",14
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","IO",32
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","IOP",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","IP",54
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","J",673
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","JK",60
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","JKM",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","JKN",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","JKO",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","JKP",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","JM",11
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","JN",2
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","JO",11
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","JP",36
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","K",841
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","KM",15
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","KMP",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","KN",7
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","KO",24
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","KP",36
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","L",4440
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","M",254
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","MNO",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","MO",4
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","MP",29
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","N",119
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","NO",9
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","NP",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","O",4372
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","OP",18
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","P",972
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","Q",68
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","QI",6
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","QIJ",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","QJ",3
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","QK",6
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","QM",1
+"2021","A","crop_production","rwa-sas-seasonA_Crop production.dta","s2q22","explanation_on_crop_production_status","QO",1
+"2021","B","crop_screening","rwa-sas-seasonB-Screening_crops.dta","s3q5","is_this_crop_for_this_season","10",1
+"2021","B","crop_screening","rwa-sas-seasonB-Screening_crops.dta","s3q5","is_this_crop_for_this_season","18",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s1q3","stratum","11",29912
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","A",649
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AB",36
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ABD",35
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ABE",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ABI",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ABJ",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ABM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ABP",4
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AC",71
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ACD",14
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ACE",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ACI",6
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ACK",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ACM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ACP",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AD",395
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ADE",52
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ADG",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ADI",34
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ADJ",35
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ADK",28
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ADM",11
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ADN",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ADO",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","ADP",20
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AE",77
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AEH",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AEI",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AEJ",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AEK",8
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AEM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AEP",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AG",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AI",67
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AIJ",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AIK",13
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AIP",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AJ",10
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AJK",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AK",14
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AKM",8
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AKP",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AN",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AO",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AP",15
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","AQ",5
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","B",2615
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BC",147
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BCD",100
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BCE",10
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BCF",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BCH",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BCI",10
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BCJ",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BCK",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BCM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BCP",6
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BD",1508
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BDE",56
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BDF",6
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BDG",4
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BDH",6
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BDI",124
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BDJ",132
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BDK",45
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BDM",71
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BDN",7
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BDO",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BDP",50
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BDQ",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BE",92
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BEH",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BEI",11
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BEJ",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BEK",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BEM",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BEP",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BEQ",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BF",15
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BFI",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BFN",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BG",11
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BGI",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BH",7
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BHI",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BHM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BHP",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BI",249
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BIJ",9
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BIK",11
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BIM",8
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BIN",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BIP",4
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BJ",91
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BJK",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BJM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BJP",4
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BK",62
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BKM",12
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BM",51
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BMN",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BMP",6
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BN",9
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BNO",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BO",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BP",101
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BQ",8
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","BQN",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","C",2204
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CD",2065
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CDE",269
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CDF",4
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CDG",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CDH",7
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CDI",144
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CDJ",111
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CDK",72
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CDM",37
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CDN",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CDO",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CDP",78
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CDQ",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CE",325
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CEF",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CEI",19
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CEJ",6
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CEK",7
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CEM",5
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CEP",11
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CF",10
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CFG",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CFI",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CFP",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CG",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CGI",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CH",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CHI",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CHK",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CI",234
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CIJ",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CIK",6
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CIM",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CIN",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CIO",4
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CIP",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CJ",75
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CJK",8
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CJM",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CJP",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CK",61
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CKM",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CKP",4
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CM",21
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CN",5
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CNO",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CO",15
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CP",71
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CQ",4
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","CQI",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","D",8759
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DE",354
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DEF",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DEH",7
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DEI",20
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DEJ",35
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DEK",11
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DEM",18
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DEP",17
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DEQ",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DF",15
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DFM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DG",16
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DGI",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DGJ",8
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DGK",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DGM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DGO",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DH",17
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DHI",5
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DHJ",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DHK",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DHM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DHP",4
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DI",1112
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DIJ",107
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DIK",74
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DIM",52
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DIN",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DIO",20
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DIP",45
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DJ",1325
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DJK",94
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DJM",39
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DJN",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DJO",23
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DJP",45
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DK",548
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DKM",24
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DKN",6
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DKO",13
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DKP",14
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DM",503
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DMN",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DMO",12
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DMP",20
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DN",44
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DNO",8
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DNP",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DO",436
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DOP",16
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DP",601
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DQ",16
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DQI",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DQJ",7
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","DQM",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","E",357
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EF",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EFI",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EH",4
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EHP",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EI",38
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EIK",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EIM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EIP",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EJ",17
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EJK",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EJM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EJP",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EK",9
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EKM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EKP",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EM",5
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EMP",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EO",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EP",18
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","EQ",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","F",29
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","FG",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","FH",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","FI",13
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","FJK",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","FK",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","FP",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","G",7
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","GIO",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","GJ",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","GM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","H",35
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","HI",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","HIM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","HJP",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","HK",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","HM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","HP",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","I",1163
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","IJ",37
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","IJK",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","IJM",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","IJO",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","IJP",4
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","IK",52
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","IKM",7
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","IKN",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","IKO",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","IKP",3
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","IM",30
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","IN",13
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","IO",35
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","IP",62
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","J",642
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","JK",48
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","JKM",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","JKP",8
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","JM",10
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","JMO",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","JO",5
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","JP",35
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","K",455
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","KM",16
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","KMP",1
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","KO",10
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","KP",32
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","L",2299
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","M",138
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","MN",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","MO",2
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","MP",7
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","N",47
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","NO",5
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","NP",4
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","O",1703
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","OP",11
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","P",602
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","Q",22
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","QI",4
+"2021","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q22","explanation_on_crop_production_status","QIK",1
+"2021","B","agroforestry_screening","rwa-sas-seasonB_Screening_Agroforestry.dta","s2q11","types_of_agroforestry_trees_planted_in_this_plot","0",7
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","A",151
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","AB",2
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","ABK",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","AC",4
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","ACD",6
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","ACI",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","AD",61
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","ADI",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","ADK",7
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","ADM",2
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","ADP",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","AE",4
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","AEI",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","AF",2
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","AI",33
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","AIK",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","AJ",6
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","AJK",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","AK",15
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","AKM",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","AM",4
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","AQI",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","B",29
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","BC",2
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","BCI",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","BD",10
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","BDI",3
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","BDJ",2
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","BEI",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","BI",7
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","BJ",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","BK",2
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","C",402
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CD",212
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CDE",3
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CDF",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CDH",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CDI",30
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CDJ",10
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CDK",8
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CDM",10
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CDP",4
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CE",8
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CEI",4
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CEM",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CEP",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CF",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CI",82
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CIK",6
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CIM",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CIP",2
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CJ",8
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CJM",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CK",19
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CM",8
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CP",9
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","CQ",3
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","D",397
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DE",12
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DEI",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DEK",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DF",9
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DFJ",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DFK",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DFM",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DG",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DGJ",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DH",2
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DHJ",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DHK",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DI",73
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DIJ",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DIK",5
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DIM",18
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DIP",3
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DJ",28
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DJK",3
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DJM",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DK",26
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DKM",4
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DM",53
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DMP",3
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DP",24
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DQ",4
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DQI",2
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","DQK",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","E",22
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","EF",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","EFI",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","EI",3
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","EIJ",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","EIM",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","EK",2
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","EM",6
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","F",15
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","FI",3
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","FKM",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","FM",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","G",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","H",3
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","I",253
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","IJ",7
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","IK",23
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","IKM",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","IKP",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","IM",15
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","IP",4
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","J",41
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","JK",2
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","JKM",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","JM",4
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","JP",3
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","K",75
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","KM",14
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","KMP",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","KP",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","L",931
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","M",54
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","MP",1
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","P",40
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","Q",5
+"2021","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q22","explanation_on_crop_production_status","QM",1
+"2022","A","fertilizers_pesticides","rwa-sas-SeasonA_PartIII_Fertilizers_Pesticides.dta","s3q15","main_crops_to_be_fertilized","0",2
+"2022","B","crop_production","rwa-sas-seasonB_Crop production.dta","s2q36","storage_facility_used_during_this_agricultural_season","12",1
+"2022","B","agroforestry_screening","rwa-sas-seasonB_Screening_Agroforestry.dta","s2q11","types_of_agroforestry_trees_planted_in_this_plot","16",218
+"2023","A","crop_screening","rwa-sas-seasonA-Screening_crops.dta","s1q7","segment_number_s1q7","25",48134
+"2023","B","crop_screening","rwa-sas-seasonB-Screening_crops.dta","s1q7","segment_number_s1q7","25",47027
+"2023","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.dta","s4q12_2","at_which_stage_of_agriculture_practices_have_you_used_other","",16857
+"2023","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.dta","s4q12_2","at_which_stage_of_agriculture_practices_have_you_used_other","G",1
+"2023","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.dta","s4q12_2","at_which_stage_of_agriculture_practices_have_you_used_other","I",1
+"2023","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.dta","s4q12_2","at_which_stage_of_agriculture_practices_have_you_used_other","IJ",1
+"2023","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.dta","s4q12_2","at_which_stage_of_agriculture_practices_have_you_used_other","L",1
+"2023","B","agricultural_practices","rwa-sas-SeasonB_PartIV_Agricultural practice.dta","s4q12_2","at_which_stage_of_agriculture_practices_have_you_used_other","M",3
+"2023","C","crop_screening","rwa-sas-seasonC-Screening_crops.dta","s1q7","segment_number_s1q7","25",2691
+"2023","C","crop_screening","rwa-sas-seasonC-Screening_crops.dta","s1q7","segment_number_s1q7","9",2732
+"2023","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q27","on_which_market_this_crop_was_sold","1",1053
+"2023","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q27","on_which_market_this_crop_was_sold","2",1387
+"2023","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q27","on_which_market_this_crop_was_sold","3",58
+"2023","C","crop_production","rwa-sas-seasonC_Crop production.dta","s2q27","on_which_market_this_crop_was_sold","4",2
+"2024","A","crop_production","Rwa_raw_SeasonA2024_Production.dta","s2q37","storage_facility_used_during_this_agricultural_season","12",1
+"2024","A","crop_production","Rwa_raw_SeasonA2024_Production.dta","s2q37","storage_facility_used_during_this_agricultural_season","13",1
+"2024","A","crop_production","Rwa_raw_SeasonA2024_Production.dta","s2q37","storage_facility_used_during_this_agricultural_season","14",1
+"2024","A","crop_production","Rwa_raw_SeasonA2024_Production.dta","s3q1","use_organic_fertilizer_in_any_of_your_plots_during_this_season","1",35344
+"2024","A","crop_production","Rwa_raw_SeasonA2024_Production.dta","s3q1","use_organic_fertilizer_in_any_of_your_plots_during_this_season","2",3986
+"2024","B","crop_production","Rwa_raw_SeasonB2024_Production.dta","s2q37","storage_facility_used_during_this_agricultural_season","12",1
+"2024","B","crop_production","Rwa_raw_SeasonB2024_Production.dta","s3q1","use_organic_fertilizer_in_any_of_your_plots_during_this_season","1",28729
+"2024","B","crop_production","Rwa_raw_SeasonB2024_Production.dta","s3q1","use_organic_fertilizer_in_any_of_your_plots_during_this_season","2",6854
+"2024","C","crop_production","Rwa_raw_SeasonC2024_Production.dta","s3q1","use_organic_fertilizer_in_any_of_your_plots_during_this_season","1",1562
+"2024","C","crop_production","Rwa_raw_SeasonC2024_Production.dta","s3q1","use_organic_fertilizer_in_any_of_your_plots_during_this_season","2",387
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","",16374
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","12",30
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1234",5
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1235",39
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1236",3
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1238",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","124",3
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1245",18
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1246",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1248",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","125",21
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1256",35
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1258",3
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","126",4
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","128",3
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1345",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","145",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1456",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","15",20
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","156",8
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1568",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","158",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","16",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","18",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","23",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","2345",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","2346",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","235",5
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","2356",9
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","236",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","238",4
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","246",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","2468",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","248",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","25",6
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","256",6
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","2568",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","26",5
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","28",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","34",5
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","3456",4
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","35",11
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","356",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","358",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","36",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","456",4
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","46",3
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","56",15
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","568",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","58",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","68",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q10_2","at_which_stage_of_agriculture_practice_have_you_used_animal","",17054
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q10_2","at_which_stage_of_agriculture_practice_have_you_used_animal","A",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q10_2","at_which_stage_of_agriculture_practice_have_you_used_animal","H",7
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","",16898
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","A",59
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AB",32
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABE",12
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABEHL",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABEK",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABG",5
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABHI",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABHK",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABI",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABK",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AE",3
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AEG",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AEGHI",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AG",3
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AGLM",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AHI",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AHM",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AI",4
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AJL",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AM",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","F",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","GL",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","H",7
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","I",14
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","IJ",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","J",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","JK",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","K",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","L",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","",16224
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","12",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","123",3
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","13",27
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","134",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","13456",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","135",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","136",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","14",4
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","146",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","156",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","16",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","23",9
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","235",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","25",4
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","26",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","34",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","3456",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","346",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","35",4
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","356",4
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","36",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","456",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","46",50
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","467",1
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","56",2
+"2025","A","agricultural_practices","Rwa_raw_SeasonA2025_Agricultural_practice.dta","s4q17","irrigation_tool","7",1
+"2025","A","crop_production","Rwa_raw_SeasonA2025_Production.dta","s2q37","type_of_storage_used","13",1
+"2025","A","crop_screening","Rwa_raw_SeasonA2025_Screening.dta","s1q8","segment_number_s1q8","25",45766
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q10_2","at_which_stage_of_agriculture_practice_have_you_used_animal","",17095
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q10_2","at_which_stage_of_agriculture_practice_have_you_used_animal","A",3
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q10_2","at_which_stage_of_agriculture_practice_have_you_used_animal","AB",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q10_2","at_which_stage_of_agriculture_practice_have_you_used_animal","AC",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","",16973
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","A",27
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AB",44
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABCE",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABCEI",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABE",13
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABEGI",2
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABEH",3
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABEIJ",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABEK",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABG",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABH",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABI",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABJ",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ABM",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","ADEH",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AE",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AEGIL",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AEHJ",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AH",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","AIJ",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","B",2
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","C",2
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","F",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","H",5
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","I",4
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","J",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","K",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","KM",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","L",5
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q11_2","at_which_stage_of_agriculture_practice_have_you_used_ploughing","M",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q12_2","at_which_stage_of_agriculture_practices_have_you_used_other","",17094
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q12_2","at_which_stage_of_agriculture_practices_have_you_used_other","G",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q12_2","at_which_stage_of_agriculture_practices_have_you_used_other","I",2
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q12_2","at_which_stage_of_agriculture_practices_have_you_used_other","IJ",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q12_2","at_which_stage_of_agriculture_practices_have_you_used_other","J",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q12_2","at_which_stage_of_agriculture_practices_have_you_used_other","L",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","",16505
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","12",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","123",12
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","13",9
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","1346",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","135",8
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","14",2
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","146",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","15",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","16",2
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","23",5
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","2346",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","24",2
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","34",5
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","345",2
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","346",1
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","35",5
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","45",2
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","456",3
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","46",25
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","56",3
+"2025","B","agricultural_practices","Rwa_raw_SeasonB2025_Agricultural_practice.dta","s4q17","irrigation_tool","7",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s1q8","segment_number_s1q8","25",44338
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","",14951
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,2",17
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,2,5",18
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,2,7",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,3",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,3,5",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,4",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,4,5",5
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,5",117
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,5,2",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,5,4",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,5,7",15
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,6,9",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,7",16
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,7,5",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,8",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","1,9",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,1",11
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,1,5",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,3",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,3,5",9
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,3,6",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,4",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,4,5",4
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,4,6",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,4,7",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,5",22
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,5,7",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,5,9",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,6,9",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,7",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,7,5",4
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,8",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","2,9",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","3,1",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","3,2",5
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","3,2,5",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","3,5",91
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","3,5,1",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","3,5,2",9
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","3,5,4",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","3,9",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","4,1",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","4,2",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","4,2,5",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","4,5",25
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","4,5,2",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","4,5,3",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","4,5,7",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","4,5,8",4
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","4,9",5
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","4,9,8",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,1",48
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,1,2",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,2",26
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,2,1",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,3",42
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,3,2",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,3,8",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,4",30
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,4,1",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,4,2",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,6",6
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,6,9",14
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,7",12
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,7,1",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,7,4",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,8",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,8,9",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,9",73
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,9,2",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,9,6",9
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","5,9,7",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","6,1",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","6,10",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","6,2",7
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","6,5",20
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","6,5,9",7
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","6,8",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","6,8,9",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","6,9",754
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","6,9,2",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","6,9,5",6
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","6,9,8",5
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","7,1",23
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","7,1,5",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","7,2",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","7,5",26
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","7,5,1",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","7,5,3",4
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","7,5,4",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","7,8",78
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","7,9",5
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","7,9,5",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","8,1",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","8,2",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","8,4",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","8,5",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","8,5,1",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","8,6",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","8,6,9",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","8,7",5
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","8,9",33
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","8,9,6",6
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","9,2",12
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","9,3",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","9,4",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","9,5",36
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","9,5,6",5
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","9,6",521
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","9,6,2",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","9,6,5",16
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","9,6,8",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","9,7",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","9,8",33
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","9,8,5",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","9,8,6",35
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","A",649
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","AB",102
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","ABC",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","ABD",12
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","ABE",469
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","ABG",4
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","ABH",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","ABI",10
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","AC",8
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","ACE",9
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","AD",62
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","ADE",225
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","ADH",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","ADJ",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","AE",1579
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","AEG",73
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","AEH",12
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","AEI",27
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","AG",45
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","AH",5
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","AI",10
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","B",808
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BC",42
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BCD",7
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BCE",152
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BCI",7
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BD",115
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BDE",503
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BDH",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BDI",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BE",1947
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BEF",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BEG",106
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BEH",17
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BEI",43
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BEJ",6
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BG",37
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BGH",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BH",51
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BHI",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","BI",43
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","C",194
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","CD",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","CDE",9
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","CDI",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","CE",1047
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","CEG",4
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","CEI",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","CI",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","D",726
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","DE",3076
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","DEF",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","DEG",78
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","DEH",8
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","DEI",29
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","DF",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","DG",13
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","DGI",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","DH",5
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","DHI",2
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","DI",24
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","E",13974
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","EF",21
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","EFI",3
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","EG",703
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","EGH",6
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","EGI",17
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","EGJ",6
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","EH",265
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","EHI",30
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","EI",579
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","EJ",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","F",69
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","FG",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","FI",11
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","G",646
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","GH",9
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","GHI",1
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","GI",15
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","H",844
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","HI",93
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","I",907
+"2025","B","crop_screening","Rwa_raw_SeasonB2025_Screening.dta","s2q10","types_of_anti_erosion_activities_existing_on_this_plot","J",22
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","",1446
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","12",2
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1235",1
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1236",1
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","125",1
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","1256",9
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","126",3
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","15",5
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","156",2
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","16",2
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","235",1
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","236",1
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","2456",1
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","25",2
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","256",1
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","26",7
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","34",3
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","35",2
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","36",2
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","45",2
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","56",11
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","58",6
+"2025","C","agricultural_practices","Rwa_raw_SeasonC2025_Agricultural_practice.dta","s4q7","what_do_you_gain_as_support_from_land_consolidation_program","68",1
+"2025","C","crop_production","Rwa_raw_SeasonC2025_Production.dta","s3q1","use_organic_fertilizer_in_any_of_your_plots_during_this_season","1",1553
+"2025","C","crop_production","Rwa_raw_SeasonC2025_Production.dta","s3q1","use_organic_fertilizer_in_any_of_your_plots_during_this_season","2",331
