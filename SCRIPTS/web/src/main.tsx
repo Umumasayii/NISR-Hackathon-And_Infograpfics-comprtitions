@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { registerSW } from 'virtual:pwa-register';
 import App from './App';
 import { AppProvider, loadAll, type Loaded } from './data/store';
-import { WEB_I18N } from './lib/webI18n';
+import { WEB_I18N, WEB_OVERRIDE } from './lib/webI18n';
 import { initialLang } from './lib/i18n';
 import './styles.css';
 
@@ -15,6 +15,7 @@ function Boot() {
   useEffect(() => {
     loadAll().then((d) => {
       for (const [k, v] of Object.entries(WEB_I18N)) if (!d.dict[k]) d.dict[k] = v;
+      Object.assign(d.dict, WEB_OVERRIDE);
       setData(d);
     }).catch((e) => { console.error(e); setErr(true); });
   }, []);

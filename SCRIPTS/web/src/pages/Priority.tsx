@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { TriangleAlert, SlidersHorizontal, Map as MapIcon, ArrowUpDown, Table2, ClipboardCheck, CircleHelp, RotateCcw, Download } from 'lucide-react';
 import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
-import { ChartCard, DataTable, FiltersUsed, Grid, RelBadge, relLabel, type Col } from '../components/ui';
+import { ChartCard, DataTable, FiltersUsed, Grid, RelBadge, relLabel, type Col, Callout } from '../components/ui';
 import { Plot, choropleth, std, type Fig } from '../components/Plot';
 import { downloadCsv } from '../lib/stats';
 import { fmtNum, fmtPct } from '../lib/format';
@@ -70,7 +70,7 @@ export default function Priority() {
   return (
     <>
       <FiltersUsed used={['area']} />
-      <div className="callout warn"><TriangleAlert size={18} className="callout-ic" /><div><strong>{tr('prelim_title')}</strong> {tr('prelim_text')}</div></div>
+      <Callout icon={TriangleAlert} kind="warn">{tr('prelim_text')}</Callout>
       <Grid cols="3fr 9fr">
         <section className="card chart-card">
           <header className="card-head"><span className="ch-icon"><SlidersHorizontal size={16} /></span><h3>{tr('weights')}</h3></header>

@@ -1,11 +1,64 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Check, CheckCheck, ChevronDown, Download, Filter, Lightbulb, Maximize2, Minimize2, Minus, Search, X, type LucideIcon } from 'lucide-react';
+import { Fragment, isValidElement, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  CalendarDays, Check, CheckCheck, ChevronDown, CloudSunRain, Download, Info, MapPin, Maximize2, Minimize2, Search, SlidersHorizontal, Sprout, X,
+  type LucideIcon,
+} from 'lucide-react';
 import { useApp } from '../data/store';
 import { relCols } from '../lib/theme';
 import { downloadCsv } from '../lib/stats';
 
+// ---- short text ------------------------------------------------------------------------------
+/** plain text of a string or a fragment of strings; null when it holds other elements */
+function toText(n: ReactNode): string | null {
+  if (n == null || typeof n === 'boolean') return '';
+  if (typeof n === 'string' || typeof n === 'number') return String(n);
+  if (Array.isArray(n)) { const p = n.map(toText); return p.some((x) => x === null) ? null : p.join(''); }
+  if (isValidElement(n) && n.type === Fragment) return toText((n.props as { children?: ReactNode }).children);
+  return null;
+}
+/** first sentence and the rest ("2.5%" and "e.g." stay whole: a sentence ends at . ! ? before a space) */
+function splitFirst(s: string): [string, string] {
+  const m = s.trim().match(/^(.+?[.!?])\s+(\S[\s\S]*)$/);
+  return m ? [m[1], m[2]] : [s.trim(), ''];
+}
+
+/** One line to read, the rest one tap away: the first sentence, or two lines of richer content */
+export function Brief({ children, className = '' }: { children: ReactNode; className?: string }) {
+  const { tr } = useApp();
+  const [open, setOpen] = useState(false);
+  const text = toText(children);
+  const [lead, rest] = text !== null ? splitFirst(text) : ['', ''];
+  const box = useRef<HTMLDivElement>(null);
+  const [over, setOver] = useState(false);
+  useLayoutEffect(() => {
+    if (text !== null || !box.current) return;
+    const el = box.current;
+    const check = () => setOver(el.scrollHeight > el.clientHeight + 2);
+    check();
+    const ro = new ResizeObserver(check); ro.observe(el);
+    return () => ro.disconnect();
+  }, [text, children]);
+  const more = (text !== null ? !!rest : over || open) && (
+    <button type="button" className="more-btn" onClick={() => setOpen(!open)} aria-expanded={open}>{tr(open ? 'less' : 'more')}</button>
+  );
+  if (text !== null) {
+    if (!lead) return null;
+    return (
+      <div className={`brief ${className}`}>
+        <span>{lead}</span>{' '}{more}
+        {open && rest && <div className="brief-rest">{rest}</div>}
+      </div>
+    );
+  }
+  return (
+    <div className={`brief ${className}`}>
+      <div ref={box} className={open ? '' : 'brief-clamp'}>{children}</div>{more}
+    </div>
+  );
+}
+
 // ---- cards -------------------------------------------------------------------------------
-/** Every chart card: icon + title, optional tools, the chart and a "What this means" line */
+/** Every chart card: title, the one-line message the chart shows, optional tools, the chart */
 export function ChartCard({ title, icon: Icon, tools, means, children, className = '' }: {
   title: string; icon?: LucideIcon; tools?: ReactNode; means?: ReactNode; children: ReactNode; className?: string;
 }) {
@@ -20,15 +73,15 @@ export function ChartCard({ title, icon: Icon, tools, means, children, className
   return (
     <section className={`card chart-card ${full ? 'is-full' : ''} ${className}`}>
       <header className="card-head">
-        {Icon && <span className="ch-icon"><Icon size={16} strokeWidth={2} /></span>}
+        {Icon && <span className="ch-icon"><Icon size={15} strokeWidth={2} /></span>}
         <h3>{title}</h3>
-        <button className="icon-btn ghost" onClick={() => setFull(!full)} aria-label={tr(full ? 'close' : 'expand')} title={full ? 'Esc' : ''}>
+        <button className="icon-btn ghost" onClick={() => setFull(!full)} aria-label={tr(full ? 'close' : 'expand')} title={full ? 'Esc' : tr('expand')}>
           {full ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
         </button>
       </header>
+      {means ? <Brief className="takeaway">{means}</Brief> : null}
       {tools && <div className="card-tools">{tools}</div>}
       <div className="card-body">{children}</div>
-      {means && <footer className="means"><Lightbulb size={16} className="means-ic" /><div>{means}</div></footer>}
     </section>
   );
 }
@@ -36,14 +89,20 @@ export function ChartCard({ title, icon: Icon, tools, means, children, className
 /** a missing table cell (null or NaN) shows as a dash */
 const cell = (v: unknown) => (v == null || (typeof v === 'number' && !Number.isFinite(v)) ? '–' : (v as ReactNode));
 
-/** NISR-style number card: circled line icon, title, one big value, period below */
-export function Kpi({ label, value, icon: Icon, color, foot, delta, deltaGood = true }: {
-  label: string; value: string; icon: LucideIcon; color: string; foot?: ReactNode; delta?: number | null; deltaGood?: boolean;
+/** Number card: circled line icon, title, one big value, period below; the definition in a hover hint */
+export function Kpi({ label, value, icon: Icon, color, foot, delta, deltaGood = true, hint }: {
+  label: string; value: string; icon: LucideIcon; color: string; foot?: ReactNode; delta?: number | null; deltaGood?: boolean; hint?: string;
 }) {
   const shown = useCountUp(value);
+  // a long plain-text note keeps its first part on the card; the rest moves to the hint
+  if (typeof foot === 'string' && !hint) {
+    const m = foot.match(/^(.+?)(?:\s\(|\.\s)/);
+    if (m && m[1].length >= 8) { hint = foot; foot = m[1]; }
+  }
   return (
     <div className="card kpi" style={{ ['--accent' as string]: color }}>
       <span className="kpi-icon"><Icon size={22} strokeWidth={1.8} /></span>
+      {hint && <span className="kpi-hint" tabIndex={0} title={hint} aria-label={hint}><Info size={14} /></span>}
       <div className="kpi-label">{label}</div>
       <div className="kpi-value">{shown}
         {delta != null && Number.isFinite(delta) && (
@@ -75,35 +134,51 @@ function useCountUp(value: string) {
   return out;
 }
 
+/** A finding told by its number: the number large, the short claim beside it, the detail one tap away */
 export function Insight({ icon: Icon, title, text, color }: { icon: LucideIcon; title: string; text: string; color: string }) {
+  const [open, setOpen] = useState(false);
+  const m = title.match(/^([+\-−]?\d[\d.,]*\s?%?)\s+(.+)$/);
   return (
-    <div className="card insight" style={{ ['--accent' as string]: color }}>
-      <span className="in-icon"><Icon size={18} /></span>
-      <div><div className="in-title">{title}</div><div className="in-text">{text}</div></div>
-    </div>
+    <button type="button" className={`card insight ${open ? 'open' : ''}`} style={{ ['--accent' as string]: color }} onClick={() => setOpen(!open)} aria-expanded={open}>
+      {m ? <span className="in-num">{m[1]}</span> : <span className="in-icon"><Icon size={20} /></span>}
+      <span className="in-body">
+        <span className="in-title">{m ? m[2] : title}</span>
+        {open && <span className="in-text">{text}</span>}
+      </span>
+      <ChevronDown size={16} className="in-chev" />
+    </button>
   );
 }
 export const InsightGrid = ({ children }: { children: ReactNode }) => <div className="insight-grid">{children}</div>;
 
-export const SectionTitle = ({ title, sub }: { title: string; sub?: string }) => (
-  <div className="section-title"><h2>{title}</h2>{sub && <p>{sub}</p>}</div>
+/** Section heading; the old subtitles are dropped so the numbers below do the talking */
+export const SectionTitle = ({ title }: { title: string; sub?: string }) => (
+  <div className="section-title"><h2>{title}</h2></div>
 );
 
 export function Callout({ icon: Icon, kind = '', children }: { icon: LucideIcon; kind?: '' | 'soft' | 'warn'; children: ReactNode }) {
-  return <div className={`callout ${kind}`}><Icon size={18} className="callout-ic" /><div>{children}</div></div>;
+  return <div className={`callout ${kind}`}><Icon size={17} className="callout-ic" /><Brief>{children}</Brief></div>;
 }
 
-/** Which global filters a page uses */
+/** The current choice for the filters this page follows; a tap opens the filters */
+export const openFilters = () => window.dispatchEvent(new Event('si-open-filters'));
 export function FiltersUsed({ used }: { used: ('years' | 'seasons' | 'area' | 'crop')[] }) {
-  const { tr } = useApp();
+  const { tr, f, YEARS } = useApp();
+  const ys = [...f.years].sort((a, b) => a - b);
+  const run = ys.length > 1 && ys[ys.length - 1] - ys[0] === ys.length - 1;
+  const years = !ys.length ? '–' : ys.length === 1 ? String(ys[0]) : run || ys.length === YEARS.length ? `${ys[0]}–${ys[ys.length - 1]}` : ys.join(', ');
+  const crop = f.crops.length ? (f.crops.length === 1 ? f.crops[0] : tr('n_crops', f.crops.length)) : f.cropGroups.length ? f.cropGroups.join(', ') : tr('all_crops');
+  const area = f.areaLevel === 'district' && f.districts.length > 2 ? tr('n_districts', f.districts.length) : f.area;
+  const chips: { k: (typeof used)[number]; icon: LucideIcon; v: string }[] = [
+    { k: 'years', icon: CalendarDays, v: years }, { k: 'seasons', icon: CloudSunRain, v: f.seasons.join(' + ') },
+    { k: 'area', icon: MapPin, v: area }, { k: 'crop', icon: Sprout, v: crop },
+  ];
   return (
     <div className="filters-used">
-      <span className="fu-lead"><Filter size={13} /> {tr('fu_lead')}</span>
-      {(['years', 'seasons', 'area', 'crop'] as const).map((x) => (
-        <span key={x} className={`fu ${used.includes(x) ? 'on' : 'off'}`}>
-          {used.includes(x) ? <Check size={12} /> : <Minus size={12} />} {tr(`fu_${x}`)}
-        </span>
+      {chips.filter((c) => used.includes(c.k)).map((c) => (
+        <button type="button" key={c.k} className="fu" onClick={openFilters} title={tr('edit_filters')}><c.icon size={13} /> {c.v}</button>
       ))}
+      <button type="button" className="fu edit" onClick={openFilters} aria-label={tr('edit_filters')} title={tr('edit_filters')}><SlidersHorizontal size={13} /></button>
     </div>
   );
 }
