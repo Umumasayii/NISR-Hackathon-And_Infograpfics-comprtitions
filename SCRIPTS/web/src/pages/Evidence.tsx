@@ -4,7 +4,7 @@ import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
 import { Callout, ChartCard, FiltersUsed, Grid, RelBadge, Select } from '../components/ui';
 import { Plot, simpleLines, std, type Fig } from '../components/Plot';
-import { cropsFor, groupBy, sum, wm } from '../lib/stats';
+import { cropsFor, groupBy, yieldOf } from '../lib/stats';
 import { fmtNum } from '../lib/format';
 import { brand, colIrrigated, colRainfed } from '../lib/theme';
 
@@ -78,18 +78,24 @@ export default function Evidence() {
   }, [ladder, tr]);
   const ladOk = ladder.filter((r) => r.reliability !== 'Unreliable');
 
-  const yarea = useMemo(() => [...groupBy(cropsFor(D, { ...f, crops: [crop], cropGroups: [] }), (r) => String(r.sas_year)).values()].map((g) => ({
-    y: g[0].sas_year, irr: wm(g.map((r) => r.yield_irrigated_kg_ha), g.map((r) => r.n_irrigated_yield)), rain: wm(g.map((r) => r.yield_rainfed_kg_ha), g.map((r) => r.crop_area_ha)), nIrr: sum(g.map((r) => r.n_irrigated_yield)),
-  })).sort((a, b) => a.y - b.y), [D, f, crop]);
+  // one bar pair per survey season: yields of different seasons and districts are only
+  // combined from summed harvest and area (yieldOf), never by averaging yields
+  const yarea = useMemo(() => [...groupBy(cropsFor(D, { ...f, crops: [crop], cropGroups: [] }), (r) => `${r.sas_year}${r.sas_season}`).values()]
+    .map((g) => ({ g, y: yieldOf(D, g) }))
+    .filter((x) => x.y.excluded < x.g.length)
+    .map(({ g, y }) => ({ y: `${g[0].sas_year}${g[0].sas_season}`, yr: g[0].sas_year, irr: y.irr, rain: y.rf, nIrr: y.nIrr, exact: y.exact }))
+    .sort((a, b) => a.y.localeCompare(b.y)), [D, f, crop]);
+  const yPending = yarea.some((r) => !r.exact);
   const yareaFig = useMemo<Fig | null>(() => {
-    if (!yarea.length) return null;
-    const ok = yarea.filter((r) => r.nIrr >= 10 && Number.isFinite(r.irr));
+    const d = yarea.filter((r) => Number.isFinite(r.rain) || Number.isFinite(r.irr));
+    if (!d.length) return null;
+    const ok = d.filter((r) => r.nIrr >= 10 && Number.isFinite(r.irr));
     return {
       data: [
-        { type: 'bar', name: tr('rainfed'), x: yarea.map((r) => r.y), y: yarea.map((r) => r.rain), marker: { color: colRainfed }, text: yarea.map((r) => `${r.y} · ${tr('rainfed')}: ${fmtNum(r.rain)} kg/ha`), hoverinfo: 'text', textposition: 'none' },
+        { type: 'bar', name: tr('rainfed'), x: d.map((r) => r.y), y: d.map((r) => r.rain), marker: { color: colRainfed }, text: d.map((r) => `${r.y} · ${tr('rainfed')}: ${fmtNum(r.rain)} kg/ha`), hoverinfo: 'text', textposition: 'none' },
         { type: 'bar', name: tr('irrigated'), x: ok.map((r) => r.y), y: ok.map((r) => r.irr), marker: { color: colIrrigated }, text: ok.map((r) => `${r.y} · ${tr('irrigated')}: ${fmtNum(r.irr)} kg/ha (n = ${fmtNum(r.nIrr)})`), hoverinfo: 'text', textposition: 'none' },
       ] as Data[],
-      layout: std({ y: tr('y_yield'), xaxis: { dtick: 1 }, barmode: 'group', bargap: 0.3 }),
+      layout: std({ y: tr('y_yield'), xaxis: { type: 'category', tickangle: -45 }, barmode: 'group', bargap: 0.3 }),
     };
   }, [yarea, tr]);
   const yOk = yarea.filter((r) => r.nIrr >= 10 && Number.isFinite(r.irr) && Number.isFinite(r.rain));
@@ -98,7 +104,8 @@ export default function Evidence() {
     <>
       <FiltersUsed used={['years', 'seasons', 'area', 'crop']} />
       <Callout icon={Scale}>{tr('evidence_caveat')}</Callout>
-      <ChartCard title={tr('c_forest')} icon={Sprout}
+      <ChartCard title={tr('c_forest')} icon={Sprout} source={<>{tr('src_model_y')} {D.model_yield.eligibility ?? ''}</>}
+        table={{ cols: [tr('crop'), tr('raw_diff'), tr('adj_diff'), '95%', 'n'], rows: MY.filter((r) => scope.has(r.crop_name)).map((r) => [r.crop_name, `${fmtNum(r.raw_pct, 0)}%`, `${fmtNum(r.adjusted_pct, 0)}%`, `${fmtNum(r.adjusted_low, 0)} to ${fmtNum(r.adjusted_high, 0)}`, r.n]) }}
         means={<>{tr('m_forest', pos.length, MY.length, pos.length ? pos.map((r) => `${r.crop_name} (+${fmtNum(r.adjusted_pct, 0)}%)`).join(', ') : '–', MY.length - pos.length - neg.length)} {tr('m_forest_controls', D.model_yield.controls)}</>}>
         <Plot fig={forestFig} height={400} empty={tr('no_adjusted')} />
       </ChartCard>
@@ -126,7 +133,10 @@ export default function Evidence() {
         <ChartCard title={tr('c_yield_year')} icon={ChartLine} means={yrsBoth.length ? tr('m_byyear', yrsBoth.filter((x) => x.i! > x.r!).length, yrsBoth.length, crop) : null}>
           <Plot fig={byYearFig} height={300} empty={tr('no_data')} />
         </ChartCard>
-        <ChartCard title={tr('c_yield_area')} icon={MapPin} means={yOk.length ? tr('m_yarea', crop, f.area, yOk.filter((r) => r.irr > r.rain).length, yOk.length) : tr('m_yarea_few', crop, f.area)}>
+        <ChartCard title={tr('c_yield_area')} icon={MapPin}
+          means={yPending && !yOk.length ? tr('yield_combined_pending') : yOk.length ? tr('m_yarea', crop, f.area, yOk.filter((r) => r.irr > r.rain).length, yOk.length) : tr('m_yarea_few', crop, f.area)}
+          source={tr('src_yield')}
+          table={{ cols: [tr('season'), tr('irrigated'), tr('rainfed'), 'n'], rows: yarea.map((r) => [r.y, Number.isFinite(r.irr) && r.nIrr >= 10 ? Math.round(r.irr) : null, Number.isFinite(r.rain) ? Math.round(r.rain) : null, r.nIrr]) }}>
           <Plot fig={yareaFig} height={300} empty={tr('no_data')} />
         </ChartCard>
       </Grid>

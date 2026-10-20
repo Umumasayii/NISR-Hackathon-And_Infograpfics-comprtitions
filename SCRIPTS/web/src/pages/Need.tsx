@@ -27,7 +27,7 @@ export default function Need() {
         type: 'scatter', mode: 'text+markers', name: tr(qKey(q)), x: d.map((r) => r.need_score), y: d.map((r) => r.adoption_pct), customdata: d.map((r) => r.district_std),
         text: d.map((r) => (q === QLEV[0] || isSel(r.district_std) ? r.district_std : '')), textposition: 'top center', textfont: { size: 10, color: brand.ink },
         marker: { color: QCOL[i], size: d.map((r) => (isSel(r.district_std) ? 16 : 11)), line: { color: d.map((r) => (isSel(r.district_std) ? brand.ink : '#FFFFFF')), width: 1.5 } },
-        hovertext: d.map((r) => `<b>${r.district_std}</b> (${prov(r.district_std)})<br>${tr('need_score')}: ${fmtNum(r.need_score, 0)}/100<br>${tr('ind_irrigated')}: ${fmtPct(r.adoption_pct)} (${fmtPct(r.adoption_low)}–${fmtPct(r.adoption_high)})<br>${tr('normal_rain')}: ${fmtNum(r.rain_normal_ab_mm)} mm · CV ${fmtNum(r.rain_cv_pct, 0)}%<br>${tr(qKey(r.quadrant))}`),
+        hovertext: d.map((r) => `<b>${r.district_std}</b> (${prov(r.district_std)})<br>${tr('need_score')}: ${fmtNum(r.need_score, 0)}/100<br>${tr('ind_irrigated')}: ${fmtPct(r.adoption_pct)} (${fmtPct(r.adoption_low)}–${fmtPct(r.adoption_high)})<br>${tr('normal_rain')}: ${fmtNum(r.rain_normal_ab_mm)} mm · CV A ${fmtNum(r.rain_cv_a_pct, 0)}%, B ${fmtNum(r.rain_cv_b_pct, 0)}%<br>${tr(qKey(r.quadrant))}`),
         hoverinfo: 'text',
       } as Data;
     });
@@ -43,7 +43,7 @@ export default function Need() {
   const bub = useMemo(() => {
     const Y = new Set(f.years), Ds = new Set(f.districts);
     const e = D.est.filter((r) => r.level === 'district' && r.indicator === 'irrigated' && (r.sas_season === 'A' || r.sas_season === 'B') && Y.has(r.sas_year) && Ds.has(r.area));
-    const ha = new Map([...groupBy(D.totals.filter((r) => r.level === 'district' && r.sas_season !== 'C'), (r) => `${r.area}|${r.sas_year}`).entries()].map(([k, g]) => [k, sum(g.map((r) => r.cultivated_area_ha))]));
+    const ha = new Map([...groupBy(D.totals.filter((r) => r.level === 'district' && r.sas_season !== 'C'), (r) => `${r.area}|${r.sas_year}`).entries()].map(([k, g]) => [k, mean(g.map((r) => r.cultivated_area_ha))]));  // land per main season, not A + B
     return [...groupBy(e, (r) => `${r.area}|${r.sas_year}`).values()].map((g) => ({
       d: g[0].area, y: g[0].sas_year, a: wm(g.map((r) => r.estimate), g.map((r) => r.wsum)), n: sum(g.map((r) => r.n)),
       need: nd.find((r) => r.district_std === g[0].area)?.need_score ?? NaN, ha: ha.get(`${g[0].area}|${g[0].sas_year}`) ?? 0,
@@ -84,7 +84,7 @@ export default function Need() {
     const lim = Math.max(30, ...amap.map((r) => Math.abs(r.rain_anomaly_pct)));
     return choropleth(geo, amap.map((r) => ({ district: r.district_std, value: r.rain_anomaly_pct,
       hover: `<b>${r.district_std}</b><br>${fmtNum(r.rain_mm)} mm (${tr('normal')} ${fmtNum(r.rain_normal_mm)} mm)<br>${tr('anomaly')}: ${r.rain_anomaly_pct > 0 ? '+' : ''}${fmtNum(r.rain_anomaly_pct, 0)}%` })),
-    { label: tr('anomaly_pct'), colorscale: divRain, zmin: -lim, zmax: lim, selected: f.areaLevel !== 'national' ? f.districts : undefined });
+    { noData: tr('no_estimate'), label: tr('anomaly_pct'), colorscale: divRain, zmin: -lim, zmax: lim, selected: f.areaLevel !== 'national' ? f.districts : undefined });
   }, [amap, geo, f, tr]);
   const dryMap = amap.filter((r) => r.rain_anomaly_pct < -15).sort((a, b) => a.rain_anomaly_pct - b.rain_anomaly_pct);
 

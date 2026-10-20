@@ -8,8 +8,9 @@
 #
 # Run from the Hackathon project root, after 09_Run_All.R:
 #   source("SCRIPTS/12_Export_Web_Data.R")
-# Then pushes every project change to GitHub (13_Push_To_GitHub.R), so the
-# website on Vercel updates; Sys.setenv(SI_AUTO_PUSH = "FALSE") skips that.
+# Export only: nothing is committed or pushed. To publish afterwards, check the
+# site locally, then run SCRIPTS/13_Push_To_GitHub.R yourself (or set
+# Sys.setenv(SI_AUTO_PUSH = "TRUE") before this script to push at the end).
 # Writes:
 #   SCRIPTS/web/public/data/app_data.json      every table the pages use
 #   SCRIPTS/web/public/data/districts.json     30 district shapes (GeoJSON)
@@ -32,13 +33,20 @@ as_df <- function(d) as.data.frame(d, stringsAsFactors = FALSE)
 # "Other (specify)" crops and categories are never shown (user decision 2026-10-14)
 is_other <- function(x) grepl("^other|specify|unclassified", x, ignore.case = TRUE)
 
-est    <- ld("est_plot") |> filter(!is.na(area))
-totals <- ld("totals")
-if (!"source" %in% names(est)) est$source <- "survey"
-if (!"totals_source" %in% names(totals)) totals$totals_source <- "survey"
+# Scope: statistics for 2019-2025 only (no 2026 survey figure reaches the website)
+in_scope <- function(d) if ("sas_year" %in% names(d)) d[is.na(d$sas_year) | d$sas_year <= 2025, , drop = FALSE] else d
+est    <- ld("est_plot") |> filter(!is.na(area)) |> in_scope()
+totals <- ld("totals") |> in_scope()
+# every survey figure is a project estimate from the microdata ("survey"); published
+# NISR figures travel separately in app_data$official, never inside these tables
+est$source <- "survey"; totals$totals_source <- "survey"
 
-crop      <- ld("crop_season") |> filter(!is_other(crop_name), !is_other(crop_group))
-crop_dist <- ld("crop_district_season") |> filter(!is_other(crop_name), !is_other(crop_group))
+crop      <- ld("crop_season") |> filter(!is_other(crop_name), !is_other(crop_group)) |> in_scope()
+crop_dist <- ld("crop_district_season") |> filter(!is_other(crop_name), !is_other(crop_group)) |> in_scope()
+# one grain only: individual crops. A group total ("Vegetables (all)") added next to
+# its own crops would be counted twice in every sum (audit 2026-10-20)
+parent_rows <- function(d) grepl("\\(all\\)$|^fodder crops$|^yams & taro$", d$crop_name, ignore.case = TRUE)
+if (any(parent_rows(crop)) || any(parent_rows(crop_dist))) stop("crop tables hold group totals next to their crops")
 
 tech <- ld("irrigation_tech")
 tech$mix <- tech$mix |> filter(!is_other(category)) |>
@@ -81,25 +89,35 @@ drop_cols <- function(d, cols) d[, setdiff(names(d), cols), drop = FALSE]
 app_data <- list(
   built     = meta$built,
   lookup    = as_df(ld("district_lookup")),
-  est       = as_df(drop_cols(est, c("n_psu", "survey_estimate", "nisr_table"))),
-  totals    = as_df(totals),
-  crop      = as_df(crop),
-  crop_dist = as_df(drop_cols(crop_dist, c("production_survey_t"))),
+  # n_psu (segments) is kept: it is part of each estimate's provenance
+  est       = as_df(drop_cols(est, c("survey_estimate", "nisr_table"))),
+  totals    = as_df(drop_cols(totals, c("production_survey_t", "cultivated_survey_ha"))),
+  crop      = as_df(drop_cols(crop, c("production_survey_t", "production_source"))),
+  crop_dist = as_df(drop_cols(crop_dist, c("production_survey_t", "production_source"))),
+  # published NISR figures, cell by cell (SCRIPTS/14); a separate layer
+  official  = if (file.exists(file.path(dir_app, "data", "official.rds"))) as_df(ld("official")) else NULL,
   yield     = lapply(ld("yield_evidence")[c("pooled", "by_year", "ladder", "crops")], \(x) if (is.data.frame(x)) as_df(x) else x),
   tech      = lapply(tech, as_df),
   rain      = lapply(ld("rain_need"), as_df),
   equity    = lapply(ld("equity"), as_df),
   screen    = list(table = as_df(screen$table), default_weights = as.list(screen$default_weights),
-                   feasibility_missing = screen$feasibility_missing),
+                   meta = screen$meta, feasibility_missing = screen$feasibility_missing),
   model     = model_web,
-  model_yield = list(table = as_df(my$table), controls = my$controls, excluded_seasons = as_df(my$excluded_seasons)),
+  model_yield = list(table = as_df(my$table), controls = my$controls, estimands = my$estimands,
+                     eligibility = my$eligibility, excluded_seasons = as_df(my$excluded_seasons)),
   meta      = list(built = meta$built, team = meta$team, n_plots = meta$n_plots, n_crop_plots = meta$n_crop_plots,
                    n_farmers = meta$n_farmers, sources = as_df(meta$sources),
-                   season_quality = as_df(meta$season_quality), benchmarks = as_df(meta$benchmarks),
-                   published = list(seasons = meta$published$seasons,
-                                    headline = as_df(meta$published$headline),
-                                    production_alignment = as_df(meta$published$production_alignment),
-                                    totals_alignment = as_df(meta$published$totals_alignment)),
+                   season_quality = as_df(meta$season_quality), scope = meta$scope,
+                   # which layer each table belongs to, so every chart and CSV can say it
+                   layers = data.frame(
+                     table = c("est", "totals", "crop", "crop_dist", "yield", "tech", "rain", "equity", "screen", "model", "model_yield", "ahs", "official"),
+                     layer = c(rep("project_estimate", 4), "project_estimate", "project_estimate", "project_analysis", "project_estimate",
+                               "project_analysis", "model_output", "model_output", "project_estimate", "published"),
+                     source = c(rep("NISR SAS 2019-2025 microdata, survey-weighted (07_Build_App_Data.R)", 6),
+                                "CHIRPS v2 rainfall 1981-2025 + SAS 2023-2025", "NISR SAS 2023-2025 microdata",
+                                "Screening score (07 section 8)", "08_Models.R", "08_Models.R",
+                                "NISR AHS 2017, 2020, 2024 microdata (10_AHS_Preparation.R)",
+                                "NISR published tables, cell references (14_Official_Reference.R)")),
                    skip_audit = as_df(meta$skip_audit), join_log = as_df(meta$join_log)),
   ahs       = if (!is.null(ahs)) list(indicators = as_df(ahs$indicators), equity = as_df(ahs$equity),
                                       irrigation_mix = as_df(ahs$irrigation_mix), built = ahs$built))
@@ -131,7 +149,7 @@ sz <- file.info(list.files(dir_out, full.names = TRUE))$size
 message("Web data written to ", normalizePath(dir_out), " (", round(sum(sz) / 1e6, 1), " MB, built ", meta$built, ")")
 
 # ---- send the new data to GitHub; Vercel then rebuilds the website ----------------
-if (!identical(toupper(Sys.getenv("SI_AUTO_PUSH", "TRUE")), "FALSE")) {
+if (identical(toupper(Sys.getenv("SI_AUTO_PUSH", "FALSE")), "TRUE")) {
   source(file.path(dir_root, "SCRIPTS", "13_Push_To_GitHub.R"))
   push_project(paste("Update web data (built", meta$built, ")"), root = dir_root)
 }

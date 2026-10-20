@@ -99,13 +99,22 @@ add_design_vars <- function(d) d |>
     left_join(key, by = ".dom")
 }
 
+# The independent samples: SAS seasons (sas_year + sas_season) or, for the AHS,
+# survey rounds (year). Each sample gets its own design; pooled results add them.
+.sample_cols <- function(d) {
+  if (all(c("sas_year", "sas_season") %in% names(d))) c("sas_year", "sas_season")
+  else if ("year" %in% names(d)) "year"
+  else stop("survey_mean_by / survey_ratio_by: no sample identity (sas_year + sas_season, or year)")
+}
+
 .ratio_est <- function(d, by) {
   if (!nrow(d) || !any(d$.ok)) return(tibble())
-  seas <- intersect(by, c("sas_year", "sas_season")); dom <- setdiff(by, seas)
-  d <- d |> mutate(.season = paste(sas_year, sas_season))
+  smp <- .sample_cols(d)
+  seas <- intersect(by, smp); dom <- setdiff(by, seas)
+  d$.season <- do.call(paste, unname(as.list(d[smp])))
   per <- d |> group_by(.season) |> group_modify(\(g, k) .season_totals(g, dom)) |> ungroup()
   if (!nrow(per)) return(tibble())
-  per <- per |> left_join(distinct(d, .season, sas_year, sas_season), by = ".season")
+  per <- per |> left_join(distinct(d, across(all_of(c(".season", smp)))), by = ".season")
   per |> group_by(across(all_of(c(seas, dom)))) |>
     summarise(across(c(Y, X, vY, vX, cXY, df, n, n_psu, wsum), sum), .groups = "drop") |>
     mutate(estimate = Y / X,
