@@ -400,3 +400,8 @@ input[type=number] { width: 100%; padding: 7px 10px; border: 1px solid #CDD4D0; 
 .audio-note audio { height: 40px; max-width: 100%; }
 .audio-note details { flex-basis: 100%; font-size: 14px; }
 .audio-note summary { cursor: pointer; color: var(--blue); min-height: 32px; }
+
+/* published NISR figures: the table they come from, readable without colour */
+.pub-tag { display: inline-block; font-size: 11px; line-height: 1.3; padding: 1px 6px; border-radius: 999px; border: 1px solid #9DBFDD; color: #0D4C80; background: #EEF5FB; white-space: nowrap; cursor: help; }
+.season-pick { margin: 4px 0 12px; }
+.ptable tr.on td { font-weight: 600; }

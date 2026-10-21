@@ -89,12 +89,6 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
               tr("f5", fmt_num(pc$t[1]), pc$sas_year[1], fmt_num(tail(pc$t, 1)), tail(pc$sas_year, 1)), "#00897B")
     }
 
-    bench_line <- function() {
-      b <- D$meta$benchmarks
-      if (is.null(b) || f()$area_level != "national" || 2026 %in% PUB_YEARS) return(NULL)
-      v <- b$value[b$key == "nisr_2026a_farmers"]
-      if (!length(v)) NULL else div(class = "st-bench", tr("k_any_bench", fmt_pct(v)))
-    }
     output$tiles <- renderUI({
       irr <- yearly("irrigated"); mod <- yearly("irrig_modern"); anyf <- yearly("irrig_any_farmer")
       fert <- yearly("inorganic_fert")
@@ -130,7 +124,7 @@ mod_overview_server <- function(id, f, tr, goto = NULL) {
                     tagList(yr(mod), tr("k_modern_sub2"), " ", if (!latest_pub(mod)) rel_badge(lst(mod, "rel"), tr)),
                     num = lst(mod), suffix = "%", decimals = 1),
           stat_tile(tr("ind_irrig_any_farmer"), fmt_pct(lst(anyf)), "user-check", brand$green, dlt(anyf), TRUE, anyf$estimate,
-                    tagList(yr(anyf), tr("k_any_sub"), bench_line()), num = lst(anyf), suffix = "%", decimals = 1)),
+                    tagList(yr(anyf), tr("k_any_sub")), num = lst(anyf), suffix = "%", decimals = 1)),
         tile_row(
           stat_tile(tr("ind_inorganic_fert"), fmt_pct(lst(fert)), "flask", "#6A4C93", dlt(fert), TRUE, fert$estimate,
                     tagList(yr(fert), tr("k_fert_sub")), num = lst(fert), suffix = "%", decimals = 1),
