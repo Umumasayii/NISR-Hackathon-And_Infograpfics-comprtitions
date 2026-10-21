@@ -94,8 +94,6 @@ app_data <- list(
   totals    = as_df(drop_cols(totals, c("production_survey_t", "cultivated_survey_ha"))),
   crop      = as_df(drop_cols(crop, c("production_survey_t", "production_source"))),
   crop_dist = as_df(drop_cols(crop_dist, c("production_survey_t", "production_source"))),
-  # published NISR figures, cell by cell (SCRIPTS/14); a separate layer
-  official  = if (file.exists(file.path(dir_app, "data", "official.rds"))) as_df(ld("official")) else NULL,
   yield     = lapply(ld("yield_evidence")[c("pooled", "by_year", "ladder", "crops")], \(x) if (is.data.frame(x)) as_df(x) else x),
   tech      = lapply(tech, as_df),
   rain      = lapply(ld("rain_need"), as_df),
@@ -140,6 +138,30 @@ app_data <- mark_df(app_data)
 
 write_json(app_data, file.path(dir_out, "app_data.json"), auto_unbox = TRUE,
            na = "null", digits = I(5), null = "null")
+# Published NISR figures (07 section 10) go in their own file, official.json: one
+# row per figure, with the NISR value, our value for the same question, the
+# decision, and the cell it was read from. Repeated text (source titles,
+# definitions) is written once in lookup tables to keep the file small.
+off <- if (file.exists(file.path(dir_app, "data", "official.rds"))) ld("official") else NULL
+if (!is.null(off) && nrow(off)) {
+  dcode <- c("Published cell blank: shown as unavailable" = "blank",
+             "NISR value shown under its own label; not compared (different definition)" = "own_label",
+             "NISR value shown; no project estimate" = "no_project",
+             "NISR value shown; project estimate kept as cross-check" = "cross_check")
+  off <- off |> filter(sas_year <= 2025, farmer_type == "All") |>
+    mutate(src = paste(source_file, sheet, coalesce(measure_label, ""), sep = " | "), d = unname(dcode[decision]))
+  # one row per source table and printed column label; figures point to it by number
+  src_tab <- off |> distinct(src, survey, source_title, source_file, sheet, nisr_table, table_title, measure_label) |>
+    mutate(src_id = row_number())
+  def_tab <- off |> distinct(indicator, .keep_all = TRUE) |>
+    select(indicator, unit, population, definition, comparable, project_indicator, project_table)
+  rows <- off |> left_join(select(src_tab, src, src_id), by = "src") |>
+    transmute(indicator, sas_year, sas_season, level, area, crop_name, is_group, value,
+              src_id, cell, project_value, d)
+  write_json(mark_df(fix_num(list(rows = as_df(rows), sources = as_df(select(src_tab, -src)), definitions = as_df(def_tab),
+                                  built = meta$built))),
+             file.path(dir_out, "official.json"), auto_unbox = TRUE, na = "null", digits = I(6), null = "null")
+} else message("No published NISR figures to export (official.json not written)")
 write_json(geo, file.path(dir_out, "districts.json"), auto_unbox = TRUE, digits = NA)
 file.copy(file.path(dir_app, "i18n", "translations.json"), file.path(dir_out, "i18n.json"), overwrite = TRUE)
 if (file.exists(file.path(dir_app, "DATA_SOURCE.md")))

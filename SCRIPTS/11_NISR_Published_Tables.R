@@ -1,26 +1,23 @@
 # ============================================================================
-# SMARTIRRIGATE RWANDA | OFFICIAL NISR FIGURES FROM THE PUBLISHED TABLES
+# SMARTIRRIGATE RWANDA | NISR PUBLISHED TABLES -> ONE LONG TABLE
 #
-# RETIRED (audit 2026-10-20): not run by 09_Run_All.R and not read by 07. The app's
-# statistics cover 2019-2025 only, and published figures are now read cell by cell,
-# with their table, sheet and cell, by SCRIPTS/14_Official_Reference.R. Kept for the
-# record; its output is not used anywhere.
+# Reads every NISR Seasonal Agricultural Survey (SAS) and Agricultural Household
+# Survey (AHS) table workbook saved under DATA/NISR_published/ and turns every
+# table into one long table, keeping for each number its workbook, sheet, cell,
+# table number and title, season, geography, measure and farmer type.
+# SCRIPTS/14_Official_Reference.R then picks the figures the app uses.
 #
-# Reads the "Tables_<year> Season <A|B>.xlsx" workbooks NISR publishes with
-# each Seasonal Agricultural Survey report and turns every table into one
-# long, tidy table. The dashboard uses these official numbers as published.
+#   Input : DATA/NISR_published/**/*.xlsx (or .xls), downloaded by hand from
+#           statistics.gov.rw > Statistical publications > Agriculture. File names
+#           only need the survey year (e.g. "SAS 2025_Annual Tables.xlsx",
+#           "Tables_2024 Season A.xlsx", "AHS 2024 Tables.xlsx").
+#   Output: DATA/processed/official/nisr_published_all_tables.csv
 #
-#   Input : DATA/NISR_published/Tables_2026 Season A.xlsx (and Season B ...)
-#           Download from statistics.gov.rw > Statistical publications >
-#           Agriculture > Seasonal Agricultural Survey. Any later season
-#           saved here with the same file name pattern is picked up too.
-#   Output: DATA/processed/official/
-#           nisr_published.csv          app indicators (see section 5)
-#           nisr_published_all_tables.csv   every cell of every table
-#
-# Table numbers differ between seasons (Season A has two extra GVA tables),
-# so tables are matched by their title, never by number. The real number is
-# kept in nisr_table.
+# Scope (user rule 2026-10-20/21): statistics 2019-2025 only. Workbooks released
+# after 2025 are skipped, and any row whose reference season is after 2025 is
+# dropped, so no 2026 figure can enter the app.
+# Table numbers differ between releases, so 14 matches tables by title, never by
+# number. The real number is kept in nisr_table.
 # ============================================================================
 
 suppressPackageStartupMessages({
@@ -28,14 +25,24 @@ suppressPackageStartupMessages({
   library(stringr); library(readr); library(tibble)
 })
 
-dir_in  <- file.path("DATA", "NISR_published")
-dir_out <- file.path("DATA", "processed", "official")
+dir_root <- Sys.getenv("HACKATHON_ROOT", ".")
+dir_in   <- file.path(dir_root, "DATA", "NISR_published")
+dir_out  <- file.path(dir_root, "DATA", "processed", "official")
 dir.create(dir_out, recursive = TRUE, showWarnings = FALSE)
+last_stat_year <- 2025
 
-files <- list.files(dir_in, pattern = "^Tables_\\d{4} Season [ABC]\\.xlsx$",
-                    full.names = TRUE)
-if (!length(files)) stop("No NISR tables found in ", dir_in,
-                         " (expected e.g. 'Tables_2026 Season A.xlsx').")
+files <- list.files(dir_in, pattern = "\\.xlsx?$", recursive = TRUE, full.names = TRUE, ignore.case = TRUE)
+files <- files[!startsWith(basename(files), "~$")]                 # Excel lock files
+release <- suppressWarnings(as.integer(str_extract(basename(files), "20[0-9]{2}")))
+if (any(release > last_stat_year, na.rm = TRUE))
+  message("Skipped (released after ", last_stat_year, "): ",
+          paste(basename(files[release > last_stat_year & !is.na(release)]), collapse = ", "))
+files <- files[!is.na(release) & release <= last_stat_year]
+if (!length(files)) stop("No NISR table workbooks for 2019-", last_stat_year, " in ", dir_in)
+
+# Excel column letters for the cell reference of every value
+col_letter <- function(j) vapply(j, \(k) { s <- ""; while (k > 0) { r <- (k - 1) %% 26
+  s <- paste0(LETTERS[r + 1], s); k <- (k - 1) %/% 26 }; s }, character(1))
 
 
 # 1. GEOGRAPHY ----------------------------------------------------------------
@@ -64,7 +71,8 @@ classify_row <- function(label, year, season) {
     d <- adist(x, dn)[1, ]
     if (min(d) <= 2 && sum(d == min(d)) == 1) names(district_province)[which.min(d)] else NA_character_
   })
-  ref  <- str_match(lab, "^(\\d{4})\\s*([ABC])$")
+  # "2025A", or "National 2021 A" (national row with the season it refers to)
+  ref  <- str_match(lab, "^(?:(?:National|Rwanda|Total)\\s*)?(\\d{4})\\s*([ABC])$")
   tibble(
     level = case_when(!is.na(dist) ~ "district",
                       TRUE ~ "national"),
@@ -105,9 +113,12 @@ unit_from <- function(txt) {
     TRUE ~ NA_character_)
 }
 
-read_table <- function(path, sheet, year, season) {
-  raw <- suppressMessages(read_excel(path, sheet = sheet, col_names = FALSE,
-                                     col_types = "text", .name_repair = "minimal"))
+read_table <- function(path, sheet, year, season, survey) {
+  # range from A1 so that leading blank rows and columns are kept: cell references
+  # then match what a reader sees in Excel
+  raw <- suppressMessages(read_excel(path, sheet = sheet, col_names = FALSE, col_types = "text",
+                                     range = cellranger::cell_limits(c(1, 1), c(NA, NA)),
+                                     .name_repair = "minimal"))
   m <- as.matrix(raw)
   m[!is.na(m)] <- str_squish(m[!is.na(m)])
   m[m == ""] <- NA
@@ -116,6 +127,10 @@ read_table <- function(path, sheet, year, season) {
   # title row: first cell starting with "Table"
   title_row <- which(apply(m, 1, \(r) any(str_detect(r, "^Table\\s*\\d"), na.rm = TRUE)))[1]
   if (is.na(title_row)) return(NULL)
+  # a season named in the title or sheet ("Season A") applies to the whole table
+  ttl_season <- str_match(paste(sheet, paste(na.omit(m[title_row, ]), collapse = " ")),
+                          "[Ss]eason\\s*([ABC])(?![A-Za-z])")[, 2]
+  if (is.na(season)) season <- ttl_season
   title <- clean_title(paste(na.omit(m[title_row, ]), collapse = " "))
   nisr_table <- str_extract(paste(na.omit(m[title_row, ]), collapse = " "), "Table\\s*\\d+") |>
     str_remove_all("\\s")
@@ -158,37 +173,51 @@ read_table <- function(path, sheet, year, season) {
     p <- na.omit(header[, j]); p <- p[!str_detect(p, "^(District|Crops?|Crop/Groups|District/Crop|Year)$")]
     if (length(p) > 1) p[length(p)] else NA_character_ })
 
+  data_rows <- title_row + which(is_data)                     # row numbers in the sheet
+  # a label row without numbers below the header is a section ("Cultivated area for
+  # major crops (Ha)"): it is kept with each data row under it
+  sec_lab <- ifelse(!is_data & seq_len(nrow(body)) > first_data & !is.na(body[, label_col]),
+                    body[, label_col], NA_character_)
+  section <- vapply(which(is_data), \(i) { s <- sec_lab[seq_len(i)]; s <- s[!is.na(s)]
+    if (length(s)) s[length(s)] else NA_character_ }, character(1))
   vals <- data[, value_cols, drop = FALSE]
   keep <- !is.na(col_label) | colSums(!is.na(vals)) > 0
   out <- expand_grid(r = seq_len(nrow(data)), k = which(keep)) |>
     mutate(row_label = data[cbind(r, label_col)],
            column = col_label[k], measure = col_measure[k], category = col_category[k],
-           value_text = vals[cbind(r, k)]) |>
+           value_text = vals[cbind(r, k)],
+           cell = paste0(col_letter(value_cols[k]), data_rows[r]),
+           section = section[r]) |>
     filter(!is.na(value_text) | !is.na(column))
 
   out |>
     bind_cols(classify_row(out$row_label, year, season)) |>
     filter(!drop, !is.na(value_text)) |>
     mutate(
-      source_file = basename(path), workbook = paste0(year, season),
+      survey = survey, source_file = basename(path), sheet = sheet, workbook = paste0(year, coalesce(season, "")),
       nisr_table = nisr_table, table_title = title,
       # reference season: from the row (e.g. "2025A"), else from the column
-      # (e.g. "2026 B | 2025 B"), else the workbook's season
-      col_ref = str_match(coalesce(column, ""), "(\\d{4})\\s*([ABC])\\b"),
-      sas_year = coalesce(row_year, as.integer(col_ref[, 2]), as.integer(year)),
-      sas_season = coalesce(row_season, col_ref[, 3], season),
+      # (e.g. "2025 B" or "Season B"), else the workbook's season
+      col_ref = str_match(coalesce(column, ""), "(20\\d{2})\\s*([ABC])(?![A-Za-z])"),
+      # summary tables: "SAS 2023 | Season | A"
+      col_year = as.integer(str_match(coalesce(column, ""), "\\b(20\\d{2})\\b")[, 2]),
+      col_season = coalesce(str_match(coalesce(column, ""), "[Ss]eason\\s*([ABC])(?![A-Za-z])")[, 2],
+                            str_match(coalesce(column, ""), "(?:^|\\|)\\s*([ABC])\\s*$")[, 2]),
+      sas_year = coalesce(row_year, as.integer(col_ref[, 2]), col_year, as.integer(year)),
+      sas_season = coalesce(row_season, col_ref[, 3], col_season, season),
       farmer_type = coalesce(row_farmer_type,
                              str_match(coalesce(category, ""), "^(Overall|SSF|LSF)$")[, 2],
+                             str_match(coalesce(column, ""), "\\b(SSF|LSF)\\b")[, 2],
                              "All") |> recode(Overall = "All"),
-      value = suppressWarnings(as.numeric(value_text)),
+      value = suppressWarnings(as.numeric(str_remove_all(value_text, "[,%\\s]"))),
       value_note = case_when(value_text == "-" ~ "dash in table (none reported)",
                              value_text == "(NA)" ~ "not applicable in table",
                              TRUE ~ NA_character_),
       unit = coalesce(unit_from(coalesce(measure, "")), unit_from(title)),
       province = unname(district_province[area])
     ) |>
-    select(workbook, source_file, nisr_table, table_title, sas_year, sas_season,
-           level, province, area, row_item, measure, category, column,
+    select(survey, workbook, source_file, sheet, cell, nisr_table, table_title, sas_year, sas_season,
+           level, province, area, section, row_item, measure, category, column,
            farmer_type, value, unit, value_note)
 }
 
@@ -196,11 +225,15 @@ read_table <- function(path, sheet, year, season) {
 # 3. ALL TABLES OF ALL WORKBOOKS ---------------------------------------------
 
 all_tables <- map(files, \(f) {
-  year   <- str_extract(basename(f), "\\d{4}")
-  season <- str_match(basename(f), "Season ([ABC])")[, 2]
-  sheets <- excel_sheets(f)
-  map(sheets, \(s) read_table(f, s, year, season)) |> bind_rows()
-}) |> bind_rows()
+  nm     <- basename(f)
+  year   <- str_extract(nm, "20[0-9]{2}")
+  season <- str_match(nm, "[Ss]eason\\s*([ABC])(?![A-Za-z])")[, 2]
+  survey <- if (str_detect(str_to_upper(nm), "AHS|HOUSEHOLD")) "AHS" else "SAS"
+  map(excel_sheets(f), \(s) tryCatch(read_table(f, s, year, season, survey), error = \(e) {
+    warning(nm, " / ", s, ": ", conditionMessage(e)); NULL })) |> bind_rows()
+}) |> bind_rows() |>
+  # earlier seasons printed beside the current one are kept (same scope), later never
+  filter(sas_year <= last_stat_year)
 
 # Table 5 (sampling errors) mixes units by column
 all_tables <- all_tables |>
@@ -216,103 +249,16 @@ all_tables <- all_tables |>
 
 n_dist <- all_tables |> filter(level == "district") |>
   group_by(workbook, nisr_table) |> summarise(n = n_distinct(area), .groups = "drop")
-if (any(n_dist$n != 30)) {
-  warning("Tables without all 30 districts: ",
+if (any(n_dist$n != 30))
+  message("Tables without all 30 districts (check the layout): ",
           paste(n_dist$workbook[n_dist$n != 30], n_dist$nisr_table[n_dist$n != 30], collapse = ", "))
-}
+no_season <- all_tables |> filter(survey == "SAS", is.na(sas_season)) |> distinct(source_file, nisr_table)
+if (nrow(no_season))
+  warning("SAS tables with no season found (named neither in file, sheet, title, row nor column): ",
+          paste(no_season$source_file, no_season$nisr_table, collapse = "; "))
 
-
-# 5. APP INDICATORS -------------------------------------------------------------
-# Matched by table title and column text, so Season A and B (different table
-# numbers) map to the same indicator. Only the "All" farmer type is kept here;
-# SSF / LSF splits stay in nisr_published_all_tables.csv.
-
-pick <- function(d, indicator, title_rx, column_rx = NULL, farmer = "All") {
-  d |>
-    filter(str_detect(table_title, regex(title_rx, ignore_case = TRUE)),
-           if (is.null(column_rx)) TRUE
-           else str_detect(coalesce(column, ""), regex(column_rx, ignore_case = TRUE)),
-           farmer_type %in% farmer) |>
-    mutate(indicator = indicator)
-}
-
-base <- filter(all_tables, is.na(row_item))   # geography rows only
-
-app <- bind_rows(
-  pick(base, "irrig_any_farmer",     "farmers who practiced agricultural practices", "practiced irrigation"),
-  pick(base, "anti_erosion_farmers", "farmers who practiced agricultural practices", "against erosion"),
-  pick(base, "mechanised_farmers",   "farmers who practiced agricultural practices", "mechanical equipment"),
-  pick(base, "agroforestry_farmers", "farmers who practiced agricultural practices", "agroforestry"),
-  pick(base, "inorganic_fert",       "use of inorganic fertilizer", "plots in which"),
-  pick(base, "organic_fert",         "use of organic fertilizer",   "plots in which"),
-  pick(base, "pesticide",            "use of pesticides",           "plots in which"),
-  pick(base, "improved_seed_farmers", "use of seeds by farmer type", "farmers who used improved seeds"),
-  pick(base, "modern_irrig_area_ha", "area under agricultural practices", "modern irrigated"),
-  # land use table is in thousand ha: physical cultivated land -> ha
-  pick(base, "cultivated_area_ha",   "agricultural land use per district", "^Physical cultivated land$") |>
-    mutate(value = value * 1000, unit = "ha"),
-  # share of irrigated plots using a modern technique = 100 - traditional;
-  # a row of zeros (no irrigated plot in the sample) stays unknown
-  pick(base, "modern_irrig_share",   "types of irrigation used") |>
-    group_by(workbook, sas_year, sas_season, area) |>
-    mutate(row_total = sum(value, na.rm = TRUE)) |>
-    filter(str_detect(column, "^Traditional")) |>
-    ungroup() |>
-    mutate(value_note = if_else(row_total == 0, "no irrigated plot in the sample", value_note),
-           value = if_else(row_total == 0, NA_real_, 100 - value),
-           column = "100 - Traditional techniques") |>
-    select(-row_total)
-)
-
-# Districts left blank in a published table get an explicit NA row
-app <- app |>
-  group_by(indicator, workbook, nisr_table, table_title, sas_year, sas_season, unit) |>
-  complete(level = "district", area = names(district_province)) |>
-  ungroup() |>
-  mutate(value_note = if_else(is.na(value) & is.na(value_note),
-                              "blank in published table", value_note))
-
-# One spelling per crop across tables and seasons
-crop_fix <- c("Bananas" = "Banana", "Cooking Banana" = "Cooking banana",
-              "Groundnuts" = "Groundnut", "Ground nuts" = "Groundnut",
-              "Taro &Yams" = "Yams & Taro", "Taro & Yams" = "Yams & Taro",
-              "vegetables" = "Vegetables", "Other Cereals" = "Other cereals")
-crop_groups <- c("Cereals", "Tubers and Roots", "Banana", "Legumes and Pulses",
-                 "Vegetables and Fruits")
-fix_crop <- \(x) { x <- str_squish(x); coalesce(unname(crop_fix[x]), x) }
-
-# Production by crop: national (crop table, with the earlier seasons it
-# compares against) and district (crop x district table)
-prod_nat <- all_tables |>
-  filter(str_detect(table_title, regex("cultivated area, harvested area, production and yield by crop", ignore_case = TRUE)),
-         str_detect(coalesce(measure, ""), regex("^Production", ignore_case = TRUE)),
-         !is.na(row_item)) |>
-  mutate(indicator = "production_t", crop_name = fix_crop(row_item))
-prod_dist <- all_tables |>
-  filter(str_detect(table_title, regex("crop production by crop type and district", ignore_case = TRUE)),
-         level == "district") |>
-  mutate(indicator = "production_t", crop_name = fix_crop(column))
-# (the national rows of the district table repeat the crop table: not used)
-
-nisr_published <- bind_rows(app, prod_nat, prod_dist) |>
-  mutate(crop_name = coalesce(crop_name, NA_character_),
-         province = unname(district_province[area]),
-         farmer_type = coalesce(farmer_type, "All")) |>
-  transmute(indicator, sas_year, sas_season, level, area, value, unit,
-            nisr_table = paste0(workbook, " ", nisr_table, ": ", table_title),
-            crop_name, crop_group = crop_name %in% crop_groups,
-            province, farmer_type, value_note,
-            source = paste0("NISR, Seasonal Agricultural Survey ", workbook,
-                            ", published tables")) |>
-  arrange(indicator, sas_year, sas_season, level != "national", area, crop_name)
-
-dups <- count(nisr_published, indicator, sas_year, sas_season, level, area, crop_name) |> filter(n > 1)
-if (nrow(dups)) warning(nrow(dups), " duplicate indicator rows, see `dups`")
-
-write_csv(all_tables,     file.path(dir_out, "nisr_published_all_tables.csv"), na = "")
-write_csv(nisr_published, file.path(dir_out, "nisr_published.csv"), na = "")
-
-cat("\nNISR published tables:", n_distinct(paste(all_tables$workbook, all_tables$nisr_table)),
-    "tables,", nrow(all_tables), "cells\n")
-print(count(nisr_published, indicator, sas_year, sas_season, level), n = Inf)
+write_csv(all_tables, file.path(dir_out, "nisr_published_all_tables.csv"), na = "")
+cat("\nNISR published tables:", n_distinct(paste(all_tables$source_file, all_tables$sheet)),
+    "sheets,", nrow(all_tables), "cells, seasons",
+    paste(sort(unique(paste0(all_tables$sas_year, coalesce(all_tables$sas_season, "")))), collapse = " "), "\n")
 cat("Saved in", dir_out, "\n")

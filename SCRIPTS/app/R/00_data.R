@@ -46,7 +46,7 @@ D$geo$features <- lapply(D$geo$features, \(ft) {
 recent_years_app <- 2023:2025
 D$est <- D$est |> dplyr::filter(!is.na(area))
 # "survey" = our estimate from the SAS microdata, "nisr" = NISR published figure
-# (SAS 2026 A/B, and any season NISR publishes; SCRIPTS/07 section 10)
+# (published figures now travel separately in official.rds / official.json, SCRIPTS/07 section 10)
 if (!"source" %in% names(D$est)) D$est$source <- "survey"
 if (!"totals_source" %in% names(D$totals)) D$totals$totals_source <- "survey"
 PUB_YEARS <- sort(unique(D$est$sas_year[D$est$source == "nisr"]))
