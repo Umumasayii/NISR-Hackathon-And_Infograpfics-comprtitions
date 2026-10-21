@@ -1,15 +1,20 @@
 import { useMemo, useState } from 'react';
-import { Filter, Network, Trophy, ChartLine, Table2, Wheat, Sprout, Store, Scale, ListChecks } from 'lucide-react';
+import { Filter, Trophy, ChartLine, Table2, Store, Scale, ListChecks, BookOpen, Calculator } from 'lucide-react';
 import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
-import { Callout, ChartCard, DataTable, FiltersUsed, Grid, Kpi, KpiRow, Select, type Col } from '../components/ui';
+import { Callout, ChartCard, DataTable, FiltersUsed, Grid, Kpi, KpiRow, SectionTitle, Select, type Col } from '../components/ui';
+import { citeShort, cite, pubArea, pubCsv, pubSource, seasonsOf, splitAtUpgrade, ysKey, type YS } from '../lib/official';
 import { Plot, simpleLines, std, legendBottom, type Fig } from '../components/Plot';
-import { cropsFor, groupBy, mean, sum, yieldOf } from '../lib/stats';
+import { cropsFor, downloadCsv, groupBy, mean, sum, yieldOf } from '../lib/stats';
 import { fmtNum, fmtPct, shortSet } from '../lib/format';
 import { brand, catCols, seasonCols } from '../lib/theme';
-import type { AppData, Crop } from '../data/types';
+import type { AppData, Crop, PubRow } from '../data/types';
 
 const MEASURES = ['production_t', 'crop_area_ha', 'yield_kg_ha', 'yield_irrigated_kg_ha', 'yield_rainfed_kg_ha', 'sold_t', 'sold_share_pct', 'price_rwf_kg', 'sales_value_mrwf', 'improved_seed_pct'] as const;
+// NISR publishes production, harvested area and yield by crop: those come from NISR (above).
+// Our microdata section keeps only what NISR does not publish (sales, prices, irrigated vs rain-fed yield).
+const OUR_ONLY = ['sold_share_pct', 'price_rwf_kg', 'sales_value_mrwf', 'sold_t', 'yield_irrigated_kg_ha', 'yield_rainfed_kg_ha', 'improved_seed_pct'] as const;
+const PUB_M = ['production_t', 'harvested_crop_ha', 'yield_kg_ha'] as const;
 type M = (typeof MEASURES)[number];
 const SUMS: M[] = ['production_t', 'crop_area_ha', 'sold_t', 'sales_value_mrwf'];
 
@@ -35,7 +40,7 @@ const num = (x: number | string | null | undefined) => (typeof x === 'number' &&
 
 export default function Explorer() {
   const { D, f, tr } = useApp();
-  const [m, setM] = useState<M>('production_t');
+  const [m, setM] = useState<M>('sold_share_pct');
   const cr = useMemo(() => cropsFor(D, f), [D, f]);
   const grpCols = useMemo(() => catCols([...new Set(D.crop.map((r) => r.crop_group))].sort()), [D]);
   const label = f.crops.length ? shortSet(f.crops) : f.cropGroups.length ? shortSet(f.cropGroups) : tr('all_crops');
@@ -48,21 +53,6 @@ export default function Explorer() {
   }, [D, cr]);
 
   const byCrop = useMemo(() => [...groupBy(cr, (r) => `${r.crop_group}|${r.crop_name}`).values()].map((g) => ({ crop_group: g[0].crop_group, crop_name: g[0].crop_name, ...agg(D, g) })), [cr]);
-  const treeFig = useMemo<Fig | null>(() => {
-    const tm: M = SUMS.includes(m) ? m : 'production_t';
-    const d = byCrop.filter((r) => num(r[tm]) > 0);
-    if (!d.length) return null;
-    const g = [...groupBy(d, (r) => r.crop_group).entries()].map(([k2, x]) => ({ k: k2, v: sum(x.map((r) => num(r[tm]))) }));
-    return {
-      data: [{ type: 'treemap', ids: [...g.map((x) => x.k), ...d.map((r) => `${r.crop_group}/${r.crop_name}`)], labels: [...g.map((x) => x.k), ...d.map((r) => r.crop_name)],
-        parents: [...g.map(() => ''), ...d.map((r) => r.crop_group)], values: [...g.map((x) => x.v), ...d.map((r) => num(r[tm]))], branchvalues: 'total',
-        marker: { colors: [...g.map((x) => grpCols[x.k]), ...d.map((r) => grpCols[r.crop_group])], line: { color: '#fff', width: 2 } },
-        textinfo: 'label+percent root', hovertemplate: `<b>%{label}</b><br>${tr(`ms_${tm}`)}: %{value:,.0f}<br>%{percentRoot:.1%} <extra></extra>`,
-        textfont: { color: '#FFFFFF', size: 13 }, pathbar: { visible: true, textfont: { size: 12 } } } as unknown as Data],
-      layout: { margin: { l: 0, r: 0, t: 24, b: 0 }, paper_bgcolor: 'rgba(0,0,0,0)' },
-    };
-  }, [byCrop, m, grpCols, tr]);
-
   const top = useMemo(() => byCrop.filter((r) => Number.isFinite(num(r[m])) && r.n_crop_plots >= 30).sort((a, b) => num(b[m]) - num(a[m])), [byCrop, m]);
   const barFig = useMemo<Fig | null>(() => {
     const d = top.slice(0, 15).reverse(); if (!d.length) return null;
@@ -107,21 +97,19 @@ export default function Explorer() {
     <>
       <FiltersUsed used={['years', 'seasons', 'area', 'crop']} />
       <Callout icon={Filter} kind="soft">{tr('explorer_intro')}</Callout>
+      <PublishedCrops />
+      <SectionTitle title={tr('s_our_crops')} />
+      <p className="muted small">{tr('our_crops_note')}</p>
       {k ? (
         <KpiRow>
-          <Kpi label={tr('ms_production_t')} value={`${fmtNum(num(k.a.production_t) / k.ny / 1000)} kt`} icon={Wheat} color="#B07A1C" foot={tr('k_per_year', label, f.area)} />
-          <Kpi label={tr('ms_crop_area_ha')} value={`${fmtNum(num(k.a.crop_area_ha) / k.ny / 1000, 1)}k ha`} icon={Sprout} color={brand.green} foot={tr('k_per_year', label, f.area)} />
           <Kpi label={tr('ms_sold_share_pct')} value={fmtPct(num(k.a.sold_share_pct))} icon={Store} color={brand.blue} foot={tr('k_sold_sub', fmtNum(num(k.a.sold_t) / k.ny / 1000), fmtNum(num(k.a.sales_value_mrwf) / k.ny / 1000, 1))} />
-          {f.crops.length === 1
-            ? <Kpi label={tr('ms_yield_kg_ha')} value={`${fmtNum(num(k.a.yield_kg_ha))} kg/ha`} icon={Scale} color="#6A4C93" foot={tr('k_yield_sub', fmtNum(k.a.n_crop_plots))} />
-            : <Kpi label={tr('k_n_crops')} value={String(k.nCrops)} icon={ListChecks} color="#6A4C93" foot={tr('k_n_crops_sub')} />}
+          <Kpi label={tr('ms_price_rwf_kg')} value={`${fmtNum(num(k.a.price_rwf_kg))} RWF/kg`} icon={Scale} color="#6A4C93" foot={`${label} · ${f.area}`} />
+          <Kpi label={tr('k_n_crops')} value={String(k.nCrops)} icon={ListChecks} color={brand.green} foot={tr('layer_est')} />
         </KpiRow>
       ) : <p className="muted">{tr('no_data')}</p>}
       <div className="toolbar">
-        <Select label={tr('c_top_crops')} value={m} onChange={setM} options={MEASURES.map((x) => ({ value: x, label: tr(`ms_${x}`) }))} width={320} />
+        <Select label={tr('c_top_crops')} value={m} onChange={setM} options={OUR_ONLY.map((x) => ({ value: x, label: tr(`ms_${x}`) }))} width={320} />
       </div>
-      <ChartCard title={tr('c_treemap')} icon={Network} means={tr('m_tree')}><Plot fig={treeFig} height={360} empty={tr('no_data')} /></ChartCard>
-      <div style={{ height: 16 }} />
       <Grid cols="1fr 1fr">
         <ChartCard title={tr('c_top_crops')} icon={Trophy}
           means={top.length ? <>{tr('m_bycrop', top[0].crop_name, tr(`ms_${m}`))}{SUMS.includes(m) ? tr('m_bycrop_share', fmtPct((100 * num(top[0][m])) / sum(top.map((r) => num(r[m]))), 0)) : ''} {tr('m_bycrop_note')}</> : null}>
@@ -129,9 +117,79 @@ export default function Explorer() {
         </ChartCard>
         <ChartCard title={tr('c_measure_trend')} icon={ChartLine} means={trendMeans}><Plot fig={trendFig} height={380} empty={tr('no_data')} /></ChartCard>
       </Grid>
-      <ChartCard title={tr('c_table')} icon={Table2}>
-        <DataTable rows={table} cols={cols} csvName={`smartirrigate_crops_${f.area.replace(/\W+/g, '_')}.csv`} />
+      <ChartCard title={tr('c_table_ours')} icon={Table2}>
+        <DataTable rows={table} cols={cols} csvName={`smartirrigate_crops_project_estimate_${f.area.replace(/\W+/g, '_')}.csv`}
+          csvRows={() => table.map((r) => ({ ...r, area: f.area, layer: 'project estimate from SAS microdata (not an official NISR statistic)' }))} />
       </ChartCard>
+    </>
+  );
+}
+
+/** NISR's published crop figures for the selection: one season, crop rows only (group subtotals listed apart, never added) */
+function PublishedCrops() {
+  const { O, f, tr } = useApp();
+  const [pm, setPm] = useState<(typeof PUB_M)[number]>('production_t');
+  const [seasonKey, setSeasonKey] = useState('');
+  const [crop, setCrop] = useState('Maize');
+  const area = pubArea(f);
+  const ss = useMemo(() => seasonsOf(f), [f]);
+  const ps: YS | undefined = ss.find((x) => ysKey(x) === seasonKey) ?? [...ss].reverse().find((x) => x.s !== 'C') ?? ss[ss.length - 1];
+  const want = new Set(f.crops);
+  const rows = useMemo(() => (!O || !ps || !area ? [] : O.of(pm).filter((r) => r.area === area && r.sas_year === ps.y && r.sas_season === ps.s && r.value != null && r.crop_name)),
+    [O, ps, area, pm]);
+  const crops = rows.filter((r) => !r.is_group && (!want.size || want.has(r.crop_name!))).sort((a, b) => (b.value as number) - (a.value as number));
+  const groups = rows.filter((r) => r.is_group);
+  const unit = pm === 'production_t' ? 't' : pm === 'harvested_crop_ha' ? 'ha' : 'kg/ha';
+  const fig = useMemo<Fig | null>(() => {
+    const d = crops.slice(0, 15).reverse(); if (!d.length || !O) return null;
+    return {
+      data: [{ type: 'bar', orientation: 'h', y: d.map((r) => r.crop_name), x: d.map((r) => r.value as number), marker: { color: brand.amber },
+        text: d.map((r) => fmtNum(r.value)), textposition: 'outside', cliponaxis: false, textfont: { size: 11, color: brand.ink },
+        hovertext: d.map((r) => `<b>${r.crop_name}</b>: ${fmtNum(r.value)} ${unit}<br>${citeShort(O, r)}, ${tr('cell')} ${r.cell}`), hoverinfo: 'text' } as Data],
+      layout: std({ x: `${tr(`pub_ind_${pm}`)} (${unit})`, legend: false, bargap: 0.3, margin: { l: 10, r: 70, t: 4, b: 36 },
+        xaxis: { range: [0, Math.max(...d.map((r) => r.value as number)) * 1.2] }, yaxis: { title: { text: '' }, categoryorder: 'array', categoryarray: d.map((r) => r.crop_name) } }),
+    };
+  }, [crops, O, pm, unit, tr]);
+  const cropList = useMemo(() => [...new Set((O?.of(pm) ?? []).filter((r) => !r.is_group && r.crop_name).map((r) => r.crop_name as string))].sort(), [O, pm]);
+  const series = useMemo(() => (!O || !area ? [] : seasonsOf(f).map((x) => O.get(pm, x.y, x.s, area, crop)).filter((r): r is PubRow => !!r && r.value != null)), [O, f, area, pm, crop]);
+  const tfig = useMemo<Fig | null>(() => {
+    if (!series.length || !O) return null;
+    const data: Data[] = (['A', 'B', 'C'] as const).map((s) => { const x = series.filter((r) => r.sas_season === s); return x.length ? {
+      type: 'scatter', mode: 'lines+markers', name: tr(`season_${s.toLowerCase()}`), connectgaps: false,
+      x: splitAtUpgrade(x.map((r) => r.sas_year), x).x, y: splitAtUpgrade(x.map((r) => r.sas_year), x.map((r) => r.value as number)).y,
+      line: { color: seasonCols[s], dash: s === 'C' ? 'dot' : 'solid' }, marker: { color: seasonCols[s], symbol: s === 'A' ? 'circle' : s === 'B' ? 'square' : 'diamond', size: 8 },
+      text: splitAtUpgrade(x.map((r) => r.sas_year), x).y.map((r) => !r ? '' : `${r.sas_year}${s}: ${fmtNum(r.value)} ${unit}<br>${citeShort(O, r)}, ${tr('cell')} ${r.cell}`), hoverinfo: 'text' } as Data : null; }).filter(Boolean) as Data[];
+    return simpleLines(data, std({ y: `${tr(`pub_ind_${pm}`)} (${unit})`, xaxis: { dtick: 1 }, yaxis: { rangemode: 'tozero' } }));
+  }, [series, O, pm, unit, tr]);
+  if (!O) return null;
+  const when = ps ? tr('season_of', ps.s, ps.y) : '–';
+  return (
+    <>
+      <SectionTitle title={tr('s_pub_crops')} />
+      <div className="toolbar">
+        <Select label={tr('measure')} value={pm} onChange={setPm} options={PUB_M.map((x) => ({ value: x, label: tr(`pub_ind_${x}`) }))} width={220} />
+        <Select label={tr('pub_season')} value={ps ? ysKey(ps) : ''} onChange={setSeasonKey} options={[...ss].reverse().map((x) => ({ value: ysKey(x), label: tr('season_of', x.s, x.y) }))} width={170} />
+        {!area && <span className="muted small">{tr('pub_unavailable_hint')}</span>}
+      </div>
+      <Grid cols="1fr 1fr">
+        <ChartCard title={tr('c_pub_crops', when)} icon={BookOpen}
+          means={crops.length ? tr('m_pub_crops', area ?? '', when, crops[0].crop_name ?? '', fmtNum(crops[0].value), unit) : tr('pub_unavailable')}
+          source={<>{pubSource(O, crops, tr)} {groups.length ? tr('pub_groups_apart', groups.map((g) => `${g.crop_name} ${fmtNum(g.value)}`).join('; ')) : ''}</>}
+          table={{ cols: [tr('crop'), unit, tr('pub_cell')], rows: crops.map((r) => [r.crop_name, Math.round(r.value as number), `${citeShort(O, r)} · ${r.cell}`]) }}>
+          <Plot fig={fig} height={380} empty={tr('pub_unavailable')} />
+        </ChartCard>
+        <ChartCard title={tr('c_pub_crop_trend')} icon={ChartLine}
+          tools={<Select value={crop} onChange={setCrop} options={cropList.map((c) => ({ value: c, label: c }))} width="100%" />}
+          means={series.length >= 2 ? `${tr('m_pub_crop_trend', crop, area ?? '')} ${series.some((r) => r.sas_year < 2020) ? tr('usas_break') : ''}` : !area ? tr('pub_unavailable_hint') : null}
+          source={pubSource(O, series, tr)}
+          table={{ cols: [tr('season'), unit, tr('pub_cell')], rows: series.map((r) => [`${r.sas_year}${r.sas_season}`, Math.round(r.value as number), `${citeShort(O, r)} · ${r.cell}`]) }}>
+          <Plot fig={tfig} height={380} empty={tr('pub_unavailable')} />
+        </ChartCard>
+      </Grid>
+      {crops.length > 0 && (
+        <p className="muted small"><Calculator size={13} /> <button type="button" className="link-btn" title={crops[0] ? cite(O, crops[0]) : ''}
+          onClick={() => downloadCsv(pubCsv(O, [...crops, ...groups]), `smartirrigate_nisr_${pm}_${area}_${ps ? ysKey(ps) : ''}.csv`)}>{tr('dl_pub_csv')}</button></p>
+      )}
     </>
   );
 }

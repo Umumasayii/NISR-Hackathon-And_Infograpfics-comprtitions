@@ -35,7 +35,7 @@ combine_est <- function(d, label) {
 }
 
 # Averages over several years use the survey seasons. A NISR published season
-# (SAS 2026) is used on its own only when the selection has no survey season for
+# (if one is ever merged into est) is used on its own only when the selection has no survey season for
 # that indicator, so two different sources are never averaged together.
 survey_first <- function(d, by = "indicator") {
   if (!nrow(d) || !"source" %in% names(d)) return(d)

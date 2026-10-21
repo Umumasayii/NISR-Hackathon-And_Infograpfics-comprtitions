@@ -1620,9 +1620,9 @@
   "rw": "Kuhira kugezweho"
  },
  "kd_irrig_modern": {
-  "en": "Irrigated plots using a motorised pump or machine, drip, sprinkler or pivot ÷ irrigated plots, %. For 2026: drip + sprinkler + pivot from the NISR published tables.",
-  "fr": "Parcelles irriguées avec pompe motorisée ou machine, goutte-à-goutte, aspersion ou pivot ÷ parcelles irriguées, %. 2026 : goutte-à-goutte + aspersion + pivot des tableaux publiés du NISR.",
-  "rw": "Imirima yuhirwa ikoresha pompe ya moteri cyangwa imashini, ibitonyanga, kuminjagira cyangwa pivot ÷ imirima yuhirwa, %. 2026: ibitonyanga + kuminjagira + pivot biva mu mbonerahamwe za NISR."
+  "en": "Irrigated plots using a motorised pump or machine, drip, sprinkler or pivot ÷ irrigated plots, %. Not the same as NISR’s published “modern irrigation”.",
+  "fr": "Parcelles irriguées avec pompe motorisée ou machine, goutte-à-goutte, aspersion ou pivot ÷ parcelles irriguées, %. Différent de l’« irrigation moderne » publiée par le NISR.",
+  "rw": "Imirima yuhirwa ikoresha pompe ya moteri cyangwa imashini, ibitonyanga, kuminjagira cyangwa pivot ÷ imirima yuhirwa, %. Bitandukanye na 'kuhira kugezweho' kwa NISR."
  },
  "kd_irrigated_area_ha_n": {
   "en": "Area of plots that report irrigation",
@@ -1745,9 +1745,9 @@
   "rw": "Ifishi y'akarere"
  },
  "hero_m1": {
-  "en": "21 survey seasons 2019–2025 + NISR 2026 A, B",
-  "fr": "21 saisons d'enquête 2019–2025 + NISR 2026 A, B",
-  "rw": "Ibihembwe 21, 2019–2025 + NISR 2026 A, B"
+  "en": "21 survey seasons, 2019–2025",
+  "fr": "21 saisons d’enquête, 2019–2025",
+  "rw": "Ibihembwe 21 by'ubushakashatsi, 2019–2025"
  },
  "hero_m2": {
   "en": "Seasons A, B and C",
@@ -2705,9 +2705,9 @@
   "rw": "Ingo %s z'abahinzi zakoresheje imbuto z'indobanure muri 2024 (%s muri 2020), ariko %s gusa ni zo zari zifite ubwishingizi."
  },
  "k_any_bench": {
-  "en": "Official NISR figure, Season A 2026: %s of farmers.",
-  "fr": "Chiffre officiel du NISR, saison A 2026 : %s des agriculteurs.",
-  "rw": "Imibare yemewe ya NISR, igihembwe A 2026: %s by'abahinzi."
+  "en": "Published NISR figure for the same season: %s of farmers.",
+  "fr": "Chiffre publié par le NISR pour la même saison : %s des agriculteurs.",
+  "rw": "Umubare watangajwe na NISR ku gihembwe kimwe: %s by'abahinzi."
  },
  "kd_irrig_any_farmer_n": {
   "en": "Farmers irrigating any plot",
@@ -2809,11 +2809,6 @@
   "fr": "Ces chiffres utilisent d'autres définitions et périodes que les chiffres d'enquête de l'application (par exemple, hectares de programme contre parcelles déclarées irriguées). Ils sont montrés à côté, sans être mélangés.",
   "rw": "Iyi mibare ikoresha ibisobanuro n'ibihe bitandukanye n'imibare y'ubushakashatsi iri muri iyi porogaramu (urugero: hegitari z'imishinga n'imirima ivuga ko yuhiwe). Igaragazwa iruhande, ntivangwa."
  },
- "bench_nisr_2026a_farmers": {
-  "en": "Farmers who irrigated (NISR SAS)",
-  "fr": "Agriculteurs ayant irrigué (EAS NISR)",
-  "rw": "Abahinzi buhiye (NISR SAS)"
- },
  "bench_nst2_base": {
   "en": "Irrigated land, baseline",
   "fr": "Terres irriguées, référence",
@@ -2905,9 +2900,9 @@
   "rw": "Imibare yatangajwe na NISR ikoreshwa muri porogaramu"
  },
  "pub_note": {
-  "en": "Where NISR publishes the same figure for the same season and area, the app shows the published figure. SAS 2026 Seasons A and B come only from the published tables. NISR's farmer-level figures for erosion control, machines and agroforestry measure something different from our plot-level shares, so they are not mixed in. Modern tools for 2026 = drip, sprinkler and pivot among irrigated plots (NISR also counts surface and flood irrigation as modern: 66.4% in 2026A).",
-  "fr": "Lorsque le NISR publie le même chiffre pour la même saison et la même zone, l'application affiche le chiffre publié. Les saisons A et B 2026 viennent uniquement des tableaux publiés. Les chiffres du NISR par agriculteur pour la lutte antiérosive, les machines et l'agroforesterie mesurent autre chose que nos parts de parcelles : ils ne sont pas mélangés. Outils modernes 2026 = goutte-à-goutte, aspersion et pivot parmi les parcelles irriguées (le NISR compte aussi l'irrigation de surface et par submersion : 66,4 % en 2026A).",
-  "rw": "Iyo NISR itangaje umubare umwe ku gihembwe kimwe n'ahantu hamwe, porogaramu yerekana uwo mubare watangajwe. Ibihembwe A na B bya 2026 biva gusa mu mbonerahamwe zatangajwe. Imibare ya NISR ku bahinzi (kurwanya isuri, imashini, amashyamba avanze n'imyaka) ipima ibindi bitandukanye n'imibare yacu y'imirima, ntibivangwa. Ibikoresho bigezweho 2026 = kuvomerera ibitonyanga, kuminjagira na pivot mu mirima yuhirwa (NISR ibara n'kuhira ku butaka no kwuzuza amazi: 66,4% muri 2026A)."
+  "en": "Where NISR publishes a figure with the same definition, the app shows the NISR figure and names its table and cell. Statistics cover 2019–2025 only.",
+  "fr": "Lorsque le NISR publie un chiffre de même définition, l’application affiche ce chiffre et cite son tableau et sa cellule. Les statistiques couvrent 2019–2025 seulement.",
+  "rw": "Iyo NISR itangaje umubare ufite ibisobanuro bimwe, porogaramu yerekana uwo mubare n'imbonerahamwe yawo. Imibare ireba 2019–2025 gusa."
  },
  "pub_cultivated": {
   "en": "Cultivated area",
@@ -2966,5 +2961,10 @@
  },
  "_meta": {
   "en": "French and Kinyarwanda are AI-assisted drafts pending native-speaker review."
+ },
+ "bench_nisr_farmers": {
+  "en": "Farmers who irrigated (NISR SAS)",
+  "fr": "Agriculteurs ayant irrigué (EAS NISR)",
+  "rw": "Abahinzi buhiye (NISR SAS)"
  }
 }
