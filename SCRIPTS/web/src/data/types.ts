@@ -56,20 +56,17 @@ export interface ScreenRow {
   prob_top5_pct: number; stability: string; reasons: string;
   inorganic_fert_pct?: number | null; gender_gap_pts?: number | null; gender_gap_ok?: boolean | null;
 }
-/** A published NISR figure, read cell by cell (SCRIPTS/14); a separate layer from our estimates */
-export interface OfficialRow {
-  indicator: string; sas_year: number; sas_season: string | null; level: string; area: string; crop_name: string | null;
-  value: number; unit: string; population: string; definition: string; same_definition: boolean;
-  source_title: string; source_url: string; table: string; sheet: string; cell: string; status: string;
+/** A published NISR figure, read cell by cell from the SAS annual tables (official.json, SCRIPTS/11 + 14).
+ *  d: how it relates to our estimate: '' none, 'cross_check' same definition (our value kept beside it),
+ *  'own_label' different definition (never compared), 'no_project' nothing of ours to compare, 'blank' cell empty */
+export interface PubRow {
+  indicator: string; sas_year: number; sas_season: Season; level: 'national' | 'district'; area: string; crop_name: string | null;
+  is_group: boolean; value: number | null; src_id: number; cell: string; project_value: number | null;
+  d: 'cross_check' | 'own_label' | 'no_project' | 'blank' | null;
 }
-/** One line of the reconciliation register (published figure vs our estimate) */
-export interface RegisterRow {
-  register_id: string; family: string; indicator: string; sas_year: string | number; sas_season: string | null; level: string | null;
-  area: string | null; crop_name: string | null; unit: string | null; published_population: string | null; published_definition: string | null;
-  project_population: string | null; same_definition: string; source_title: string | null; source_url: string | null;
-  workbook: string | null; sheet: string | null; cell: string | null; published_value_audit: number | null; project_value: number | null;
-  gap: number | null; gap_pct: number | null; status: string; decision: string; note: string | null;
-}
+export interface PubSource { src_id: number; survey: string; source_title: string; source_file: string; sheet: string; nisr_table: string; table_title: string; measure_label: string | null }
+export interface PubDef { indicator: string; unit: string; population: string; definition: string; comparable: boolean; project_indicator: string | null; project_table: string | null }
+export interface OfficialFile { rows: PubRow[]; sources: PubSource[]; definitions: PubDef[]; built: string }
 export interface AhsRow {
   level: Level; area: string; year: number; indicator: string; population: string; estimate: number;
   se: number | null; ci_low: number | null; ci_high: number | null; n: number; wsum: number;
@@ -115,8 +112,6 @@ export interface AppData {
     interim?: { note: string; pending: string[] };
     skip_audit: Record<string, unknown>[]; join_log: Record<string, unknown>[];
   };
-  official?: OfficialRow[] | null;
-  register?: RegisterRow[] | null;
   ahs: { indicators: AhsRow[]; equity: AhsEquity[]; irrigation_mix: AhsMix[]; built: string } | null;
 }
 

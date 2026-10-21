@@ -1,8 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import type { AppData, GeoJSON, I18n, Season } from './types';
+import type { AppData, GeoJSON, I18n, OfficialFile, Season } from './types';
 import { initialLang, makeTr, type Lang, type Tr } from '../lib/i18n';
 import { shortSet } from '../lib/format';
 import { uniq, type Filters } from '../lib/stats';
+import { indexOfficial, type Official } from '../lib/official';
 
 // ---- loading ------------------------------------------------------------------------
 // Tables come column by column as {"__df": {col: [values]}} (see 12_Export_Web_Data.R)
@@ -37,21 +38,24 @@ function inScope(x: unknown): unknown {
   return x;
 }
 
-export interface Loaded { D: AppData; geo: GeoJSON; dict: I18n; dataSource: string }
+/** O: the published NISR figures (null when official.json is missing: pages then show our estimates only) */
+export interface Loaded { D: AppData; O: Official | null; geo: GeoJSON; dict: I18n; dataSource: string }
 
 export async function loadAll(): Promise<Loaded> {
   const base = import.meta.env.BASE_URL;
   const get = (f: string) => fetch(`${base}data/${f}`).then((r) => { if (!r.ok) throw new Error(`${f}: ${r.status}`); return r; });
-  const [raw, geo, dict, ds] = await Promise.all([
+  const [raw, geo, dict, ds, off] = await Promise.all([
     get('app_data.json').then((r) => r.json()), get('districts.json').then((r) => r.json()),
     get('i18n.json').then((r) => r.json()), get('data_source.md').then((r) => r.text()).catch(() => ''),
+    get('official.json').then((r) => r.json()).catch(() => null),
   ]);
   const D = inScope(revive(raw)) as AppData;
+  const O = indexOfficial(off ? (inScope(revive(off)) as OfficialFile) : null);
   // same guards as the Shiny app: never show "Other (specify)" categories
   const isOther = (s: string | null) => !!s && /^other|specify|unclassified/i.test(s);
   D.crop = D.crop.filter((r) => !isOther(r.crop_name) && !isOther(r.crop_group));
   D.crop_dist = D.crop_dist.filter((r) => !isOther(r.crop_name) && !isOther(r.crop_group));
-  return { D, geo, dict, dataSource: ds.replace(/<!--[\s\S]*?-->/g, '').trim() };
+  return { D, O, geo, dict, dataSource: ds.replace(/<!--[\s\S]*?-->/g, '').trim() };
 }
 
 // ---- the selection --------------------------------------------------------------------

@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Sprout, Workflow, TriangleAlert, Ruler, Bot, Download, Scale } from 'lucide-react';
 import { useApp } from '../data/store';
-import { DataTable, RelBadge, Tabs, type Col } from '../components/ui';
+import { DataTable, RelBadge, Select, Tabs, type Col } from '../components/ui';
+import { citeShort, pubCsv } from '../lib/official';
+import type { PubRow } from '../data/types';
 import { downloadCsv } from '../lib/stats';
 import { fmtNum, fmtPct } from '../lib/format';
 
@@ -15,7 +17,7 @@ function mdToHtml(md: string) {
 }
 
 export default function Methods() {
-  const { D, tr, dataSource } = useApp();
+  const { D, O, tr, dataSource } = useApp();
   const [tab, setTab] = useState('about');
   const tabs = [
     { id: 'about', label: tr('t_about'), icon: Sprout }, { id: 'pipeline', label: tr('t_pipeline'), icon: Workflow },
@@ -91,26 +93,40 @@ export default function Methods() {
     );
   }
 
-  /** published NISR figures beside our estimates: kept apart, never merged */
+  /** every published NISR figure the app uses, our estimate beside it where the definition is the same */
   function Register() {
-    const rows = D.register ?? [];
-    type R = (typeof rows)[number];
-    const val = (r: R, v: number | null) => (v == null ? null : r.unit === '%' ? fmtPct(v) : fmtNum(v));
+    const [ind, setInd] = useState('irrig_any_farmer');
+    const [lvl, setLvl] = useState('national');
+    const all = O?.rows ?? [];
+    const inds = useMemo(() => [...new Set(all.map((r) => r.indicator))].sort(), [all]);
+    const rows = useMemo(() => all.filter((r) => r.indicator === ind && r.level === lvl), [all, ind, lvl]);
+    if (!O) return <p className="muted">{tr('pub_unavailable')}</p>;
+    type R = PubRow;
+    const u = O.def.get(ind)?.unit ?? '';
+    const fv = (v: number | null) => (v == null ? null : u === '%' ? fmtPct(v) : fmtNum(v));
+    const gap = (r: R) => (r.value == null || r.project_value == null || r.d !== 'cross_check' ? null : r.value - r.project_value);
     const cols: Col<R>[] = [
-      { key: 'ind', label: tr('indicator'), get: (r) => [r.indicator, r.crop_name, r.area].filter(Boolean).join(' · ') },
-      { key: 'ys', label: tr('season'), get: (r) => `${r.sas_year}${r.sas_season ?? ''}` },
-      { key: 'pub', label: tr('reg_published'), get: (r) => r.published_value_audit, num: true, render: (r) => val(r, r.published_value_audit) ?? '–' },
-      { key: 'ours', label: tr('reg_ours'), get: (r) => r.project_value, num: true, render: (r) => val(r, r.project_value) ?? '–' },
-      { key: 'gap', label: tr('reg_gap'), get: (r) => r.gap, num: true, render: (r) => (r.gap == null ? '–' : r.unit === '%' ? `${r.gap > 0 ? '+' : ''}${fmtNum(r.gap, 1)} pts` : `${(r.gap_pct ?? 0) > 0 ? '+' : ''}${fmtNum(r.gap_pct, 0)}%`) },
-      { key: 'src', label: tr('reg_source'), get: (r) => [r.source_title, r.cell].filter(Boolean).join(', ') },
-      { key: 'def', label: tr('definition'), get: (r) => r.published_definition },
-      { key: 'dec', label: tr('reg_decision'), get: (r) => r.decision },
+      { key: 'ys', label: tr('season'), get: (r) => `${r.sas_year}${r.sas_season}` },
+      { key: 'area', label: tr('area'), get: (r) => r.area },
+      ...(rows.some((r) => r.crop_name) ? [{ key: 'crop', label: tr('crop'), get: (r: R) => (r.crop_name ?? '') + (r.is_group ? ` · ${tr('subtotal')}` : '') }] : []),
+      { key: 'pub', label: tr('reg_published'), get: (r) => r.value, num: true, render: (r) => fv(r.value) ?? tr('pub_blank') },
+      { key: 'ours', label: tr('reg_ours'), get: (r) => r.project_value, num: true, render: (r) => fv(r.project_value) ?? '–' },
+      { key: 'gap', label: tr('reg_gap'), get: (r) => gap(r), num: true, render: (r) => { const g = gap(r); return g == null ? '–' : u === '%' ? `${g > 0 ? '+' : ''}${fmtNum(g, 1)} pts` : `${g > 0 ? '+' : ''}${fmtNum((100 * g) / (r.value as number), 0)}%`; } },
+      { key: 'dec', label: tr('reg_decision'), get: (r) => tr(`dec_${r.d ?? 'none'}`) },
+      { key: 'src', label: tr('reg_source'), get: (r) => `${citeShort(O, r)} · ${r.cell}` },
     ];
+    const d = O.def.get(ind);
     return (
       <>
         <p>{tr('reg_note')}</p>
-        {rows.length ? <DataTable rows={rows} cols={cols} pageSize={10} csvName="smartirrigate_reconciliation_register.csv"
-          csvRows={() => rows as unknown as Record<string, unknown>[]} /> : <p className="muted">{tr('no_data')}</p>}
+        <ul>{[1, 2, 3, 4, 5, 6].map((i) => <li key={i}>{tr(`rec_${i}`)}</li>)}</ul>
+        <div className="toolbar">
+          <Select label={tr('indicator')} value={ind} onChange={setInd} options={inds.map((i) => ({ value: i, label: tr(`pub_ind_${i}`) }))} width={300} />
+          <Select label={tr('area')} value={lvl} onChange={setLvl} options={[{ value: 'national', label: 'Rwanda' }, { value: 'district', label: tr('districts') }]} width={160} />
+        </div>
+        {d && <p className="muted small"><strong>{tr('definition')}:</strong> {d.definition}. <strong>{tr('who')}:</strong> {d.population}. {tr('unit')}: {d.unit}. {d.comparable ? tr('reg_same_def') : tr('reg_diff_def')}</p>}
+        <DataTable rows={rows} cols={cols} pageSize={12} csvName={`smartirrigate_register_${ind}_${lvl}.csv`} csvRows={() => pubCsv(O, rows)} />
+        <p className="muted small">{tr('reg_full')}</p>
       </>
     );
   }
@@ -128,6 +144,7 @@ export default function Methods() {
       need_adoption: () => tag(D.rain.district, 'project_analysis', 'CHIRPS v2 1991-2020 season-specific variability + SAS 2023-2025'),
       yield_adjusted: () => tag(D.model_yield.table, 'model_output', 'survey-weighted log yield model, SAS 2019-2025 (2024B, 2024C excluded)'),
       model_validation: () => tag(D.model.performance, 'model_output', 'out-of-time validation'),
+      ...(O ? { published_nisr: () => pubCsv(O, O.rows.filter((r) => r.level === 'national')) } : {}),
     };
     return (
       <>
