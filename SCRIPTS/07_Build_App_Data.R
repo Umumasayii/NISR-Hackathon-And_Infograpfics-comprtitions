@@ -53,6 +53,11 @@ save_app(district_lookup, "district_lookup")
 message("2/9 Plot indicators with survey CIs (takes a minute)")
 plot_indicators <- c("irrigated", "inorganic_fert", "organic_fert", "pesticide",
                      "mechanised", "anti_erosion", "land_consolidated", "agroforestry")
+input_vars <- c("inorganic_fert", "organic_fert", "pesticide")
+# land share: area of plots with the input over area of plots answering (same plots)
+land_df <- plot_df |>
+  mutate(across(all_of(input_vars), \(x) if_else(is.na(x) | is.na(plot_area_ha), NA_real_, x * plot_area_ha),
+                .names = "{.col}_area"))
 # modern tools: a domain of irrigated plots (other plots set to missing, design kept)
 modern_df <- plot_df |> mutate(irrig_modern = if_else(irrigated %in% 1L, irrig_modern, NA_integer_))
 
@@ -62,7 +67,13 @@ est_level <- function(by_extra, level_name, area_col) {
     map_dfr(plot_indicators, \(v) survey_mean_by(plot_df, v, base)),
     survey_mean_by(modern_df, "irrig_modern", base),
     # farmers irrigating any plot: ONE record per farmer (master_farmer), 2020+
-    survey_mean_by(farmer_df, "irrig_farmer", base) |> mutate(indicator = "irrig_any_farmer")) |>
+    survey_mean_by(farmer_df, "irrig_farmer", base) |> mutate(indicator = "irrig_any_farmer"),
+    # NISR publishes inputs three ways (SAS tables "Use of ... by farmer type per
+    # district"): % of farmers, % of plots, % of land. Plots = the indicators above;
+    # farmers and land added here so each can be set beside the matching NISR column.
+    map_dfr(input_vars, \(v) survey_mean_by(farmer_df, paste0(v, "_farmer"), base)),
+    map_dfr(input_vars, \(v) survey_ratio_by(land_df, paste0(v, "_area"), "plot_area_ha", base) |>
+              mutate(indicator = paste0(v, "_land")))) |>
     mutate(level = level_name, area = if (is.null(area_col)) "Rwanda" else .data[[area_col]])
 }
 est_plot <- bind_rows(
@@ -291,25 +302,53 @@ if (file.exists(ahs_file)) {
     built = ahs$built), "ahs")
 } else message("AHS aggregates skipped: run 10_AHS_Preparation.R first")
 
-# ---- 10. PUBLISHED NISR FIGURES: A SEPARATE REFERENCE LAYER ---------------------
-# Published figures are never written over our estimates (audit 2026-10-20). They
-# come from SCRIPTS/14_Official_Reference.R, which reads the official workbooks
-# cell by cell and keeps the source table, sheet, cell, population and definition.
-# A published figure is shown next to ours only when its definition matches
-# (same_definition = TRUE); otherwise it stays in the reconciliation register.
-# Earlier builds merged the published SAS 2026 tables here; 2026 is out of scope.
+# ---- 10. PUBLISHED NISR FIGURES: SHOWN FIRST WHERE THE DEFINITION MATCHES ------
+# User decision 2026-10-21: where NISR publishes a figure with the same definition
+# as one of ours, the app shows the NISR figure and keeps ours as a cross-check;
+# a figure with a different definition is shown under its own NISR label only.
+# Figures come from SCRIPTS/11 (every published cell, with file, sheet and cell)
+# and SCRIPTS/14 (which cells answer which app question). Our estimates are never
+# overwritten here: both values travel together and the web picks the NISR one.
 off_file <- file.path(dir_root, "DATA", "processed", "official", "official_reference.csv")
 official <- if (file.exists(off_file)) {
-  message("10 Published reference layer")
-  read_csv(off_file, show_col_types = FALSE) |> filter(sas_year <= 2025)
+  message("10 Published NISR figures")
+  read_csv(off_file, show_col_types = FALSE, guess_max = 1e5) |> filter(sas_year <= 2025)
 } else {
-  message("10 No published reference layer yet (run SCRIPTS/14_Official_Reference.R)")
-  tibble(indicator = character(), sas_year = integer(), sas_season = character(), level = character(),
-         area = character(), crop_name = character(), value = numeric(), unit = character(),
-         population = character(), definition = character(), same_definition = logical(),
-         source_title = character(), source_url = character(), table = character(), sheet = character(),
-         cell = character(), status = character())
+  message("10 No published NISR figures yet (save the workbooks in DATA/NISR_published, run 11 and 14)")
+  tibble(indicator = character(), survey = character(), sas_year = integer(), sas_season = character(),
+         level = character(), area = character(), crop_name = character(), is_group = logical(),
+         farmer_type = character(), value = numeric(), unit = character(), measure_label = character(),
+         population = character(), definition = character(), comparable = logical(),
+         project_indicator = character(), project_table = character(), source_title = character(),
+         source_file = character(), sheet = character(), cell = character())
 }
+# our value for the same question, place, season and crop (only for "All" farmers)
+proj_est  <- est_plot |> transmute(project_indicator = indicator, project_table = "est", sas_year, sas_season,
+                                   level, area, crop_name = NA_character_, project_value = estimate,
+                                   project_reliability = reliability)
+proj_tot  <- bind_rows(nat_season |> mutate(level = "national", area = "Rwanda"),
+                       dist_season |> mutate(level = "district", area = district_std)) |>
+  select(level, area, sas_year, sas_season, cultivated_area_ha, irrigated_area_ha) |>
+  tidyr::pivot_longer(c(cultivated_area_ha, irrigated_area_ha), names_to = "project_indicator", values_to = "project_value") |>
+  mutate(project_table = "totals", crop_name = NA_character_, project_reliability = NA_character_)
+crop_cols <- c("production_t", "crop_area_ha", "yield_kg_ha")
+proj_crop <- bind_rows(
+  read_master("master_crop_season") |> mutate(level = "national", area = "Rwanda", project_table = "crop"),
+  read_master("master_crop_district_season") |> mutate(level = "district", area = district_std, project_table = "crop_dist")) |>
+  select(project_table, level, area, sas_year, sas_season, crop_name, any_of(crop_cols)) |>
+  tidyr::pivot_longer(any_of(crop_cols), names_to = "project_indicator", values_to = "project_value") |>
+  mutate(project_reliability = NA_character_)
+project_values <- bind_rows(proj_est, proj_tot, proj_crop)
+official <- official |>
+  left_join(project_values |> mutate(farmer_type = "All"),
+            by = c("project_indicator", "project_table", "sas_year", "sas_season", "level", "area", "crop_name", "farmer_type")) |>
+  mutate(gap = value - project_value,
+         gap_pct = if_else(unit == "%", NA_real_, 100 * gap / value),
+         decision = case_when(
+           is.na(value) ~ "Published cell blank: shown as unavailable",
+           comparable & !is.na(project_value) ~ "NISR value shown; project estimate kept as cross-check",
+           comparable ~ "NISR value shown; no project estimate",
+           TRUE ~ "NISR value shown under its own label; not compared (different definition)"))
 save_app(official, "official")
 
 skip <- if (file.exists(file.path(dir_master, "skip_pattern_audit.csv")))
