@@ -342,6 +342,13 @@ fp_std <- fp |>
                                        yes(take(fp, "use_pesticide_fungicide_in_any_of_your_plots_during_this_season", "chr")), ys, "pesticide"),
             micronutrient  = gate_fill(yes(take(fp, "use_any_type_of_micro_nutrients_in_this_plot_during_this_season", "chr")),
                                        yes(take(fp, "use_any_type_of_micro_nutrients_in_any_of_your_plots_in_this", "chr")), ys, "micronutrient")) |>
+  # the farmer-level "in ANY of your plots" answers. They cover ALL the farmer's plots,
+  # also plots outside the sampled segment, so "% of farmers who used X" must come from
+  # them, not from the listed plots (2025A: 2,940 farmers said yes to chemical fertiliser
+  # on some plot but on none of their listed plots; plot-derived farmer share 37% vs 62%)
+  mutate(inorganic_fert_any = yes(take(fp, "use_inorganic_fertilizer_in_any_of_your_plots_during_this_season", "chr")),
+         organic_fert_any   = yes(take(fp, "use_organic_fertilizer_in_any_of_your_plots_during_this_season", "chr")),
+         pesticide_any      = yes(take(fp, "use_pesticide_fungicide_in_any_of_your_plots_during_this_season", "chr"))) |>
   # the plot's own answer before the skip fill, kept for the reconciliation (15)
   mutate(inorganic_fert_raw = yes(take(fp, "used_inorganic_fertilizer_in_this_plot_during_this_season", "chr")),
          organic_fert_raw   = yes(take(fp, "used_organic_fertilizer_in_this_plot_during_this_season", "chr")),
@@ -349,6 +356,7 @@ fp_std <- fp |>
                                              "used_pesticides_in_this_plot_during_this_season"), "chr"))) |>
   group_by(ys, district_std, stratum, segment_id, segment_number, plot_number, farmer_id) |>
   summarise(across(c(organic_fert, inorganic_fert, pesticide, micronutrient,
+                     inorganic_fert_any, organic_fert_any, pesticide_any,
                      inorganic_fert_raw, organic_fert_raw, pesticide_raw), any_yes), .groups = "drop")
 
 # agroforestry (2020-2023 module, 2024-2025 crop screening question)
@@ -518,7 +526,11 @@ master_farmer <- master_plot |>
   summarise(weight = mean(weight, na.rm = TRUE), n_plots = n(),
             irrig_gate = any_yes(irrig_any_farmer), irrig_plot_any = any_yes(irrigated),
             # inputs on ANY plot: NISR's "percentage of farmers who applied ..." (SAS tables)
-            across(c(inorganic_fert, organic_fert, pesticide), any_yes, .names = "{.col}_farmer"),
+            # the farmer's own "any of your plots" answer first; the listed plots only
+            # when that question was not asked (2019)
+            inorganic_fert_farmer = coalesce(any_yes(inorganic_fert_any), any_yes(inorganic_fert)),
+            organic_fert_farmer   = coalesce(any_yes(organic_fert_any), any_yes(organic_fert)),
+            pesticide_farmer      = coalesce(any_yes(pesticide_any), any_yes(pesticide)),
             gender = first(na.omit(gender)), farmer_type = first(na.omit(farmer_type)), .groups = "drop") |>
   mutate(weight = if_else(is.finite(weight), weight, NA_real_),
          irrig_farmer = case_when(irrig_gate == 1L | irrig_plot_any == 1L ~ 1L,

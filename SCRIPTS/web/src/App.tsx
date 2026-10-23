@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { HashRouter, NavLink, Route, Routes, useLocation, Link } from 'react-router-dom';
 import {
   BookOpen, LayoutDashboard, ChartColumn, Compass, House, MapPinned, IdCard, CloudSunRain, Table, Sprout, Droplets, Users, Brain, Trophy,
-  Info, ChevronDown, Menu, X, SlidersHorizontal, CalendarDays, Map, MapPin, Layers, RotateCcw, Smartphone, Pin, PinOff, type LucideIcon,
+  Info, ChevronDown, Menu, X, SlidersHorizontal, CalendarDays, Map, MapPin, Layers, RotateCcw, Smartphone, Pin, PinOff, ClipboardCheck, type LucideIcon,
 } from 'lucide-react';
 import { useApp } from './data/store';
 import { LANGS, type Lang } from './lib/i18n';
@@ -20,6 +20,7 @@ import Households from './pages/Households';
 import Model from './pages/Model';
 import Priority from './pages/Priority';
 import Methods from './pages/Methods';
+import Assess from './pages/Assess';
 
 interface PageDef { path: string; key: string; icon: LucideIcon; el: ReactNode }
 const PAGES: Record<string, PageDef> = {
@@ -34,12 +35,15 @@ const PAGES: Record<string, PageDef> = {
   households: { path: '/households', key: 'p_households', icon: House, el: <Households /> },
   model: { path: '/model', key: 'p_model', icon: Brain, el: <Model /> },
   priority: { path: '/priority', key: 'p_priority', icon: Trophy, el: <Priority /> },
+  assess: { path: '/assess', key: 'p_assess', icon: ClipboardCheck, el: <Assess /> },
   methods: { path: '/methods', key: 'p_methods', icon: Info, el: <Methods /> },
 };
 const MENUS: { key: string; icon: LucideIcon; pages: string[] }[] = [
-  { key: 'menu_story', icon: BookOpen, pages: ['overview', 'map', 'district', 'need'] },
-  { key: 'menu_analyse', icon: ChartColumn, pages: ['explorer', 'evidence', 'how', 'who', 'households'] },
-  { key: 'menu_act', icon: Compass, pages: ['model', 'priority'] },
+  // the planner's journey first: understand -> compare -> inspect evidence -> record checks and export
+  { key: 'menu_plan', icon: Compass, pages: ['overview', 'priority', 'district', 'assess'] },
+  { key: 'menu_story', icon: BookOpen, pages: ['map', 'need', 'how', 'who'] },
+  // exploratory analysis, including the classification model, sits under Advanced
+  { key: 'menu_advanced', icon: ChartColumn, pages: ['explorer', 'evidence', 'households', 'model'] },
 ];
 // pages that use no global filter at all hide the filter panel
 const NO_FILTERS = new Set(['/methods']);

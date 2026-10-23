@@ -77,6 +77,19 @@ export default function Evidence() {
     layout: std({ x: tr('x_modern_inputs'), y: tr('y_yield'), legend: false, bargap: 0.35, xaxis: { type: 'category' } }),
   }, [ladder, tr]);
   const ladOk = ladder.filter((r) => r.reliability !== 'Unreliable');
+  // eligibility-mask sensitivity of the ratio-of-totals yield (weighted harvest / weighted area)
+  const MASKS = ['main', 'with_zero_harvests', 'no_trimming', 'trim_5_95'];
+  const sens = (D.yield.sensitivity ?? []).filter((r) => r.crop_name === crop);
+  const sensFig = useMemo<Fig | null>(() => !sens.length ? null : {
+    data: (['Irrigated', 'Rain-fed'] as const).map((g) => {
+      const d = MASKS.map((m) => sens.find((r) => r.mask === m && r.irrigation === g)).filter((r): r is NonNullable<typeof r> => !!r && r.estimate != null);
+      return { type: 'scatter', mode: 'markers', name: tr(g === 'Irrigated' ? 'irrigated' : 'rainfed'), y: d.map((r) => tr(`ym_${r.mask}`)), x: d.map((r) => r.estimate),
+        error_x: { type: 'data', symmetric: false, array: d.map((r) => (r.ci_high ?? r.estimate!) - r.estimate!), arrayminus: d.map((r) => r.estimate! - (r.ci_low ?? r.estimate!)), color: g === 'Irrigated' ? colIrrigated : colRainfed },
+        marker: { size: 10, color: g === 'Irrigated' ? colIrrigated : colRainfed },
+        text: d.map((r) => `${tr(`ym_${r.mask}`)}<br>${fmtNum(r.estimate)} kg/ha (${fmtNum(r.ci_low)}–${fmtNum(r.ci_high)})<br>n = ${fmtNum(r.n)} · ${r.reliability}`), hoverinfo: 'text' } as Data;
+    }),
+    layout: std({ x: 'kg/ha', yaxis: { title: { text: '' }, automargin: true, categoryorder: 'array', categoryarray: MASKS.map((m) => tr(`ym_${m}`)).reverse() } }) },
+  [sens, tr]); // eslint-disable-line
 
   // one bar pair per survey season: yields of different seasons and districts are only
   // combined from summed harvest and area (yieldOf), never by averaging yields
@@ -140,6 +153,11 @@ export default function Evidence() {
           <Plot fig={yareaFig} height={300} empty={tr('no_data')} />
         </ChartCard>
       </Grid>
+      {sensFig && (
+        <ChartCard title={tr('c_ysens')} icon={Scale} means={tr('m_ysens', crop)} source={tr('src_ysens')}>
+          <Plot fig={sensFig} height={240} />
+        </ChartCard>
+      )}
     </>
   );
 }
