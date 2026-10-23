@@ -28,8 +28,9 @@ fct_na <- function(x, lv = NULL) { x <- as.character(x); x[is.na(x)] <- "Unknown
 md <- plot_df |>
   filter(sas_year >= 2020, sas_season %in% main_seasons, !is.na(irrigated), plot_area_ha > 0) |>
   left_join(rain, by = c("district_std", "sas_year", "sas_season")) |>
+  mutate(.row = row_number()) |>
   transmute(
-    irrigated, weight, sas_year, district_std, province = fct_na(province),
+    .row, segment_id, irrigated, weight, sas_year, district_std, province = fct_na(province),
     gender = fct_na(gender), season = factor(sas_season),
     log_plot_area = log(pmin(plot_area_ha, 20)),
     rain_anomaly_z = coalesce(rain_std_anomaly, 0),
@@ -44,6 +45,9 @@ md <- plot_df |>
                                   TRUE ~ "Small-scale")),
     district = factor(district_std))
 
+md_design <- plot_df |>
+  filter(sas_year >= 2020, sas_season %in% main_seasons, !is.na(irrigated), plot_area_ha > 0) |>
+  add_pooled_design_vars() |> transmute(.row = row_number(), ppsu, pstr)
 train <- md |> filter(sas_year <= 2023)
 test  <- md |> filter(sas_year >= 2024)
 features <- c("district", "season", "log_plot_area", "rain_anomaly_z", "erosion", "consolidated",
@@ -52,7 +56,9 @@ fml <- as.formula(paste("irrigated ~", paste(features, collapse = " + ")))
 
 # weights normalised to mean 1 so the logistic fit is not dominated by scale
 train$w <- train$weight / mean(train$weight)
-glm_fit <- suppressWarnings(glm(fml, family = binomial(), data = train, weights = w))
+fit_warnings <- character()
+glm_fit <- withCallingHandlers(glm(fml, family = binomial(), data = train, weights = w),
+  warning = \(w) { fit_warnings <<- c(fit_warnings, conditionMessage(w)); invokeRestart("muffleWarning") })
 rf_fit  <- ranger::ranger(fml, data = train |> mutate(irrigated = factor(irrigated)),
                           probability = TRUE, num.trees = 300, min.node.size = 50,
                           case.weights = train$w, importance = "permutation", seed = 2026)
@@ -121,11 +127,34 @@ fairness <- bind_rows(
   ungroup() |>
   mutate(calibration_gap_pts = predicted_pct - observed_pct)
 
+# Odds ratios with DESIGN-BASED intervals: same weighted point estimates as glm(), but
+# standard errors from survey::svyglm with the physical segment as cluster (segments
+# are revisited across seasons and years) and t quantiles on the design df. The plain
+# glm() intervals treated every plot as independent and were too narrow.
+# Fit problems are recorded, not hidden: warnings, convergence and near-0/1 fitted
+# values (a sign of separation).
+train_des <- survey::svydesign(ids = ~ppsu, strata = ~pstr, weights = ~weight,
+                               data = train |> left_join(md_design, by = ".row"), nest = TRUE)
+svy_fit <- withCallingHandlers(survey::svyglm(fml, design = train_des, family = quasibinomial()),
+  warning = \(w) { fit_warnings <<- c(fit_warnings, paste("svyglm:", conditionMessage(w))); invokeRestart("muffleWarning") })
 coefs <- {
-  s <- summary(glm_fit)$coefficients
-  tibble(term = rownames(s), estimate = s[, 1], se = s[, 2]) |>
-    mutate(odds_ratio = exp(estimate), or_low = exp(estimate - 1.96 * se), or_high = exp(estimate + 1.96 * se))
+  b <- coef(svy_fit); se <- survey::SE(svy_fit); tq <- qt(0.975, survey::degf(train_des))
+  tibble(term = names(b), estimate = b, se = se) |>
+    mutate(odds_ratio = exp(estimate), or_low = exp(estimate - tq * se), or_high = exp(estimate + tq * se),
+           se_naive_glm = summary(glm_fit)$coefficients[term, 2])
 }
+fitted_p <- fitted(glm_fit)
+diagnostics <- list(
+  converged = glm_fit$converged, iterations = glm_fit$iter, warnings = unique(fit_warnings),
+  fitted_near_0_or_1 = sum(fitted_p < 1e-3 | fitted_p > 1 - 1e-3),
+  terms_with_se_over_10 = names(which(survey::SE(svy_fit) > 10)),
+  design_df = survey::degf(train_des), n_segments_train = n_distinct(train_des$cluster[[1]]),
+  # segments are revisited, so the 2024-2025 check shares units with training
+  test_segments_in_train_pct = 100 * mean(unique(test$segment_id) %in% unique(train$segment_id)),
+  decision_date = paste("Contemporaneous classification: fertiliser use, plot erosion and the season's rain anomaly",
+                        "are only known during or after the season, so this is NOT a validated pre-season forecast."))
+message("glm converged: ", glm_fit$converged, "; warnings: ", length(unique(fit_warnings)),
+        "; near-0/1 fitted: ", diagnostics$fitted_near_0_or_1)
 importance <- tibble(feature = names(rf_fit$variable.importance),
                      importance = as.numeric(rf_fit$variable.importance)) |>
   arrange(desc(importance)) |> mutate(importance = 100 * importance / max(importance))
@@ -146,7 +175,7 @@ glm_light <- list(terms = tt_light, xlevels = glm_fit$xlevels,
                   contrasts = glm_fit$contrasts, coefficients = coef(glm_fit))
 
 save_app(list(performance = perf, calibration = calibration, fairness = fairness,
-              coefficients = coefs, importance = importance, potential = potential,
+              coefficients = coefs, importance = importance, potential = potential, diagnostics = diagnostics,
               glm = glm_light, levels = lapply(md[features], \(x) if (is.factor(x)) levels(x) else range(x)),
               n_train = nrow(train), n_test = nrow(test)), "model_adoption")
 print(perf)
@@ -170,8 +199,10 @@ fit_crop <- function(cn) {
            seed = yn_unknown(improved_seed), ys = paste0(sas_year, sas_season),
            complete = in_crop & !is.na(inorganic_fert) & !is.na(organic_fert) & !is.na(improved_seed))
   # the crop is a domain of the full design (subset() keeps every segment)
-  des_all <- survey::svydesign(ids = ~psu, strata = ~strat, weights = ~weight,
-                               data = d |> filter(sas_season %in% main_seasons, season_yield_usable %in% TRUE), nest = TRUE)
+  # seasons are pooled, so the physical segment is the cluster (revisited across seasons)
+  des_all <- survey::svydesign(ids = ~ppsu, strata = ~pstr, weights = ~weight,
+                               data = d |> filter(sas_season %in% main_seasons, season_yield_usable %in% TRUE) |>
+                                 add_pooled_design_vars(), nest = TRUE)
   des <- subset(des_all, in_crop)
   f <- survey::svyglm(log_yield ~ irrigated + inorganic + organic + seed + log_area + district_std + ys, design = des)
   b <- coef(f)["irrigated"]; se <- survey::SE(f)["irrigated"]; dfr <- survey::degf(des); tq <- qt(0.975, dfr)
@@ -187,7 +218,7 @@ fit_crop <- function(cn) {
          adjusted_high = 100 * (exp(b + tq * se) - 1),
          complete_case_pct = 100 * (exp(bc) - 1),           # sensitivity: only plots with all inputs known
          inputs_known_pct = round(100 * mean(dd$complete), 1),
-         n = nrow(dd), n_irrigated = sum(dd$irrigated == 1L), n_psu = n_distinct(dd$psu))
+         n = nrow(dd), n_irrigated = sum(dd$irrigated == 1L), n_psu = n_distinct(dd$segment_id))
 }
 yield_adj <- map_dfr(crops, \(cn) tryCatch(fit_crop(cn), error = \(e) { message("  skipped ", cn, ": ", conditionMessage(e)); NULL })) |>
   mutate(direction = case_when(adjusted_low > 0 ~ "Higher on irrigated plots",

@@ -121,6 +121,26 @@ ref <- ref |>
   select(-parent) |>
   distinct(indicator, sas_year, sas_season, level, area, crop_name, farmer_type, .keep_all = TRUE)
 
+# Skip gate (verified on the 2019-2025 microdata by 15_Reconcile_With_NISR.R): once
+# the questionnaire asks "did you use X on ANY of your plots?" first, the plot
+# question is only answered on plots of farmers who said yes, and NISR's "% of
+# plots" is the share among those plots. Ours is the share of ALL cultivated
+# plots, so the two are different populations from the gate onwards and are not
+# compared as the same indicator. Gate starts: pesticide and organic fertiliser
+# 2022C, chemical fertiliser 2025A (in 2024A the question was asked on every plot).
+gate_start <- c(pesticide = 2022.3, organic_fert = 2022.3, inorganic_fert = 2025.1)
+# the % of land is built from the same gated plot question, so it follows the same gate
+gate_start <- c(gate_start, setNames(gate_start, paste0(names(gate_start), "_land")))
+season_key <- \(y, s) y + match(s, c("A", "B", "C")) / 10
+ref <- ref |>
+  mutate(gated = indicator %in% names(gate_start) &
+           season_key(sas_year, sas_season) >= coalesce(gate_start[indicator], Inf),
+         comparable = comparable & !gated,
+         population = if_else(gated, paste0("plots of farmers who reported using it on any plot (", sas_year, sas_season, " questionnaire skip)"), population),
+         rule_note = if_else(gated, str_squish(paste(coalesce(rule_note, ""),
+           "Different population from ours: NISR counts only plots of farmers who used it on any plot; ours counts all cultivated plots.")), rule_note)) |>
+  select(-gated)
+
 write_csv(ref, file.path(dir_out, "official_reference.csv"), na = "")
 message("14 Official reference: ", nrow(ref), " published figures (",
         sum(ref$comparable), " with the same definition as a project estimate)")

@@ -1,0 +1,821 @@
+{
+  "built": "2026-10-23T11:56:12+0000",
+  "data_built": "2026-10-23 11:54",
+  "git_commit": "dd6879427ea326d84775ff1d04dff2a9b5729df9",
+  "git_branch": "district-assessment-rebuild",
+  "git_dirty": true,
+  "r_version": "R version 4.3.3 (2024-02-29)",
+  "platform": "x86_64-pc-linux-gnu",
+  "packages": [
+    {
+      "package": "dplyr",
+      "version": "1.1.4"
+    },
+    {
+      "package": "survey",
+      "version": "4.2.1"
+    },
+    {
+      "package": "haven",
+      "version": "2.5.4"
+    },
+    {
+      "package": "ranger",
+      "version": "0.16.0"
+    },
+    {
+      "package": "readxl",
+      "version": "1.4.3"
+    },
+    {
+      "package": "sf",
+      "version": "1.0.15"
+    },
+    {
+      "package": "jsonlite",
+      "version": "1.8.8"
+    }
+  ],
+  "inputs": {
+    "sas_microdata": [
+      {
+        "file": "DATA/SAS/SAS 2019/Season A/rwa-sas-SeasonA_PartIII_Fertilizers_Pesticides.sav",
+        "bytes": 4218225,
+        "sha256": "8ddb9e4ed93f6c696155545c94ea968f84cccdcf8823bef3ca9696494e3692a8"
+      },
+      {
+        "file": "DATA/SAS/SAS 2019/Season A/rwa-sas-SeasonA_PartIV_Agricultural practice.sav",
+        "bytes": 6191154,
+        "sha256": "c03b604411531f8e25d1b9b6ea557011d21b13be2ef0759789b8490d592006ef"
+      },
+      {
+        "file": "DATA/SAS/SAS 2019/Season A/rwa-sas-SeasonA_PartV_Land Tenure.sav",
+        "bytes": 8614106,
+        "sha256": "8dbdb7dd3c37dbe76b528e05d993a9c07596372e47d4f3dd57fb081080e88168"
+      },
+      {
+        "file": "DATA/SAS/SAS 2019/Season A/rwa-sas-seasonA-Screening.sav",
+        "bytes": 9004539,
+        "sha256": "9b196fbdf1a7318a143058a278e77e1c995775f1344a420a944853d2066b3505"
+      },
+      {
+        "file": "DATA/SAS/SAS 2019/Season A/rwa-sas-seasonA_Crop production.sav",
+        "bytes": 12913244,
+        "sha256": "b07badf1519a1b4b28429bd9ea6762bd86c9cf29652d55d8d908d03eec14ffe3"
+      },
+      {
+        "file": "DATA/SAS/SAS 2019/Season B/rwa-sas-SeasonB_PartIII_Fertilizers_Pesticides.sav",
+        "bytes": 3960345,
+        "sha256": "996c17fa8f48d9c3fa351497d147ec564c94318b7ec807ddb34587f7fb4e7395"
+      },
+      {
+        "file": "DATA/SAS/SAS 2019/Season B/rwa-sas-SeasonB_PartIV_Agricultural practice.sav",
+        "bytes": 6009026,
+        "sha256": "c238c0590913c99dc8354578105a966fc2ceaf75cdd1e1f680b58b7831f58354"
+      },
+      {
+        "file": "DATA/SAS/SAS 2019/Season B/rwa-sas-SeasonB_PartV_Land Tenure.sav",
+        "bytes": 8376402,
+        "sha256": "2733efcbc36d502d641cd75d1457473ed564d60536fa5871910c8de6c681c67a"
+      },
+      {
+        "file": "DATA/SAS/SAS 2019/Season B/rwa-sas-seasonB-Screening.sav",
+        "bytes": 8343423,
+        "sha256": "efb7a93036033082ae2d5927f6f3927399bacfb47391a92ecc2b39e70bc30d2d"
+      },
+      {
+        "file": "DATA/SAS/SAS 2019/Season B/rwa-sas-seasonB_Crop production.sav",
+        "bytes": 11968114,
+        "sha256": "56a35200e93910f559f705aba5c03b125b4f61513ed55059f35e5697a9d773b4"
+      },
+      {
+        "file": "DATA/SAS/SAS 2019/Season C/rwa-sas-SeasonC_PartIII_Fertilizers_Pesticides.sav",
+        "bytes": 404286,
+        "sha256": "c96ff27d1acd8f86165ced0d9f02fdf19a187ea2246be72005141a337ebe7d0d"
+      },
+      {
+        "file": "DATA/SAS/SAS 2019/Season C/rwa-sas-SeasonC_PartIV_Agricultural practice.sav",
+        "bytes": 536923,
+        "sha256": "765748af3877b928879ae3e91f556de018db8bf9b4ccdc62af19adfb46f97649"
+      },
+      {
+        "file": "DATA/SAS/SAS 2019/Season C/rwa-sas-SeasonC_PartV_Land Tenure.sav",
+        "bytes": 695955,
+        "sha256": "890f61fb4cd22406f999f8fb036c04bdda79dbf8d65a96aece2f58cdcd78fd2d"
+      },
+      {
+        "file": "DATA/SAS/SAS 2019/Season C/rwa-sas-seasonC-Screening.sav",
+        "bytes": 1602567,
+        "sha256": "2a7bdade063cb9ca01d4996f63d99648580593e8d61e8fe00e1832ab67cf8b97"
+      },
+      {
+        "file": "DATA/SAS/SAS 2019/Season C/rwa-sas-seasonC_Crop production.sav",
+        "bytes": 664655,
+        "sha256": "a0c13f05e8f9e43a41c9e9da07d59a3d2d1923bf9862bbcc6272d8dc83852c6f"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season A/rwa-sas-SeasonA_PartIII_Fertilizers_Pesticides.dta",
+        "bytes": 2204536,
+        "sha256": "63f96375b9a917d23a03b250866095349d62e5bc6f1a552b5d13ae12d2201249"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season A/rwa-sas-SeasonA_PartIV_Agricultural practice.dta",
+        "bytes": 1613601,
+        "sha256": "3edea8b5fe809131a36191563060602099f1fffbb84dd82a17e1fe4dd9524ff2"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season A/rwa-sas-seasonA-Screening_crops.dta",
+        "bytes": 2093201,
+        "sha256": "8a893f6cd528d820d65a743eddc58ff2532ca9ee04d1cff4ae0e51a5d3b519a1"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season A/rwa-sas-seasonA_Crop production.dta",
+        "bytes": 10927615,
+        "sha256": "16f9ffe10712d3eb69fd9ceb6ccc25ef0fcd6b7dadbf075b8b340175d9a2bc9c"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season A/rwa-sas-seasonA_Screening_Agroforestry.dta",
+        "bytes": 584125,
+        "sha256": "154ec1fb610e09472d30bbbf9411ed45de4986989141a1eb448887d66d0d46c8"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season A/rwa-sas-seasonA_Screening_Antierosion_land consolidation.dta",
+        "bytes": 787760,
+        "sha256": "0a13582dcd7dbc490f1a39997bf7d6185cd803256235a6078d2a984af34efd8a"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season B/rwa-sas-SeasonB_PartIII_Fertilizers_Pesticides.dta",
+        "bytes": 1874239,
+        "sha256": "40d2db4d398c2afd24cf2cdfc02a8cfb6cc282cbe6143769ce266de3446c0000"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season B/rwa-sas-SeasonB_PartIV_Agricultural practice.dta",
+        "bytes": 1378482,
+        "sha256": "71f9ea91c414b9846010a1bd95f67ab51e74bd86db6b910feea8766bbe1ba3fa"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season B/rwa-sas-seasonB-Screening_crops.dta",
+        "bytes": 2008449,
+        "sha256": "0d4b6a3581166eb3628ac84aa6e67ff3f582b4a62f31542020e256eb841aca81"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season B/rwa-sas-seasonB_Crop production.dta",
+        "bytes": 9860605,
+        "sha256": "3570473845139741a586c6f1f637468457bfbf44275dd4cb1e6ed9896dcac3a4"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season B/rwa-sas-seasonB_Screening_Agroforestry.dta",
+        "bytes": 509201,
+        "sha256": "532c241b305b934ad87caed23e758d6498194f63f4a59d41f5d029adcf2bc53f"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season B/rwa-sas-seasonB_Screening_Antierosion_land consolidation.dta",
+        "bytes": 663773,
+        "sha256": "19a18b636b8183eb54a895127548d2538d5af53b2c19b22543be37a741a257d0"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season C/rwa-sas-SeasonC_PartIII_Fertilizers_Pesticides.dta",
+        "bytes": 512759,
+        "sha256": "6a626d1c5a84768ba3c03786395ff49f3d710d27345cb42d6c3060e81f253ca0"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season C/rwa-sas-SeasonC_PartIV_Agricultural practice.dta",
+        "bytes": 243235,
+        "sha256": "c31bc05c53854fa21b0a85db15a193c7d5499d8eb97782ee782f82d61a6de5ff"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season C/rwa-sas-seasonC-Screening_crops.dta",
+        "bytes": 445176,
+        "sha256": "39febbb7583a13702635edfcb39ed82d7a7ccf06b30ad1b316d22ad9cfc5d2da"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season C/rwa-sas-seasonC_Crop production.dta",
+        "bytes": 766385,
+        "sha256": "8a6725041d2e469b21c736112aee9a808c09ffae3efb7cf2b3fc98eeb30b27a2"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season C/rwa-sas-seasonC_Screening_Agroforestry.dta",
+        "bytes": 90973,
+        "sha256": "d0fc5d653e37c4c37bf26705d42a5bbdc2c9bb98be73ade3a3ee3c7c1c2cbd06"
+      },
+      {
+        "file": "DATA/SAS/SAS 2020/Season C/rwa-sas-seasonC_Screening_Antierosion_land consolidation.dta",
+        "bytes": 188384,
+        "sha256": "d3ab388db64524e8a3881f5d2a54534697307268da6c07ba3de5af17d149a225"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season A/rwa-sas-SeasonA_PartIII_Fertilizers_Pesticides.dta",
+        "bytes": 2896047,
+        "sha256": "8b2d2439fc790c052b1646786158fca412fd0778574f5fc0e09b7a4070d4d72c"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season A/rwa-sas-SeasonA_PartIV_Agricultural practice.dta",
+        "bytes": 2150792,
+        "sha256": "2c3101bba0b9d6a8004b43efd194ff86c06e0c03a2997496f6f3d20f5541678e"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season A/rwa-sas-seasonA-Screening_crops.dta",
+        "bytes": 1913739,
+        "sha256": "8ac59ad5b8c589b274a22a1bd638473ba01cc90e7413ea3e85238adb1f886702"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season A/rwa-sas-seasonA_Crop production.dta",
+        "bytes": 12928253,
+        "sha256": "d578d6f46181b8056087a48f59d65778a7b045dd2ad724cd1a5a55bf2673cd05"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season A/rwa-sas-seasonA_Screening_Agroforestry.dta",
+        "bytes": 556393,
+        "sha256": "c51f83f08ddd15289fc4817bc13fb01aa5e912114d97169d26c2c3649878f559"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season A/rwa-sas-seasonA_Screening_Antierosion_land consolidation.dta",
+        "bytes": 649827,
+        "sha256": "3b5d5ba81c9b1c0255963d3601fdfac16755ca304de24f37fdf48cf82c1af022"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season B/rwa-sas-SeasonB_PartIII_Fertilizers_Pesticides.dta",
+        "bytes": 2939264,
+        "sha256": "2cd1328e309a6503ca55ba24c67610cef5d951bd2b95dfe9be8834b99a3f52e1"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season B/rwa-sas-SeasonB_PartIV_Agricultural practice.dta",
+        "bytes": 2279400,
+        "sha256": "923677818016c70fbeddbe86e741211b4a2cda375bf9b67468fc16416e1b1bc9"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season B/rwa-sas-seasonB-Screening_crops.dta",
+        "bytes": 1788117,
+        "sha256": "7d140be5dec12a9a6edd58cee373669ff46bf9a621e004ee71d8a072915649aa"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season B/rwa-sas-seasonB_Crop production.dta",
+        "bytes": 11428036,
+        "sha256": "9dc49419691880f160754e79513c15b8f4565593d584067d3968e83ac7c6816d"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season B/rwa-sas-seasonB_Screening_Agroforestry.dta",
+        "bytes": 548407,
+        "sha256": "2a33f770a97febe921a54e36655cfa5c88953839d944483b08b5c803bdb589ec"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season B/rwa-sas-seasonB_Screening_Antierosion_land consolidation.dta",
+        "bytes": 695436,
+        "sha256": "1069afdf7e9777c99be25c30e13d42a3a0e2c50f2668443fb78ffe85cea4a097"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season C/rwa-sas-SeasonC_PartIII_Fertilizers_Pesticides.dta",
+        "bytes": 421107,
+        "sha256": "774763480de426be923b7f56214c1ddea5e86dc09ac8337e2492a4c7dedd93bd"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season C/rwa-sas-SeasonC_PartIV_Agricultural practice.dta",
+        "bytes": 240231,
+        "sha256": "ffe1ad5bf761ab598b5fe8b6be4748a2d6baa6cdcfe167f9e4376a2eb34fc800"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season C/rwa-sas-seasonC-Screening_crops.dta",
+        "bytes": 355396,
+        "sha256": "cc35c003a1a066c5207d264bf3d98120a8e2fabe0a3ec0596025088e6dfd8e3c"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season C/rwa-sas-seasonC_Crop production.dta",
+        "bytes": 665387,
+        "sha256": "e6b414139c9f18f22ad3608370049bc0a65e5b769142113b3ef4289867442872"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season C/rwa-sas-seasonC_Screening_Agroforestry.dta",
+        "bytes": 116290,
+        "sha256": "55cd6687b9d72b4176e0f3572d28b575b6f7e2f5209dc5695c77528213381220"
+      },
+      {
+        "file": "DATA/SAS/SAS 2021/Season C/rwa-sas-seasonC_Screening_Antierosion_land consolidation.dta",
+        "bytes": 112826,
+        "sha256": "15010e7e9e5024e4b84936befea64b7fb6f249bdd727039a1330b427d7c9eec7"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season A/rwa-sas-SeasonA_PartIII_Fertilizers_Pesticides.dta",
+        "bytes": 11198521,
+        "sha256": "6691a528c952de606ed29ad121c9e90ca3cdcf984086434d5dc52d58cf4b3178"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season A/rwa-sas-SeasonA_PartIV_Agricultural practice.dta",
+        "bytes": 8599378,
+        "sha256": "bd8ef0ccaaf52ac79ce21435a78c7c75c38a99b4ac291a351f18f94e3a0f2048"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season A/rwa-sas-seasonA-Screening_crops.dta",
+        "bytes": 12938619,
+        "sha256": "cf9d2ccd7a1729d608c5c89689ba3edf4d3d779879830cc24d55123762f3bbde"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season A/rwa-sas-seasonA_Crop production.dta",
+        "bytes": 37223997,
+        "sha256": "7c145e7bf69e94eef13fdc6563cfa35467873db25d36e0d379ab0b93060aab21"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season A/rwa-sas-seasonA_Screening_Agroforestry.dta",
+        "bytes": 5191819,
+        "sha256": "11bee9e796514148207e6377b2fe09e0c19fbe549632e9a5fb97718c30a61542"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season A/rwa-sas-seasonA_Screening_Antierosion_land consolidation.dta",
+        "bytes": 5360183,
+        "sha256": "eacf7a60f039335bd07017cef132087f5568bbc8e88abfc3f8b53f0b06b1a0c4"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season B/rwa-sas-SeasonB_PartIII_Fertilizers_Pesticides.dta",
+        "bytes": 9875026,
+        "sha256": "05c3d094a1a569c94caeebbdbe3a8b4b0211f5f4112baa60bf931770fe7058c7"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season B/rwa-sas-SeasonB_PartIV_Agricultural practice.dta",
+        "bytes": 8325300,
+        "sha256": "b0d01376a9d20937592c9955e48fe1c597a36311cc827ff573b9cc45cd263d69"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season B/rwa-sas-seasonB-Screening_crops.dta",
+        "bytes": 12407454,
+        "sha256": "5fcbc4c365cee3c560b83c4739364092508e6b5054567c5c00670a49442ced10"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season B/rwa-sas-seasonB_Crop production.dta",
+        "bytes": 32146193,
+        "sha256": "3bebe73184564639355838750a3d455ff710a258d0a4a154e3dc4eb50bb98e63"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season B/rwa-sas-seasonB_Screening_Agroforestry.dta",
+        "bytes": 5084745,
+        "sha256": "31bd507f1b238a570651b24df535d2511aa949cf57e0eced7401a8bb79b0dbe7"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season B/rwa-sas-seasonB_Screening_Antierosion_land consolidation.dta",
+        "bytes": 5316911,
+        "sha256": "234206671b79b6aa96b18d8dbcf2564b26d79da9cf2d9143f87ba1b5f9b88f05"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season C/rwa-sas-SeasonC_PartIII_Fertilizers_Pesticides.dta",
+        "bytes": 4433240,
+        "sha256": "c31bd89ea982c1342dfcbc1dc82b547216ad407837eb76dc3f538884f098f6fb"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season C/rwa-sas-SeasonC_PartIV_Agricultural practice.dta",
+        "bytes": 2455131,
+        "sha256": "feb6052702656b45d61335cc5e0cbb027addeee18a516551a2d3aebeea73c578"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season C/rwa-sas-seasonC-Screening_crops.dta",
+        "bytes": 2485107,
+        "sha256": "5ff5a2fcbe380450ada7059ce0b0fe18675054d435dc3dc52cc1da2e73c015d3"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season C/rwa-sas-seasonC_Crop production.dta",
+        "bytes": 5166871,
+        "sha256": "50f4d6e3a78af043146aae919f11a265e81fa482ca0a5a9cc38a872eec0ea8c3"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season C/rwa-sas-seasonC_Screening_Agroforestry.dta",
+        "bytes": 772272,
+        "sha256": "6ed7a7256299f9a2d7a09bb4129ec342697d721acea72df5a0f5007499a6b430"
+      },
+      {
+        "file": "DATA/SAS/SAS 2022/Season C/rwa-sas-seasonC_Screening_Antierosion_land consolidation.dta",
+        "bytes": 761786,
+        "sha256": "8f0aa6dbed9b8821343c4a3806938795c1598c035bfd39cd4722da8bfeabcbd2"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season A/rwa-sas-SeasonA_PartIII_Fertilizers_Pesticides.dta",
+        "bytes": 17326972,
+        "sha256": "1347e19ffc01f5347c60e68bb446434e4a1381de3f7099d7b3f7e5ac64fe3830"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season A/rwa-sas-SeasonA_PartIV_Agricultural practice.dta",
+        "bytes": 8921565,
+        "sha256": "2c23c2e8a9cb02f9587ab53c59c9ecc8964cd5955e13c76c3f7736f63e121459"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season A/rwa-sas-seasonA-Screening_crops.dta",
+        "bytes": 14295784,
+        "sha256": "7ae5724b98bfe6fc5b5b1780b43339e87f968ec71bda49e136d9c81a7f032662"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season A/rwa-sas-seasonA_Crop production.dta",
+        "bytes": 38726193,
+        "sha256": "1b8198e445601ebac8b48af74581cae5c1f38c1102d830dc9fd32b3179aae0f3"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season A/rwa-sas-seasonA_Screening_Agroforestry.dta",
+        "bytes": 4964758,
+        "sha256": "0c588349f4769a86f9938da523cc9e78e5cbda8a14b8c70d50256d81d7cdd180"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season A/rwa-sas-seasonA_Screening_Antierosion_land consolidation.dta",
+        "bytes": 5361409,
+        "sha256": "31b396c5692a56ed3fc88a4b9167bca9e56a6576dc05a76815f23af46ce8e646"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season B/rwa-sas-SeasonB_PartIII_Fertilizers_Pesticides.dta",
+        "bytes": 15220482,
+        "sha256": "f2c3d390d80d73acd55c3b9a48edf1a7fd21c95c3f84fc0f8c3b9b5bac1d84df"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season B/rwa-sas-SeasonB_PartIV_Agricultural practice.dta",
+        "bytes": 6223694,
+        "sha256": "372db2e6ce356905f64fe2d3708671bf6ad3b71d66b492ff69d15cfd2482d285"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season B/rwa-sas-seasonB-Screening_crops.dta",
+        "bytes": 12841144,
+        "sha256": "4519dbe910181e36a437162f287c68d820192b67e96b5ebcbfca2dc1ebb7f084"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season B/rwa-sas-seasonB_Crop production.dta",
+        "bytes": 36183242,
+        "sha256": "7a89808ac41b790021737c5809ea69598b3302d8c1980fce1e6dcda5f5d74dee"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season B/rwa-sas-seasonB_Screening_Agroforestry.dta",
+        "bytes": 4123798,
+        "sha256": "ab2180400d482b8d0f5a234cd538c87adca1061eb85e1a864b68392ac58696d6"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season B/rwa-sas-seasonB_Screening_Antierosion_land consolidation.dta",
+        "bytes": 4706371,
+        "sha256": "378336225b9318e9cb563c5a9b9a8026eb28883820681330472084c7a7133d28"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season C/rwa-sas-SeasonC_PartIII_Fertilizers_Pesticides.dta",
+        "bytes": 2739782,
+        "sha256": "72253d99878500e8c445471afdcd371fea5f4922366c07d104f66af82626987b"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season C/rwa-sas-SeasonC_PartIV_Agricultural practice.dta",
+        "bytes": 1466301,
+        "sha256": "d659edda78ea53b9d900be7ef4e330fd2a6a688fcbc71ef07352074a8e6328ef"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season C/rwa-sas-seasonC-Screening_crops.dta",
+        "bytes": 2381374,
+        "sha256": "db8c508a03ef75d45ef9b3e4fbead69d7615fa7aab61e55a2c9da31849e06df1"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season C/rwa-sas-seasonC_Crop production.dta",
+        "bytes": 3026091,
+        "sha256": "4eb2a1878b0c7a68026c5f1615ce6cb80ad3c7ee1e827ac7ec6e090dce3c0681"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season C/rwa-sas-seasonC_Screening_Agroforestry.dta",
+        "bytes": 741149,
+        "sha256": "502dba3d33a97fd0d1c1a23ed15d11c687449fa8b8190cb6d85cb597d9d55312"
+      },
+      {
+        "file": "DATA/SAS/SAS 2023/Season C/rwa-sas-seasonC_Screening_Antierosion_land consolidation.dta",
+        "bytes": 735840,
+        "sha256": "4d6b06cc7bede5b869d54183959fec40139d47de5bd3ca217d485f3e0eb21c00"
+      },
+      {
+        "file": "DATA/SAS/SAS 2024/Season A/Rwa_raw_SeasonA2024_Agricultural_practice.dta",
+        "bytes": 3485768,
+        "sha256": "060c3b8c346cf3d02f48ca318d2de44553453aadbec7871a7d0d9edf374c9b01"
+      },
+      {
+        "file": "DATA/SAS/SAS 2024/Season A/Rwa_raw_SeasonA2024_Production.dta",
+        "bytes": 20638548,
+        "sha256": "242e4c2935470549b78855a9ae5949c89154eaa72e135166d27fdc2905d253c2"
+      },
+      {
+        "file": "DATA/SAS/SAS 2024/Season A/Rwa_raw_SeasonA2024_Screening.dta",
+        "bytes": 21934136,
+        "sha256": "62c3658458b26c73a34055085d526d6c91b39ffd9309ebc2c0857eaf1ad17ee9"
+      },
+      {
+        "file": "DATA/SAS/SAS 2024/Season A/Rwa_raw_fertilizer_pesticideA2024.dta",
+        "bytes": 11825421,
+        "sha256": "c8c362cee1ab342d1e812a655bb123c230cb625a754dd4063c6aeb135d6b909b"
+      },
+      {
+        "file": "DATA/SAS/SAS 2024/Season B/Rwa_raw_SeasonB2024_Agricultural_practice.dta",
+        "bytes": 3403459,
+        "sha256": "bf6032572d6513c770a8e4b13049d010503a970f9d317d67ced6f01105a44336"
+      },
+      {
+        "file": "DATA/SAS/SAS 2024/Season B/Rwa_raw_SeasonB2024_Production.dta",
+        "bytes": 20992268,
+        "sha256": "bdb2aa9d7098d9bed41a7500a196b04536d76cf48dbbfc7d42e8fcb56e0bc296"
+      },
+      {
+        "file": "DATA/SAS/SAS 2024/Season B/Rwa_raw_SeasonB2024_Screening.dta",
+        "bytes": 11704765,
+        "sha256": "47e255c367c5796e4b7d621fdd549d567115c14674acdc6704a45426fea2a167"
+      },
+      {
+        "file": "DATA/SAS/SAS 2024/Season B/Rwa_raw_fertilizer_pesticideB2024.dta",
+        "bytes": 10765619,
+        "sha256": "0569527e73ad89fd26ac574e57ec92a19f7983204fd90c45fdd66105e6396035"
+      },
+      {
+        "file": "DATA/SAS/SAS 2024/Season C/Rwa_raw_SeasonC2024_Agricultural_practice.dta",
+        "bytes": 336403,
+        "sha256": "22fe01021f1c3f96e799a9a41bbe3695523ef7bd84ec8cc64997f0e68cc80edf"
+      },
+      {
+        "file": "DATA/SAS/SAS 2024/Season C/Rwa_raw_SeasonC2024_Production.dta",
+        "bytes": 1170655,
+        "sha256": "2e84906a5f27d5594e8f89d7bc7557032788289e9742a83bb8cafad431ca9198"
+      },
+      {
+        "file": "DATA/SAS/SAS 2024/Season C/Rwa_raw_SeasonC2024_Screening.dta",
+        "bytes": 2791812,
+        "sha256": "f99168fb3f46655c7cf2f36f09357dfd186c884cd0c52da8c1e14e46153b9821"
+      },
+      {
+        "file": "DATA/SAS/SAS 2024/Season C/Rwa_raw_fertilizer_pesticideC2024.dta",
+        "bytes": 1389249,
+        "sha256": "7fa9d226c8f001ee5601392ba1a22a7cb7ed65569f6a8afdc7fab4a1f05e0a4c"
+      },
+      {
+        "file": "DATA/SAS/SAS 2025/Season A/Rwa_raw_SeasonA2025_Agricultural_practice.dta",
+        "bytes": 49991597,
+        "sha256": "6bd759521a1b6aef19012c0f93a622cfeb3a19aa7b5e863192eb78f434501d25"
+      },
+      {
+        "file": "DATA/SAS/SAS 2025/Season A/Rwa_raw_SeasonA2025_Production.dta",
+        "bytes": 59516314,
+        "sha256": "24bc0db5c4edcc3fb567df4e50b46a3bc496e7150c7152723fbaa16476960972"
+      },
+      {
+        "file": "DATA/SAS/SAS 2025/Season A/Rwa_raw_SeasonA2025_Screening.dta",
+        "bytes": 40154452,
+        "sha256": "64296c8e13999e2abd8e0f1f2bf0a3255e5ae5b149d8f583e6497f934bdcd921"
+      },
+      {
+        "file": "DATA/SAS/SAS 2025/Season A/Rwa_raw_fertilizer_pesticideA2025.dta",
+        "bytes": 22016801,
+        "sha256": "5d3162ab42cab08ce51f8995c4d0449beedd141ab02bf8c4c81f6c2cd8777b17"
+      },
+      {
+        "file": "DATA/SAS/SAS 2025/Season B/Rwa_raw_SeasonB2025_Agricultural_practice.dta",
+        "bytes": 27475836,
+        "sha256": "6dbebed78fd12471f27b0337f6f82b58d00d495554a1145f30b6ae73b03d8b8a"
+      },
+      {
+        "file": "DATA/SAS/SAS 2025/Season B/Rwa_raw_SeasonB2025_Production.dta",
+        "bytes": 63431944,
+        "sha256": "11700e5c1caab5e8cb6cf813b26a0bf22db19fac3f2d36ab8db0ab63780c27d3"
+      },
+      {
+        "file": "DATA/SAS/SAS 2025/Season B/Rwa_raw_SeasonB2025_Screening.dta",
+        "bytes": 150751567,
+        "sha256": "3f8acffdc98bb62ac1d98cbfab9ad7be70484e02695d5f880e9da4b084f25dfb"
+      },
+      {
+        "file": "DATA/SAS/SAS 2025/Season B/Rwa_raw_fertilizer_pesticideB2025.dta",
+        "bytes": 69527911,
+        "sha256": "c9ba39039478b4e1f59706b6f6f0adbc31aebe3d06c58fdd90b64d71dece3b56"
+      },
+      {
+        "file": "DATA/SAS/SAS 2025/Season C/Rwa_raw_SeasonC2025_Agricultural_practice.dta",
+        "bytes": 1129275,
+        "sha256": "b133ffe865274e5ac0e1a26831872e698adc7eaabb7ec295c778e3f0cefc2dc2"
+      },
+      {
+        "file": "DATA/SAS/SAS 2025/Season C/Rwa_raw_SeasonC2025_Production.dta",
+        "bytes": 3293744,
+        "sha256": "c6747d4680588ed23a51f442f9595aa2ac883a9d32201cb361a1708432913523"
+      },
+      {
+        "file": "DATA/SAS/SAS 2025/Season C/Rwa_raw_SeasonC2025_Screening.dta",
+        "bytes": 10345641,
+        "sha256": "a81b53c3909a7823f79500033deb7f87e756fe7a5051c90820cb79ee084cb318"
+      },
+      {
+        "file": "DATA/SAS/SAS 2025/Season C/Rwa_raw_fertilizer_pesticideC2025.dta",
+        "bytes": 5205929,
+        "sha256": "ab2e4088f980f9053873e20249efe5d3c2b26d91d8ace8962dfc057048492e8f"
+      }
+    ],
+    "nisr_published": [
+      {
+        "file": "DATA/NISR_published/SAS 2019 _Annual report _Tables.xlsx",
+        "bytes": 737297,
+        "sha256": "51101cae342030329db6b0047d28e6df9ad4c9d1c64742af33840b8f4145ff19"
+      },
+      {
+        "file": "DATA/NISR_published/SAS 2021_Tables.xlsx",
+        "bytes": 457387,
+        "sha256": "1596c99a351e40e58be6afe82badf69e7f187110a2415dd3857b9f3fbf08e659"
+      },
+      {
+        "file": "DATA/NISR_published/SAS 2022_Tables_0.xlsx",
+        "bytes": 451427,
+        "sha256": "8576cd4a462d7fb015b491bcccfafc9488e34db338917858f436b4f23e0b6de6"
+      },
+      {
+        "file": "DATA/NISR_published/SAS 2023_Annual Tables (3).xlsx",
+        "bytes": 261113,
+        "sha256": "fc07b45002c7aff36a0d6ee437acc47ff4bfea33b8bf240f264a78b41322fc82"
+      },
+      {
+        "file": "DATA/NISR_published/SAS 2024_Annual Tables.xlsx",
+        "bytes": 345341,
+        "sha256": "5c7c6024d9a7b766d9911348aa3b5d5316555c6aa4a8c53f10dc290e2d8906e6"
+      },
+      {
+        "file": "DATA/NISR_published/SAS 2025_Annual Tables.xlsx",
+        "bytes": 388616,
+        "sha256": "3a6ed44f1e973578e46221b392e54833bb39e73b681be6e54fa2b44efe5fe1f7"
+      },
+      {
+        "file": "DATA/NISR_published/USAS 2020 _Final_Tables.xlsx",
+        "bytes": 450640,
+        "sha256": "ddc1845613af91fee7863d00b47d9c7db5cd308d7c305de3b57400c84a5e12d2"
+      },
+      {
+        "file": "DATA/NISR_published/indicator_rules.csv",
+        "bytes": 8189,
+        "sha256": "f6f5a99a9e3e61f54492e5063f8d512260745f40c4ee6a90e7a1c71ddb7449b2"
+      }
+    ],
+    "chirps": [
+      {
+        "file": "DATA/CHIRPS/CHRIPS District-Month 1981-2025 data.csv",
+        "bytes": 925734,
+        "sha256": "9e48913fd07cd58aac5ed79b21a4b8e30a08dfdf1ccaa369b76e1a9c2424b6ba"
+      }
+    ],
+    "gadm": [
+      {
+        "file": "DATA/GADM/gadm41_RWA_0.cpg",
+        "bytes": 5,
+        "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_0.dbf",
+        "bytes": 119,
+        "sha256": "88d3c87cba32b3a59e3385fb18be574346356a65f167beb819ff35f4b6bd15f9"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_0.prj",
+        "bytes": 145,
+        "sha256": "a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_0.shp",
+        "bytes": 330576,
+        "sha256": "1b4cdcf04c831c9f8cbf0cea4c4dfa9a0a086586a115d1234a02649dc374cd84"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_0.shx",
+        "bytes": 108,
+        "sha256": "7aa066e2458e3e93f867882ad25f47c4448c79d7183031a923b6ec8bf4acefdb"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_1.cpg",
+        "bytes": 5,
+        "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_1.dbf",
+        "bytes": 1081,
+        "sha256": "94bf107029b1778600ec26c603020cf66d39c0be7ebf0bdafbe57f84f6eaa92f"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_1.prj",
+        "bytes": 145,
+        "sha256": "a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_1.shp",
+        "bytes": 843440,
+        "sha256": "7cd577216372bfd93fd1b8ea7b31a6f3696274f82f6b10148824f9687c28dc71"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_1.shx",
+        "bytes": 140,
+        "sha256": "c208309c071e518bc1400fd186a642305b6b551b809479bf2ce6f80d1398b20d"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_2.cpg",
+        "bytes": 5,
+        "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_2.dbf",
+        "bytes": 4560,
+        "sha256": "1dae04e9dc9b822aa7fe3fad5be639919feaa575811dba53f73def4b0598f4bb"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_2.prj",
+        "bytes": 145,
+        "sha256": "a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_2.shp",
+        "bytes": 2432720,
+        "sha256": "d1accc1dfcf761680d1040b0e891c51983a964143015cba26e8876c0f5d1471d"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_2.shx",
+        "bytes": 340,
+        "sha256": "2cd8bfe1ff3b8666a7c87a57816a8fb32431d597b3c6cc11a9979052a3622a91"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_3.cpg",
+        "bytes": 5,
+        "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_3.dbf",
+        "bytes": 72708,
+        "sha256": "98768894d4ceab096b6425575a641b63c7f44610246ad4e84adb5c2cf3c753cd"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_3.prj",
+        "bytes": 145,
+        "sha256": "a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_3.shp",
+        "bytes": 9847040,
+        "sha256": "c92107eeefde9ec1109f5d2d6a881456b9ee9e97a5c731f4b1d3fc956c266f37"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_3.shx",
+        "bytes": 3476,
+        "sha256": "164c1506ffb8284e712f990b837e07b255935e89b308cb6b715cbd5ae4b7502e"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_4.cpg",
+        "bytes": 5,
+        "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_4.dbf",
+        "bytes": 354029,
+        "sha256": "ffed3a82e96fc7fcd2d007ea2dd81eccd2ab7c8b09c1d4ae8c399e28a0f86304"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_4.prj",
+        "bytes": 145,
+        "sha256": "a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_4.shp",
+        "bytes": 19904756,
+        "sha256": "c228460a9274a0c322e50f457e4d99f04d089562ccf7872ff12b04136845cd5e"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_4.shx",
+        "bytes": 17452,
+        "sha256": "eaf6e09133ef16357314d37aa0f73e6dfb6db5fd9db5e8d70db0e63dce9dd069"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_5.cpg",
+        "bytes": 5,
+        "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_5.dbf",
+        "bytes": 2800738,
+        "sha256": "17aafb13efd2932c755fefb50ce7c20e0bfc631a0551d6ab9da9297ce6ef5e7e"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_5.prj",
+        "bytes": 145,
+        "sha256": "a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_5.shp",
+        "bytes": 47016132,
+        "sha256": "f51935b353e0b5225a6953f90ebaaa5fe16de13cb3621ef693231ac5b682d4ec"
+      },
+      {
+        "file": "DATA/GADM/gadm41_RWA_5.shx",
+        "bytes": 118628,
+        "sha256": "c667a18ee8eaf072757e6b7acc5bd72517d76fd315941e94272e6c9b200c0501"
+      }
+    ]
+  },
+  "outputs": [
+    {
+      "file": "SCRIPTS/web/public/data/app_data.json",
+      "bytes": 3509286,
+      "sha256": "74ff80a5748ad9453016a7dee4889012e73dfafbc49c5cc8cdb581630df83568"
+    },
+    {
+      "file": "SCRIPTS/web/public/data/districts.json",
+      "bytes": 101150,
+      "sha256": "d3a5754d2cfa1b871f60f8564590af3c46f1301b20e784152f2c866000e84cd3"
+    },
+    {
+      "file": "SCRIPTS/web/public/data/i18n.json",
+      "bytes": 108208,
+      "sha256": "c98d76d7b48c99e59d2533d0d214216273487af42b949045f8b7f5a08c379438"
+    },
+    {
+      "file": "SCRIPTS/web/public/data/official.json",
+      "bytes": 6330687,
+      "sha256": "89b76021a7c8fad252af5b182dd167f1198b9bbc42342cdbb4a839d76d2122eb"
+    }
+  ]
+}
