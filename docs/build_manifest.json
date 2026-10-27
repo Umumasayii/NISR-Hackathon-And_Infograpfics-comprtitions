@@ -638,7 +638,7 @@
     ],
     "chirps": [
       {
-        "file": "DATA/CHIRPS/CHRIPS District-Month 1981-2025 data.csv",
+        "file": "DATA/CHIRPS/CHIRPS_District_Month_1981_2025.csv",
         "bytes": 925734,
         "sha256": "9e48913fd07cd58aac5ed79b21a4b8e30a08dfdf1ccaa369b76e1a9c2424b6ba"
       }
