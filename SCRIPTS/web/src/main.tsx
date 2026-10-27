@@ -5,6 +5,11 @@ import App from './App';
 import { AppProvider, loadAll, type Loaded } from './data/store';
 import { WEB_I18N, WEB_OVERRIDE } from './lib/webI18n';
 import { initialLang } from './lib/i18n';
+// Poppins ships with the app (not from a font server), so it also works offline
+import '@fontsource/poppins/latin-400.css';
+import '@fontsource/poppins/latin-500.css';
+import '@fontsource/poppins/latin-600.css';
+import '@fontsource/poppins/latin-700.css';
 import './styles.css';
 
 registerSW({ immediate: true });
