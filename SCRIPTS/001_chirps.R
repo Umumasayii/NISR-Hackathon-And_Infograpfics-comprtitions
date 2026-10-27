@@ -1,7 +1,7 @@
 # EXPLORATORY - NOT PART OF THE PIPELINE. Early CHIRPS look-up kept for the record (uses View() and old paths).
 # The pipeline reads CHIRPS in 03_Data_Preparation.R and builds the rain index in 07_Build_App_Data.R.
 rm(list = ls())
-chrips <- read.csv("CHIRPS/CHRIPS District-Month 1981-2025 data.csv")
+chirps <- read.csv("DATA/CHIRPS/CHIRPS_District_Month_1981_2025.csv")
 library(dplyr)
 library(ggplot2)
 library(plotly)
@@ -17,13 +17,13 @@ rwanda <- rwanda %>%
   select(NAME_1, NAME_2, geometry) %>% 
   rename(province = NAME_1, district = NAME_2)
 
-crips_v <- chrips %>% 
+chirps_v <- chirps %>% 
   group_by(district) %>% 
   summarise(rainfall = mean(rainfall_total_mm, na.rm = T))
-## merging rwanda with crips_v
+## merging rwanda with chirps_v
 unique(rwanda$province)
 
-rwa_rain <- left_join(crips_v, rwanda, by = "district")
+rwa_rain <- left_join(chirps_v, rwanda, by = "district")
 
 rw_rain <- sf::st_as_sf(rwa_rain)
 
@@ -36,7 +36,7 @@ rw_rain <- sf::st_as_sf(rwa_rain)
 #     fill = "Rainfall (mm)"
 #   )
 
-data <- chrips
+data <- chirps
 
 View(data)
 

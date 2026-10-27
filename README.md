@@ -1,75 +1,88 @@
+<img src="SCRIPTS/web/public/logo.svg" width="96" alt="SmartIrrigate Rwanda logo">
+
 # SmartIrrigate Rwanda
 
-**Which districts should agricultural planners assess first for small-scale irrigation, why, and what
-evidence must they collect before recommending investment?**
+- Web app: https://niyoishimwe.vercel.app/
+- Shiny app: https://niyobyosebranchal.shinyapps.io/NiyoIshimweAPP/
 
-SmartIrrigate Rwanda is a decision-support website for a district planning officer. It turns the NISR
-Seasonal Agricultural Survey (SAS) 2019–2025, NISR's published tables and CHIRPS rainfall into a short,
-evidence-backed shortlist, and then helps the officer record the feasibility checks that the survey
-cannot answer (water source, land, energy, cost, markets, environment) and export a district
-assessment brief.
+---
 
-- Live site: https://niyoishimwe.vercel.app/ (English, Kinyarwanda, French; installable, works offline)
-- Entry: NISR 2026 Big Data Hackathon. Powered by Team NiyoIshimwe.
-- It is a screening aid. It does not decide who gets investment, and it makes no causal claims.
+## Problem
 
-## Planner journey
+Most Rwandan farmers depend on rain, and the rain is becoming less reliable. Farmers who
+irrigate get bigger harvests, yet only a small share irrigate. Planners have no single place
+that shows **where rain fails most, who already irrigates, and where support would pay off
+first.**
 
-1. **Understand**: Overview, irrigation today, with NISR published figures first.
-2. **Compare**: Priority shortlist. Adjustable weights; a criterion set to zero stays exactly zero;
-   rank ranges show how much the order depends on the weights.
-3. **Inspect evidence**: District page, Evidence (yields), Methods (definitions, reconciliation with NISR).
-4. **Record feasibility checks**: Assess page. Each check is marked *measured*, *documented*,
-   *assumed* or *unknown* (the default). Notes stay in the browser.
-5. **Export**: a one-page district assessment brief (HTML) and a CSV of the checks.
+##  Solution
 
-Advanced (models, households, data explorer) sits under its own menu.
+A dashboard that brings together **7 years of NISR farm surveys** and **45 years of satellite
+rainfall data** to answer one planning question: **which districts should planners assess
+first for small-scale irrigation, why, and what evidence must they collect before recommending
+investment?**
 
-## Team
+| | |
+|---|---|
+| **The gap** | How many farmers and how much land are irrigated, by district, since 2019? |
+| **The need** | Where is rain short or unreliable, and is irrigation happening there? |
+| **The payoff** | How do harvests on irrigated plots compare with rain-fed plots? |
+| **The action** | A **ranked district shortlist** for field checks, with weights you can adjust and a CSV download |
+| **The checks** | A district **assessment page**: record what is measured, documented, assumed or still unknown, and download a one-page brief |
 
-> To be completed by the team: member names, roles, institution, contact, and the eligibility and
-> originality declarations. These are not filled in on purpose: they must come from the team.
+Every number shows its reliability. NISR's published figures come first, and our own
+estimates sit beside them, clearly labelled. It works on a phone, offline, in three languages.
+It is a screening aid: it does not decide who gets investment, and it makes no causal claims.
 
-## Run it
+### A planner's path through the app
 
-Requirements: R ≥ 4.3 with `dplyr`, `tidyr`, `purrr`, `stringr`, `readr`, `forcats`, `survey`, `haven`,
-`ranger`, `readxl`, `sf`, `jsonlite`, `openssl`; Node ≥ 20 for the website.
+1. **Understand**: Overview, irrigation today, with NISR's published figures first.
+2. **Compare**: Priority shortlist. A criterion set to zero stays exactly zero; rank ranges show
+   how much the order depends on the weights.
+3. **Inspect the evidence**: District page, Evidence (yields), Methods (definitions and every
+   gap with NISR's tables).
+4. **Record feasibility checks**: Assess page. Water source, schemes, land, energy, cooperative
+   interest, markets, costs and environment each start as *unknown*. Notes stay in the browser.
+5. **Export**: a district assessment brief (HTML) and a CSV of the checks.
 
-```r
-# from the project root (the folder that holds DATA/ and SCRIPTS/)
-source("SCRIPTS/03_Data_Preparation.R")   # once: reads the 111 SAS files, CHIRPS and GADM
-source("SCRIPTS/09_Run_All.R")            # 05, 06, (10), 11, 14, 15, 07, 08, 12, 16
-shiny::runApp("SCRIPTS/app")              # optional Shiny version
+##  Relevance to the hackathon
+
+| Track 1 asks for | SmartIrrigate |
+|---|---|
+| A real challenge such as small-scale irrigation | Irrigation is the core topic |
+| Informed by NISR data | Seasonal Agricultural Survey 2019–2025, Agricultural Household Survey 2017–2024, NISR published tables |
+| Open climate data | CHIRPS rainfall 1981–2025, GADM district maps |
+| Innovation | Satellite rainfall combined with survey data, a district priority index, an offline web app |
+| Practical impact | A shortlist and assessment brief that district planners, MINAGRI, RAB and extension officers can act on |
+
+##  Tech stack
+
+```
+NISR surveys + NISR tables + CHIRPS + GADM
+        │
+        ▼
+R data pipeline (SCRIPTS/05–16)
+        │
+        ├─► SCRIPTS/app/data/*.rds ─► Shiny app ─► shinyapps.io
+        │
+        └─► SCRIPTS/web/public/data/*.json ─► React web app ─► Vercel
 ```
 
-```bash
-cd SCRIPTS/web
-npm ci
-npm test          # unit tests for the ranking (weights, zero criteria, Dirichlet sensitivity)
-npm run dev       # local site;  npm run build  for production files
-```
+### 1. Data pipeline (R)
 
-R tests: `Rscript SCRIPTS/tests/test_core.R` (synthetic checks of the helpers) and
-`Rscript SCRIPTS/tests/test_pooled_variance.R` (needs the microdata; checks the pooled-season
-variance against `survey::svymean`).
+The heavy work happens here, before any user opens the app.
 
-Every build writes `docs/build_manifest.json`: build time, git commit, R and package versions and
-SHA-256 checksums of every input and web output.
+| Package | What it does in this project |
+|---|---|
+| `haven`, `labelled` | Read the NISR survey files (SAS and Stata) and keep their variable and value labels |
+| `readxl` | Read every cell of NISR's published Excel tables, so official figures can be shown with their file, sheet and cell |
+| `dplyr`, `tidyr`, `purrr`, `stringr`, `readr` | Clean, rename and merge 7 years of surveys into one consistent dataset |
+| `survey` | Survey-weighted estimates with standard errors from the survey design (strata and clusters) |
+| `sf` | Read the GADM district boundaries and build the district maps |
+| `ranger` | Random forest model of which plot and farm features go with irrigation |
+| `jsonlite`, `openssl` | Export the final aggregates as JSON for the web app; checksums for the build manifest |
 
-## Inputs (not in this repository)
-
-| Input | Where it goes | Note |
-|---|---|---|
-| NISR SAS 2019–2025 microdata (111 .sav/.dta) | `DATA/SAS/` | Licensed by NISR; never published here |
-| NISR AHS 2017/2020/2024 (optional) | `DATA/Agriculture Household Survey/` | Licensed by NISR |
-| NISR SAS annual tables 2019–2025 (.xlsx) | `DATA/NISR_published/` | Public NISR releases, committed |
-| CHIRPS district-month rainfall 1981–2025 | `DATA/CHIRPS/` | See source register |
-| GADM 4.1 Rwanda boundaries | `DATA/GADM/` | Licence to be confirmed by the team |
-
-2026 survey data are excluded on purpose. No microdata, survey weights or record-level files are ever
-exported; the website reads aggregates only.
-
-## Scripts
+The scripts are numbered in run order, and `SCRIPTS/09_Run_All.R` runs them all. Only
+aggregated estimates leave the pipeline: survey microdata and weights are never published.
 
 | Script | Role |
 |---|---|
@@ -78,29 +91,106 @@ exported; the website reads aggregates only.
 | `04_Load_Data.R`, `05_Select_Irrigation_Data.R` | Load prepared files; select irrigation columns |
 | `06_Merge_Master_Data.R` | Plot, crop and farmer master tables |
 | `07_Build_App_Data.R` | Survey-weighted estimates, yields, rain index, priority screening |
-| `08_Models.R` | Adoption classifier and adjusted yield associations (Advanced) |
-| `10_AHS_Preparation.R` | AHS household indicators (optional) |
+| `08_Models.R` | Adoption classifier and adjusted yield associations (Advanced pages) |
+| `10_AHS_Preparation.R` | AHS household indicators (optional input) |
 | `11_NISR_Published_Tables.R`, `14_Official_Reference.R` | Every cell of the NISR workbooks; published figures shown first |
 | `15_Reconcile_With_NISR.R` | Our estimates recomputed several ways beside NISR's cells |
-| `12_Export_Web_Data.R` | JSON for the website (aggregates only) |
-| `16_Build_Manifest.R` | Build manifest and reconciliation register |
+| `12_Export_Web_Data.R` | JSON for the web app (aggregates only) |
+| `16_Build_Manifest.R` | Build manifest (checksums, commit, versions) and reconciliation register |
 | `09_Run_All.R` | Runs the above in order |
-| `13_Push_To_GitHub.R` | Optional helper; never run by 09 |
 
-Not part of the pipeline (kept for the record): `001_chrips.R` (early exploration),
+Not part of the pipeline (kept for the record): `001_chirps.R` (early exploration),
 `01_Load_SAS_2019_2025.R` and `02_Rename_and_Label_SAS_2019_2025.R` (replaced by 03),
-`Crop Production 2019.Rmd`, `github push.R`, `Gathering Data/`, `Analysis_d.Rmd` and
-`Mugemangango_Analysis_Corrections/` (unrelated analyses).
+`Crop_Production_2019.Rmd`.
 
-## Documentation
+### 2. Shiny app (R)
 
-- [Methods and reconciliation](docs/Methods_and_Reconciliation.md): definitions, estimators, every gap with NISR and its cause
+| Package | Role |
+|---|---|
+| `shiny` | Web framework. Its R server filters the precomputed `.rds` tables and draws the charts |
+| `bslib` | Bootstrap 5 theme and layout, with a shared filter sidebar |
+| `plotly` | Interactive charts and maps |
+| `DT` | Sortable, searchable tables with downloads |
+| `fontawesome` | Icons |
+| `rsconnect` | Deployment to shinyapps.io |
+
+Each page is its own module in `SCRIPTS/app/R/mod_*.R`.
+
+### 3. Web app (React)
+
+| Tool | Role |
+|---|---|
+| React 18 + TypeScript | The dashboard pages, with type-checked data |
+| Vite | Development server and production build |
+| React Router | Navigation between pages |
+| Plotly.js | The same interactive charts and maps as the Shiny app, loaded only when needed |
+| vite-plugin-pwa | Makes the site installable on a phone and usable offline |
+| Lucide | Icons |
+| Vercel | Hosting. Every push to `master` publishes a new version |
+
+The web app is a static site with no backend or database. It loads the JSON files once, then
+does all filtering and survey maths (combining districts, reliability labels) in the browser,
+in `src/lib/stats.ts`; the shortlist ranking and its weight sensitivity are in `src/lib/ranking.ts`.
+
+### 4. Languages and quality checks
+
+- **Three languages:** English, Kinyarwanda and French, shared by both apps through one
+  translation file. The Kinyarwanda and French text still needs a native-speaker review.
+- **GitHub Actions:** `.github/workflows/web-build.yml` builds the web app on every change, so
+  a broken build is caught before it goes live.
+- **Tests:** `cd SCRIPTS/web && npm test` (ranking: zero weights, sensitivity draws);
+  `Rscript SCRIPTS/tests/test_core.R`, `test_crop.R`, `test_official.R` (synthetic checks) and
+  `test_pooled_variance.R` (needs the microdata; checks against `survey::svymean`).
+- **Build manifest:** every rebuild writes `docs/build_manifest.json` with the build time, git
+  commit, R and package versions and SHA-256 checksums of every input and web output.
+
+##  Run it
+
+```bash
+# Web app (Node 20+)
+cd SCRIPTS/web && npm install && npm test && npm run dev
+```
+
+```r
+# Shiny app (R, from the project root)
+shiny::runApp("SCRIPTS/app")
+
+# Rebuild all data (needs the NISR microdata)
+source("SCRIPTS/03_Data_Preparation.R")   # once: reads the 111 SAS files, CHIRPS and GADM
+source("SCRIPTS/09_Run_All.R")
+```
+
+### Inputs (not in this repository)
+
+| Input | Where it goes | Note |
+|---|---|---|
+| NISR SAS 2019–2025 microdata (111 .sav/.dta) | `DATA/SAS/` | Licensed by NISR; never published here |
+| NISR AHS 2017/2020/2024 (optional) | `DATA/Agriculture Household Survey/` | Licensed by NISR |
+| NISR SAS annual tables 2019–2025 (.xlsx) | `DATA/NISR_published/` | Public NISR releases, committed |
+| CHIRPS district-month rainfall 1981–2025 | `DATA/CHIRPS/` | See the source register |
+| GADM 4.1 Rwanda boundaries | `DATA/GADM/` | See the source register |
+
+2026 survey data are excluded on purpose.
+
+##  Documentation
+
+- [Methods and reconciliation](docs/Methods_and_Reconciliation.md): estimators and every gap with NISR's tables, with its cause
+- [Reconciliation register (CSV)](docs/Reconciliation_Register_2019_2025.csv): each national NISR cell beside our value
 - [Data dictionary](docs/Data_Dictionary.md) · [Source register](docs/Source_Register.md)
-- [Reconciliation register (CSV)](docs/Reconciliation_Register_2019_2025.csv): each NISR cell beside our value
-- [Limitations and pilot plan](docs/Limitations_and_Pilot_Plan.md)
-- [AI-use disclosure](docs/AI_Use_Disclosure.md)
-- Earlier notes: `docs/Audit_Fixes_2019_2025.md`, `docs/NISR_Primary_2019_2025.md`, `DOCS/Data_Check_v0.2.md`
+- [Limitations and pilot plan](docs/Limitations_and_Pilot_Plan.md) · [AI-use disclosure](docs/AI_Use_Disclosure.md)
+- Earlier notes: `docs/Audit_Fixes_2019_2025.md`, `docs/NISR_Primary_2019_2025.md`, `docs/Data_Check_v0.2.md`
 
-## Licence
+## Team NiyoIshimwe
 
-To be chosen by the team (code licence, and terms for GADM and CHIRPS reuse).
+| Member | Role | GitHub |
+|---|---|---|
+| **NIYOBYOSE Branchal** | Data Scientist | [@Umumasayii](https://github.com/Umumasayii) |
+| **ISHIMWE Ami Paradis** | Software Engineer | [@amiparadis250](https://github.com/amiparadis250) |
+
+---
+
+<div align="center">
+
+<sub>Independent project, not affiliated with NISR. AI assistance (Claude) was used for code and drafting, as the rules require us to disclose; every figure comes from code run on the data.</sub>
+
+</div>
