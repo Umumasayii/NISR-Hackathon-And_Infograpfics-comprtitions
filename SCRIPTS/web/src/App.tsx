@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { HashRouter, NavLink, Route, Routes, useLocation, Link } from 'react-router-dom';
 import {
   BookOpen, LayoutDashboard, ChartColumn, Compass, House, MapPinned, IdCard, CloudSunRain, Table, Sprout, Droplets, Users, Brain, Trophy,
-  Info, ChevronDown, Menu, X, SlidersHorizontal, CalendarDays, Map, MapPin, Layers, RotateCcw, Smartphone, Pin, PinOff, type LucideIcon,
+  Info, ChevronRight, Menu, X, SlidersHorizontal, CalendarDays, Map, MapPin, Layers, RotateCcw, Smartphone, Pin, PinOff, type LucideIcon,
 } from 'lucide-react';
 import { useApp } from './data/store';
 import { LANGS, type Lang } from './lib/i18n';
@@ -86,6 +86,8 @@ function Shell() {
 
   return (
     <div className="app">
+      <SideNav />
+      <div className="app-body">
       <TopBar onMenu={() => setMenu(!menu)} menuOpen={menu} onFilters={showFilters && !docked ? () => setDrawer(true) : undefined} />
       {menu && <MobileNav onClose={() => setMenu(false)} />}
       <div className={`shell ${docked ? 'docked' : ''}`}>
@@ -114,6 +116,7 @@ function Shell() {
           </footer>
         </main>
       </div>
+      </div>
       {showFilters && (
         <button className="fab" onClick={() => setDrawer(true)}><SlidersHorizontal size={18} /> {tr('show_filters')}<FilterCount /></button>
       )}
@@ -121,16 +124,49 @@ function Shell() {
   );
 }
 
+const Brand = () => (
+  <Link to="/" className="brand"><img src={`${import.meta.env.BASE_URL}logo.svg`} alt="" width={34} height={34} /><span>SmartIrrigate <b>Rwanda</b></span></Link>
+);
+
+/** every page in view at once on wide screens, grouped as the story reads */
+function SideNav() {
+  const { tr } = useApp();
+  return (
+    <aside className="sidenav">
+      <Brand />
+      <nav aria-label="main">
+        {MENUS.map((m) => (
+          <div key={m.key} className="sn-group">
+            <div className="sn-title">{tr(m.key)}</div>
+            {m.pages.map((p) => { const P = PAGES[p]; return (
+              <NavLink key={p} to={P.path} end className={({ isActive }) => `sn-link ${isActive ? 'active' : ''}`}><P.icon size={18} strokeWidth={1.8} /> {tr(P.key)}</NavLink>
+            ); })}
+          </div>
+        ))}
+        <div className="sn-group">
+          <NavLink to="/methods" className={({ isActive }) => `sn-link ${isActive ? 'active' : ''}`}><Info size={18} strokeWidth={1.8} /> {tr('p_methods')}</NavLink>
+        </div>
+      </nav>
+      <div className="sn-foot">{tr('footer_by')}</div>
+    </aside>
+  );
+}
+
 function TopBar({ onMenu, menuOpen, onFilters }: { onMenu: () => void; menuOpen: boolean; onFilters?: () => void }) {
   const { tr, lang, setLang } = useApp();
   const install = useInstallPrompt();
+  const loc = useLocation();
+  const group = MENUS.find((m) => m.pages.some((p) => PAGES[p].path === loc.pathname));
+  const page = Object.values(PAGES).find((p) => p.path === loc.pathname);
   return (
     <header className="topbar">
-      <Link to="/" className="brand"><img src={`${import.meta.env.BASE_URL}logo.svg`} alt="" width={34} height={34} /><span>SmartIrrigate Rwanda</span></Link>
-      <nav className="nav" aria-label="main">
-        {MENUS.map((m) => <NavMenu key={m.key} m={m} />)}
-        <NavLink to="/methods" className={({ isActive }) => `nav-top ${isActive ? 'active' : ''}`}><Info size={16} /> {tr('p_methods')}</NavLink>
-      </nav>
+      <span className="top-brand"><Brand /></span>
+      {page && (
+        <div className="crumbs">
+          {group && <><span>{tr(group.key)}</span><ChevronRight size={14} /></>}
+          <b>{tr(page.key)}</b>
+        </div>
+      )}
       <div className="top-right">
         {onFilters && <button className="btn outline sm top-filters" onClick={onFilters}><SlidersHorizontal size={15} /> {tr('show_filters')}<FilterCount /></button>}
         {install && <button className="btn outline sm install" onClick={install}><Smartphone size={15} /> {tr('install')}</button>}
@@ -142,28 +178,6 @@ function TopBar({ onMenu, menuOpen, onFilters }: { onMenu: () => void; menuOpen:
         <button className="icon-btn menu-btn" onClick={onMenu} aria-label={tr('menu')} aria-expanded={menuOpen}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button>
       </div>
     </header>
-  );
-}
-
-function NavMenu({ m }: { m: (typeof MENUS)[number] }) {
-  const { tr } = useApp();
-  const loc = useLocation();
-  const [open, setOpen] = useState(false);
-  const active = m.pages.some((p) => PAGES[p].path === loc.pathname);
-  useEffect(() => setOpen(false), [loc.pathname]);
-  return (
-    <div className={`nav-menu ${open ? 'open' : ''}`} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button className={`nav-top ${active ? 'active' : ''}`} onClick={() => setOpen(!open)} aria-expanded={open}>
-        <m.icon size={16} /> {tr(m.key)} <ChevronDown size={14} />
-      </button>
-      {open && (
-        <div className="nav-drop">
-          {m.pages.map((p) => { const P = PAGES[p]; return (
-            <NavLink key={p} to={P.path} end className={({ isActive }) => (isActive ? 'active' : '')}><P.icon size={16} /> {tr(P.key)}</NavLink>
-          ); })}
-        </div>
-      )}
-    </div>
   );
 }
 
