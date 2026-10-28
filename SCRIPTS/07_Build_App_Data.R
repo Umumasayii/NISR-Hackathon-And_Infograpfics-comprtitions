@@ -81,7 +81,9 @@ est_plot <- bind_rows(
   est_level("province", "province", "province"),
   est_level("district_std", "district", "district_std")) |>
   mutate(across(c(estimate, se, ci_low, ci_high), \(x) 100 * x)) |>
-  select(level, area, sas_year, sas_season, indicator, estimate, se, ci_low, ci_high, n, n_psu, wsum, cv, reliability)
+  # df (design degrees of freedom) is kept so the website can combine districts with
+  # the same t-based intervals and reliability rule as R
+  select(level, area, sas_year, sas_season, indicator, estimate, se, ci_low, ci_high, n, n_psu, df, wsum, cv, reliability)
 save_app(est_plot, "est_plot")
 
 # ---- 3. TOTALS (hectares, tonnes) --------------------------------------------
@@ -126,7 +128,30 @@ ladder <- yd |> filter(sas_season %in% main_seasons) |>
   filter(crop_name %in% crops_enough)
 ladder_observed <- yd |> filter(!is.na(harvest_y), sas_season %in% main_seasons) |>
   group_by(crop_name) |> summarise(observed_pct = round(100 * mean(!is.na(modern_inputs_n)), 1), .groups = "drop")
+# Sensitivity of the irrigated / rain-fed yield ratio-of-totals to the eligibility
+# mask (main seasons pooled, usable seasons only). 'main' is the mask used everywhere:
+# positive harvest, yield inside the crop x season 1st-99th percentiles. Zero harvests
+# on a measured crop area are real crop failures, so 'with_zero_harvests' keeps them.
+q_by <- crop_df |> filter(harvest_kg > 0, !is.na(yield_kg_ha)) |> group_by(crop_name, ys) |>
+  summarise(q05 = quantile(yield_kg_ha, .05), q95 = quantile(yield_kg_ha, .95), .groups = "drop")
+ys_d <- crop_df |> filter(sas_season %in% main_seasons, ys %in% usable, !is.na(irrigated), crop_name %in% crops_enough) |>
+  left_join(q_by, by = c("crop_name", "ys")) |>
+  mutate(irrigation = if_else(irrigated == 1L, "Irrigated", "Rain-fed"),
+         area_ok = !is.na(crop_area_ha) & crop_area_ha > 0 & !is.na(harvest_kg),
+         m_main = yield_ok,
+         m_with_zero_harvests = yield_ok | (area_ok & harvest_kg == 0),
+         m_no_trimming = area_ok & harvest_kg > 0,
+         m_trim_5_95 = area_ok & harvest_kg > 0 & between(yield_kg_ha, q05, q95))
+yield_sensitivity <- map_dfr(c("main", "with_zero_harvests", "no_trimming", "trim_5_95"), \(m) {
+  dd <- ys_d |> mutate(h = if_else(.data[[paste0("m_", m)]] %in% TRUE, harvest_kg, NA_real_))
+  survey_ratio_by(dd, "h", "crop_area_ha", c("crop_name", "irrigation")) |>
+    left_join(dd |> group_by(crop_name, irrigation) |>
+                summarise(n_area_ok = sum(area_ok), n_zero_harvest = sum(area_ok & harvest_kg == 0, na.rm = TRUE),
+                          .groups = "drop"), by = c("crop_name", "irrigation")) |>
+    mutate(mask = m, n_excluded = n_area_ok - n)
+}) |> select(mask, crop_name, irrigation, estimate, se, ci_low, ci_high, n, n_psu, df, n_excluded, n_zero_harvest, reliability)
 save_app(list(pooled = yield_pooled, by_year = yield_year, ladder = ladder, ladder_observed = ladder_observed,
+              sensitivity = yield_sensitivity,
               crops = sort(crops_enough), season_quality = season_quality,
               excluded = season_quality |> filter(!yield_usable)), "yield_evidence")
 
@@ -252,15 +277,19 @@ default_weights <- c(c_need = 0.30, c_gap = 0.30, c_scale = 0.20, c_equity = 0.1
 score_with <- function(s, w) as.numeric(as.matrix(s[names(default_weights)]) %*% (w[names(default_weights)] / sum(w))) * 100
 screen$score <- score_with(screen, default_weights)
 screen$rank  <- rank(-screen$score, ties.method = "min")
-# Sensitivity: 2,000 random weight sets (Dirichlet around equal weights)
+# Sensitivity: 1,000 weight sets drawn from Dirichlet(20 x default weights) over the
+# criteria with a positive weight; a criterion weighted 0 stays exactly 0 (same as
+# the website, SCRIPTS/web/src/lib/ranking.ts). Weight uncertainty only, not sampling error.
 set.seed(2026)
-draws <- matrix(rgamma(2000 * 5, shape = 2), ncol = 5, dimnames = list(NULL, names(default_weights)))
+w_def <- default_weights / sum(default_weights)
+draws <- t(replicate(1000, { g <- ifelse(w_def > 0, rgamma(length(w_def), shape = 20 * pmax(w_def, 1e-12)), 0); g / sum(g) }))
+colnames(draws) <- names(default_weights)
 rank_draws <- apply(draws, 1, \(w) rank(-score_with(screen, w), ties.method = "min"))
 screen <- screen |>
   mutate(rank_median = apply(rank_draws, 1, median),
          rank_p10 = apply(rank_draws, 1, quantile, 0.10),
          rank_p90 = apply(rank_draws, 1, quantile, 0.90),
-         # share of the 2,000 weight scenarios with the district in the top 5 (a
+         # share of the 1,000 weight scenarios with the district in the top 5 (a
          # frequency over scenarios, not a probability that it deserves investment)
          prob_top5_pct = 100 * rowMeans(rank_draws <= 5),
          stability = case_when(rank_p90 - rank_p10 <= 4 ~ "Stable",
@@ -271,7 +300,7 @@ contrib <- sweep(as.matrix(screen[comp_cols]), 2, default_weights / sum(default_
 screen$reasons <- apply(contrib, 1, \(r) paste(comp_cols[order(-r)][1:2], collapse = ","))
 # what the shortlist is computed from (exported with every shortlist CSV)
 screen_meta <- list(
-  weights = default_weights, sensitivity = "2,000 random weight sets, Dirichlet(2, 2, 2, 2, 2), seed 2026",
+  weights = default_weights, sensitivity = "1,000 weight sets, Dirichlet(20 x default weights) over criteria with weight > 0 (zero stays zero), seed 2026",
   periods = c(c_need = "CHIRPS rainfall, baseline 1991-2020; dry seasons 2016-2025",
               c_gap = "plots irrigated, Seasons A+B 2023-2025", c_scale = "cultivated area, mean per main season 2023-2025",
               c_equity = "men - women plot irrigation gap, 2023-2025", c_readiness = "chemical fertiliser plots, 2023-2025"))

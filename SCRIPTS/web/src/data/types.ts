@@ -7,6 +7,7 @@ export interface Est {
   level: Level; area: string; sas_year: number; sas_season: Season; indicator: string;
   estimate: number; se: number | null; ci_low: number | null; ci_high: number | null;
   n: number; wsum: number; cv: number | null; reliability: Reliability; source: 'survey';
+  n_psu?: number | null; df?: number | null;   // segments and design degrees of freedom (builds from 2026-10-23)
 }
 export interface Totals {
   level: Level; area: string; province: string | null; sas_year: number; sas_season: Season;
@@ -79,7 +80,9 @@ export interface AppData {
   built: string;
   lookup: { province: string; district: string }[];
   est: Est[]; totals: Totals[]; crop: Crop[]; crop_dist: Crop[];
-  yield: { pooled: YieldRow[]; by_year: YieldRow[]; ladder: YieldRow[]; crops: string[] };
+  yield: { pooled: YieldRow[]; by_year: YieldRow[]; ladder: YieldRow[]; crops: string[];
+    sensitivity?: { mask: string; crop_name: string; irrigation: string; estimate: number | null; se: number | null; ci_low: number | null; ci_high: number | null;
+      n: number; n_psu?: number | null; df?: number | null; n_excluded: number | null; n_zero_harvest: number | null; reliability: Reliability }[] };
   tech: { mix: MixRow[]; sources_any: { sas_year: number; sas_season: Season; source: string; share: number; n: number }[];
           cost: { irrig_tool_level: string; p25: number; median: number; p75: number; n: number }[];
           other_share: { sas_year: number; other_pct: number; dimension: string }[] };
@@ -97,6 +100,8 @@ export interface AppData {
     importance: { feature: string; importance: number }[];
     potential: { district_std: string; observed_pct: number; predicted_pct: number; n: number; gap_pts: number }[];
     coef: Record<string, number>; levels: Record<string, (string | number)[]>; n_train: number; n_test: number;
+    diagnostics?: { converged: boolean; iterations: number; warnings: string[] | string; fitted_near_0_or_1: number; terms_with_se_over_10: string[];
+      design_df: number; n_segments_train: number; test_segments_in_train_pct: number; decision_date: string };
   };
   model_yield: {
     table: { crop_name: string; raw_pct: number; adjusted_pct: number; adjusted_low: number; adjusted_high: number; n: number; n_irrigated: number }[];

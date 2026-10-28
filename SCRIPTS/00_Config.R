@@ -53,6 +53,14 @@ add_design_vars <- function(d) d |>
   select(-.ys) |>
   filter(!is.na(weight), weight > 0)
 
+# Design variables for models that pool seasons or years: the PHYSICAL segment is the
+# cluster (it is revisited across seasons and years) and district x land-use stratum
+# the stratum. Integer codes, as above.
+add_pooled_design_vars <- function(d) d |>
+  mutate(ppsu = as.integer(factor(coalesce(as.character(segment_id),
+                                           paste(sas_year, sas_season, district_std, stratum, segment_number)))),
+         pstr = as.integer(factor(paste(district_std, coalesce(as.character(stratum), "unknown")))))
+
 # Domain estimation that keeps the FULL design. Each season is a separate sample,
 # so a design is built per season on EVERY row of that season, and districts,
 # gender, crops etc. are domains inside it (never cut out before the design).
@@ -115,11 +123,53 @@ add_design_vars <- function(d) d |>
   per <- d |> group_by(.season) |> group_modify(\(g, k) .season_totals(g, dom)) |> ungroup()
   if (!nrow(per)) return(tibble())
   per <- per |> left_join(distinct(d, across(all_of(c(".season", smp)))), by = ".season")
-  per |> group_by(across(all_of(c(seas, dom)))) |>
+  out <- per |> group_by(across(all_of(c(seas, dom)))) |>
     summarise(across(c(Y, X, vY, vX, cXY, df, n, n_psu, wsum), sum), .groups = "drop") |>
     mutate(estimate = Y / X,
            se = sqrt(pmax(vY - 2 * estimate * cXY + estimate^2 * vX, 0)) / X) |>
     select(-Y, -X, -vY, -vX, -cXY)
+  # Several seasons pooled into one estimate: the seasons are NOT independent samples.
+  # SAS revisits the same segments (2020-2025: ~97% of Season A segments are surveyed
+  # again in Season B and ~98% again next year), so adding season variances would
+  # understate the error. Pooled results are re-estimated with the PHYSICAL segment as
+  # the cluster across all pooled seasons (see .pooled_var). n_psu then counts
+  # distinct segments, not segment-seasons.
+  if (length(setdiff(smp, by)) && pooled_cluster_segments && "segment_id" %in% names(d)) {
+    g <- c(seas, dom)
+    if (!length(g)) { d$.all <- "all"; out$.all <- "all"; g <- ".all" }
+    pv <- .pooled_var(d, g, out)
+    out <- out |> select(-se, -df, -n_psu) |> left_join(pv, by = g) |> select(-any_of(".all"))
+  }
+  out
+}
+
+# Pooled-season variance with segments as clusters across seasons. Physical stratum =
+# district x land-use stratum; physical PSU = segment_id (2022C, which has no
+# segment_id, keeps its season-specific segment). Linearised ratio scores
+# u = w * (y - R x) are summed per segment over every pooled season, and the variance
+# is the usual with-replacement between-segment variance within strata, / X^2.
+pooled_cluster_segments <- TRUE
+.pooled_var <- function(d, grp, est) {
+  d <- d |> mutate(.pstr = paste(district_std, coalesce(as.character(stratum), "u")),
+                   .ppsu = coalesce(as.character(segment_id),
+                                    paste(sas_year, sas_season, district_std, stratum, segment_number)))
+  ps <- distinct(d, .pstr, .ppsu) |> count(.pstr, name = "nh")
+  N <- nrow(distinct(d, .ppsu)); H <- nrow(ps)
+  keep <- d$.ok & (if (length(grp)) stats::complete.cases(d[grp]) else TRUE)
+  z <- d[keep, ] |>
+    left_join(est |> select(all_of(grp), .R = estimate), by = grp) |>
+    group_by(across(all_of(grp)), .pstr, .ppsu) |>
+    summarise(u = sum(weight * (.y - .R * .x)), X = sum(weight * .x), .groups = "drop") |>
+    left_join(ps, by = ".pstr")
+  # all segments of a stratum count, also those with no row in the domain (u = 0)
+  v <- z |> group_by(across(all_of(grp)), .pstr, nh) |>
+    summarise(su = sum(u), suu = sum(u^2), .groups = "drop") |>
+    mutate(vh = if_else(nh > 1, nh / (nh - 1) * (suu - su^2 / nh), su^2)) |>
+    group_by(across(all_of(grp))) |> summarise(V = sum(vh), .groups = "drop")
+  z |> group_by(across(all_of(grp))) |>
+    summarise(X = sum(X), n_psu = n_distinct(.ppsu), .groups = "drop") |>
+    left_join(v, by = grp) |>
+    transmute(across(all_of(grp)), se = sqrt(pmax(V, 0)) / X, df = N - H, n_psu)
 }
 
 .finish <- function(out) out |>
