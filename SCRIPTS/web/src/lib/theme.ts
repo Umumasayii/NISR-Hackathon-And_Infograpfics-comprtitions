@@ -21,7 +21,7 @@ export const seqAmber: Scale = [[0, '#FBF3E4'], [0.5, '#D9A44A'], [1, '#7A5210']
 export const divRain: Scale = [[0, '#8C5A2B'], [0.5, '#ECEDE8'], [1, '#1976B9']];
 export const divGap: Scale = [[0, '#1976B9'], [0.5, '#F2F2EE'], [1, '#B07A1C']];
 
-export const FONT = "'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif";
+export const FONT = "Poppins, 'Segoe UI',system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif";
 
 /** a fixed colour per category, in the order given */
 export const catCols = (cats: string[], pal = extraCols) =>
