@@ -73,7 +73,8 @@ farmer_ways <- geo(farmer) |>
   group_by(level, area, sas_year, sas_season) |>
   summarise(across(all_of(paste0(inputs, "_farmer")), list(
     farmer_mean_w = \(x) wm(x, weight),
-    farmer_sum_w  = \(x) wm(x, w_sum)), .names = "{.col}__{.fn}"), .groups = "drop") |>
+    farmer_sum_w  = \(x) wm(x, w_sum),
+    farmer_unweighted = \(x) wm(x, rep(1, length(x)))), .names = "{.col}__{.fn}"), .groups = "drop") |>
   rename_with(\(n) str_replace(n, "_farmer__", "__"))
 
 ways <- full_join(plot_ways, farmer_ways, by = c("level", "area", "sas_year", "sas_season")) |>
@@ -87,7 +88,8 @@ pub <- official |>
                              TRUE ~ "plots")) |>
   select(input, measure, sas_year, sas_season, level, area, published = value, source_file, sheet, cell)
 way_measure <- c(plot_project = "plots", plot_answered = "plots", plot_ssf = "plots", plot_crop = "plots",
-                 plot_unweighted = "plots", farmer_mean_w = "farmers", farmer_sum_w = "farmers", land = "land")
+                 plot_unweighted = "plots", farmer_mean_w = "farmers", farmer_sum_w = "farmers",
+                 farmer_unweighted = "farmers", land = "land")
 rec <- ways |> mutate(measure = unname(way_measure[way])) |>
   inner_join(pub, by = c("input", "measure", "sas_year", "sas_season", "level", "area")) |>
   mutate(gap_pts = project_value - published)
@@ -102,6 +104,21 @@ best <- rec |> filter(!is.na(gap_pts)) |>
   group_by(input, measure, sas_year, sas_season) |>
   arrange(abs(national_gap), .by_group = TRUE) |> mutate(rank = row_number()) |> ungroup()
 write_csv(best, file.path(dir_off, "reconcile_inputs_best.csv"), na = "")
+
+# Farmers who practised irrigation (NISR "Percentage of farmers who practiced agricultural
+# practices"): the project's weighted share beside the unweighted share of sampled farmers.
+if ("irrig_farmer" %in% names(farmer)) {
+irr <- geo(farmer) |> filter(!is.na(irrig_farmer)) |>
+  group_by(level, area, sas_year, sas_season) |>
+  summarise(farmer_mean_w = wm(irrig_farmer, weight), farmer_sum_w = wm(irrig_farmer, w_sum),
+            farmer_unweighted = wm(irrig_farmer, rep(1, n())), n_farmers = n(), .groups = "drop") |>
+  pivot_longer(starts_with("farmer_"), names_to = "way", values_to = "project_value") |>
+  inner_join(official |> filter(indicator == "irrig_any_farmer") |>
+               select(sas_year, sas_season, level, area, published = value, source_file, sheet, cell),
+             by = c("sas_year", "sas_season", "level", "area")) |>
+  mutate(input = "irrigation", measure = "farmers", gap_pts = project_value - published)
+write_csv(irr, file.path(dir_off, "reconcile_irrigation_farmers.csv"), na = "")
+}
 
 # Production = harvested area x yield. Splitting the gap shows whether it comes
 # from how much land is counted or from harvest per hectare.

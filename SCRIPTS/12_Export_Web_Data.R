@@ -77,7 +77,8 @@ model_web <- list(
   # logistic model: p = plogis(intercept + sum of the level effects + slopes * x);
   # a factor's effect is the coefficient named <variable><level> (0 for the base level)
   coef = as.list(coefs), levels = model$levels,
-  n_train = model$n_train, n_test = model$n_test)
+  n_train = model$n_train, n_test = model$n_test,
+  diagnostics = model$diagnostics)
 
 screen <- ld("priority_screening")
 my     <- ld("model_yield")
@@ -94,7 +95,7 @@ app_data <- list(
   totals    = as_df(drop_cols(totals, c("production_survey_t", "cultivated_survey_ha"))),
   crop      = as_df(drop_cols(crop, c("production_survey_t", "production_source"))),
   crop_dist = as_df(drop_cols(crop_dist, c("production_survey_t", "production_source"))),
-  yield     = lapply(ld("yield_evidence")[c("pooled", "by_year", "ladder", "crops")], \(x) if (is.data.frame(x)) as_df(x) else x),
+  yield     = lapply(ld("yield_evidence")[c("pooled", "by_year", "ladder", "crops", "sensitivity")], \(x) if (is.data.frame(x)) as_df(x) else x),
   tech      = lapply(tech, as_df),
   rain      = lapply(ld("rain_need"), as_df),
   equity    = lapply(ld("equity"), as_df),
@@ -153,7 +154,8 @@ if (!is.null(off) && nrow(off)) {
   # one row per source table and printed column label; figures point to it by number
   src_tab <- off |> distinct(src, survey, source_title, source_file, sheet, nisr_table, table_title, measure_label) |>
     mutate(src_id = row_number())
-  def_tab <- off |> distinct(indicator, .keep_all = TRUE) |>
+  # the general definition (gated seasons carry their own label on each row via d)
+  def_tab <- off |> arrange(desc(comparable)) |> distinct(indicator, .keep_all = TRUE) |>
     select(indicator, unit, population, definition, comparable, project_indicator, project_table)
   rows <- off |> left_join(select(src_tab, src, src_id), by = "src") |>
     transmute(indicator, sas_year, sas_season, level, area, crop_name, is_group, value,
