@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { MapPinned, MapPin, ArrowDownWideNarrow, Hand, Play, Pause, CloudRain, Trophy } from 'lucide-react';
+import { MapPinned, MapPin, ArrowDownWideNarrow, Hand, Play, Pause, CloudRain, Trophy, ChevronDown } from 'lucide-react';
 import { useApp } from '../data/store';
 import { ChartCard, FiltersUsed, Grid, RelBadge, Select } from '../components/ui';
 import { Plot, choropleth, std, type Fig } from '../components/Plot';
@@ -29,6 +29,7 @@ export default function MapPage() {
   const unit = isPub ? (pubUnit === '%' ? '%' : ` ${pubUnit}`) : total ? ' ha' : '%';
   const dec = unit === '%' ? 1 : 0;
   const selected = f.areaLevel !== 'national' ? f.districts : undefined;
+  const provinces = useMemo(() => [...new Set(D.lookup.map((r) => r.province))].sort(), [D]);
   const indLabel = isPub ? `${tr(`pub_ind_${ind}`)} (NISR)` : `${tr(`ind_${ind}`)} (${tr('layer_est')})`;
 
   // the one season a published map is for
@@ -151,6 +152,23 @@ export default function MapPage() {
         </ChartCard>
         <section className="card chart-card">
           <header className="card-head"><span className="ch-icon"><MapPin size={16} /></span><h3>{tr('c_profile')}</h3></header>
+          {/* one district at a time, straight from here: same as clicking it on the map (sets the area filter to that district) */}
+          <div className="card-body profile-pick">
+            <label className="select" style={{ width: '100%' }}>
+              <span className="select-label">{tr('district')}</span>
+              <span className="select-box">
+                <select value={f.district} onChange={(e) => e.target.value && pickDistrict(e.target.value)}>
+                  {!f.district && <option value="" disabled>{tr('choose_district')}</option>}
+                  {provinces.map((p) => (
+                    <optgroup key={p} label={p}>
+                      {D.lookup.filter((r) => r.province === p).map((r) => r.district).sort().map((d) => <option key={d} value={d}>{d}</option>)}
+                    </optgroup>
+                  ))}
+                </select>
+                <ChevronDown size={16} className="select-chev" />
+              </span>
+            </label>
+          </div>
           <div className="card-body profile"><Profile ind={ind} isPub={isPub} ps={ps} vals={vals} unit={unit} dec={dec} label={indLabel} /></div>
         </section>
       </Grid>

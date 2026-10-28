@@ -2,8 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { HashRouter, NavLink, Route, Routes, useLocation, Link } from 'react-router-dom';
 import {
   BookOpen, LayoutDashboard, ChartColumn, Compass, House, MapPinned, IdCard, CloudSunRain, Table, Sprout, Droplets, Users, Brain, Trophy,
-  Info, ChevronRight, Menu, X, SlidersHorizontal, CalendarDays, Map, MapPin, Layers, RotateCcw, Smartphone, type LucideIcon,
-  Info, ChevronRight, Menu, X, SlidersHorizontal, CalendarDays, Map, MapPin, Layers, RotateCcw, Smartphone, Pin, PinOff, ClipboardCheck, type LucideIcon,
+  Info, ChevronRight, Menu, X, SlidersHorizontal, CalendarDays, Map, MapPin, Layers, RotateCcw, Smartphone, ClipboardCheck, type LucideIcon,
 } from 'lucide-react';
 import { useApp } from './data/store';
 import { LANGS, type Lang } from './lib/i18n';
@@ -40,9 +39,9 @@ const PAGES: Record<string, PageDef> = {
   methods: { path: '/methods', key: 'p_methods', icon: Info, el: <Methods /> },
 };
 const MENUS: { key: string; icon: LucideIcon; pages: string[] }[] = [
-  // the planner's journey first: understand -> compare -> inspect evidence -> record checks and export
-  { key: 'menu_plan', icon: Compass, pages: ['overview', 'priority', 'district', 'assess'] },
-  { key: 'menu_story', icon: BookOpen, pages: ['map', 'need', 'how', 'who'] },
+  // the planner's journey first: understand -> compare -> inspect a district -> see where need meets low adoption
+  { key: 'menu_plan', icon: Compass, pages: ['overview', 'priority', 'district', 'need'] },
+  { key: 'menu_story', icon: BookOpen, pages: ['map', 'assess', 'how', 'who'] },
   // exploratory analysis, including the classification model, sits under Advanced
   { key: 'menu_advanced', icon: ChartColumn, pages: ['explorer', 'evidence', 'households', 'model'] },
 ];
