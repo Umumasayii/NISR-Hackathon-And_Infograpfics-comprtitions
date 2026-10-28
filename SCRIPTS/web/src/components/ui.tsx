@@ -119,8 +119,10 @@ function MiniTable({ t, caption }: { t: ChartTable; caption: string }) {
 const cell = (v: unknown) => (v == null || (typeof v === 'number' && !Number.isFinite(v)) ? '–' : (v as ReactNode));
 
 /** Number card: circled line icon, title, one big value, period below; the definition in a hover hint */
-export function Kpi({ label, value, icon: Icon, color, foot, delta, deltaGood = true, hint }: {
-  label: string; value: string; icon: LucideIcon; color: string; foot?: ReactNode; delta?: number | null; deltaGood?: boolean; hint?: string;
+export function Kpi({ label, value, icon: Icon, color, foot, delta, deltaGood = true, deltaUnit = '', deltaTitle, hint }: {
+  label: string; value: string; icon: LucideIcon; color: string; foot?: ReactNode; delta?: number | null; deltaGood?: boolean;
+  /** e.g. " pts"; deltaTitle says what the change is measured against */
+  deltaUnit?: string; deltaTitle?: string; hint?: string;
 }) {
   const shown = useCountUp(value);
   const [open, setOpen] = useState(false);
@@ -136,7 +138,7 @@ export function Kpi({ label, value, icon: Icon, color, foot, delta, deltaGood = 
       <div className="kpi-label">{label}</div>
       <div className="kpi-value">{shown}
         {delta != null && Number.isFinite(delta) && (
-          <span className={`delta ${(delta >= 0) === deltaGood ? 'good' : 'bad'}`}>{delta >= 0 ? '+' : ''}{delta.toFixed(1)}</span>)}
+          <span className={`delta ${(delta >= 0) === deltaGood ? 'good' : 'bad'}`} title={deltaTitle}>{delta >= 0 ? '+' : ''}{delta.toFixed(1)}{deltaUnit}</span>)}
       </div>
       {foot && <div className="kpi-foot">{foot}</div>}
       {hint && open && <div className="kpi-note" role="note">{hint}</div>}
@@ -183,8 +185,8 @@ export function Insight({ icon: Icon, title, text, color }: { icon: LucideIcon; 
 export const InsightGrid = ({ children }: { children: ReactNode }) => <div className="insight-grid">{children}</div>;
 
 /** Section heading; the old subtitles are dropped so the numbers below do the talking */
-export const SectionTitle = ({ title }: { title: string; sub?: string }) => (
-  <div className="section-title"><h2>{title}</h2></div>
+export const SectionTitle = ({ title, id }: { title: string; sub?: string; id?: string }) => (
+  <div className="section-title" id={id}><h2>{title}</h2></div>
 );
 
 export function Callout({ icon: Icon, kind = '', children }: { icon: LucideIcon; kind?: '' | 'soft' | 'warn'; children: ReactNode }) {
@@ -259,13 +261,30 @@ export function MultiSelect<T extends string | number>({ label, icon: Icon, opti
     const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
     const k = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
     document.addEventListener('mousedown', h); document.addEventListener('keydown', k);
+    // bring the whole list (down to Done) into view inside the scrolling filter panel
+    requestAnimationFrame(() => ref.current?.querySelector('.mp-menu')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
     return () => { document.removeEventListener('mousedown', h); document.removeEventListener('keydown', k); };
   }, [open]);
   const on = options.filter((o) => value.includes(o.value));
   const narrowed = on.length > 0 && on.length < options.length;
   const text = !narrowed ? (allText ?? tr('all')) : on.length <= 2 ? on.map((o) => o.label).join(', ') : tr('n_selected', on.length);
   const shown = q ? options.filter((o) => o.label.toLowerCase().includes(q.toLowerCase())) : options;
-  const toggle = (v: T) => onChange(value.includes(v) ? value.filter((x) => x !== v) : options.map((o) => o.value).filter((x) => x === v || value.includes(x)));
+  // "All" shows every box ticked; unticking one keeps the rest. "Clear" unticks every box so the
+  // next tick starts a fresh choice; an empty filter would show nothing, so until something is
+  // ticked the pages keep showing all (and closing the list with nothing ticked means All).
+  // "Only" on a row keeps just that option.
+  const [cleared, setCleared] = useState(false);
+  useEffect(() => { if (!open) setCleared(false); }, [open]);
+  const ticked = (v: T) => !cleared && (!narrowed || value.includes(v));
+  const pick = (next: T[]) => { setCleared(false); onChange(next); };
+  const toggle = (v: T) => {
+    if (cleared) return pick([v]);
+    const next = ticked(v) ? options.map((o) => o.value).filter((x) => x !== v && ticked(x))
+      : options.map((o) => o.value).filter((x) => x === v || value.includes(x));
+    // unticking the last box: nothing ticked, same as Clear
+    if (!next.length) { setCleared(true); onChange([]); return; }
+    onChange(next);
+  };
   return (
     <div className={`mp ${open ? 'open' : ''} ${narrowed ? 'narrowed' : ''}`} ref={ref}>
       <div className="mp-label"><Icon size={14} /> {label}</div>
@@ -277,9 +296,10 @@ export function MultiSelect<T extends string | number>({ label, icon: Icon, opti
       {open && (
         <div className="mp-menu" role="listbox" aria-multiselectable>
           <div className="mp-actions">
-            <button type="button" onClick={() => onChange(options.map((o) => o.value))}><CheckCheck size={14} /> {tr('select_all')}</button>
-            <button type="button" onClick={() => onChange([])}><X size={14} /> {tr('clear')}</button>
+            <button type="button" className={!narrowed && !cleared ? 'on' : ''} aria-pressed={!narrowed && !cleared} onClick={() => pick([])}><CheckCheck size={14} /> {allText ?? tr('all')}</button>
+            <button type="button" className={cleared ? 'on' : ''} aria-pressed={cleared} onClick={() => { setCleared(true); onChange([]); }}><X size={14} /> {tr('clear')}</button>
           </div>
+          <p className="mp-hint" aria-live="polite">{cleared ? tr('pick_some') : narrowed ? tr('n_selected', on.length) : ''}</p>
           {search && (
             <div className="mp-search"><Search size={14} />
               <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr('search_ph')} autoFocus />
@@ -287,12 +307,19 @@ export function MultiSelect<T extends string | number>({ label, icon: Icon, opti
           )}
           <div className="mp-list">
             {shown.map((o) => (
-              <label key={String(o.value)} className="mp-opt">
-                <input type="checkbox" checked={value.includes(o.value)} onChange={() => toggle(o.value)} />
-                <span className="mp-box"><Check size={12} strokeWidth={3} /></span>
-                <span>{o.label}</span>
-              </label>
+              <div key={String(o.value)} className="mp-row">
+                <label className="mp-opt">
+                  <input type="checkbox" checked={ticked(o.value)} onChange={() => toggle(o.value)} />
+                  <span className="mp-box"><Check size={12} strokeWidth={3} /></span>
+                  <span>{o.label}</span>
+                </label>
+                <button type="button" className="mp-only" onClick={() => pick([o.value])} aria-label={`${tr('only')}: ${o.label}`}>{tr('only')}</button>
+              </div>
             ))}
+          </div>
+          {/* picks apply at once; Done just closes the list */}
+          <div className="mp-foot">
+            <button type="button" className="btn primary sm" onClick={() => { setOpen(false); setQ(''); }}><Check size={15} strokeWidth={2.5} /> {tr('done')}</button>
           </div>
         </div>
       )}

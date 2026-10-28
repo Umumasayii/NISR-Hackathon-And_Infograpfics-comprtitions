@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Droplet, Sprout, Users, Wheat, HandCoins, Waves, UserCheck, Sun, ChartLine, Database, Calendar, Map as MapIcon, CloudRain, House,
-  MapPinned, Grid3x3, Wrench, Trophy, ClipboardCheck, IdCard, Compass, ChartColumn, Brain, Table, FlaskConical, LandPlot, BookOpen,
+  Droplet, Sprout, Users, Wheat, HandCoins, Waves, UserCheck, Sun, ChartLine, Database, Map as MapIcon, CloudRain, House,
+  MapPinned, Wrench, Trophy, ClipboardCheck, IdCard, Compass, ChartColumn, Brain, Table, FlaskConical, LandPlot, ChevronRight, ExternalLink,
 } from 'lucide-react';
 import type { Data } from 'plotly.js';
 import { useApp } from '../data/store';
@@ -45,14 +45,17 @@ export default function Overview() {
 
   // ---- headline numbers (NISR) -------------------------------------------------------------
   const kp = useMemo(() => {
-    const irr = get('irrig_any_farmer'), fert = get('inorganic_fert_farmer'), land = get('cultivated_land_ha');
+    const irr = get('irrig_any_farmer'), fert = get('inorganic_fert_farmer'), land = get('cultivated_land_ha'), irrLand = get('irrigated_area_ha');
     // the dry season of the same year (or the newest selected year that has one)
     const cYears = [...f.years].sort((a, b) => b - a);
     const sc = O && area ? cYears.map((y) => O.get('irrig_any_farmer', y, 'C', area)).find((r) => r && r.value != null) : undefined;
     // our combined estimate for a selection NISR does not publish (labelled as ours)
     const ours = !area && ps ? estFor(D, f, 'irrig_any_farmer', [ps.y], [ps.s])[0] : undefined;
-    return { irr, fert, land, sc, ours };
+    // share of cultivated land that is irrigated: two published NISR totals for the same season
+    const landPct = irrLand?.value != null && land?.value ? (100 * irrLand.value) / land.value : NaN;
+    return { irr, fert, land, irrLand, landPct, sc, ours };
   }, [O, D, f, area, ps]); // eslint-disable-line
+  const prevTxt = ps ? tr('delta_vs', tr('season_of', ps.s, ps.y - 1)) : undefined;
   const chg = (r?: PubRow) => { if (!O || !r || r.value == null) return null; const b = yearBefore(O, r); return b && b.value != null ? r.value - b.value : null; };
   const pubFoot = (r: PubRow | undefined, who: string, when = psTxt) => (r && O
     ? <>{tr('k_who_pub', who, area ?? '', when)} <span className="pub-tag" title={cite(O, r)}>{citeShort(O, r)}</span></>
@@ -121,8 +124,12 @@ export default function Overview() {
       .map((g) => ({ k: `${g[0].sas_year}${g[0].sas_season}`, y: yieldOf(D, g) }))
       .filter((x) => x.y.excluded === 0 && Number.isFinite(x.y.irr) && Number.isFinite(x.y.rf) && x.y.nIrr >= 10)
       .sort((a, b) => a.k.localeCompare(b.k));
-    return bySeason.length ? last(bySeason) : null;
-  }, [D, f, crop]);
+    // the season shown above when it has enough irrigated plots, else the newest that does
+    return bySeason.find((x) => ps && x.k === ysKey(ps)) ?? (bySeason.length ? last(bySeason) : null);
+  }, [D, f, crop, ps]);
+  // the same crop compared with similar rain-fed farms (survey-weighted model, all seasons)
+  const cropAdj = D.model_yield.table.find((r) => r.crop_name === crop);
+  const signedPct = (v: number) => `${v >= 0 ? '+' : ''}${fmtPct(v, 0)}`;
   const cropFig = useMemo<Fig | null>(() => !cropY ? null : {
     data: [{ type: 'bar', x: [tr('rainfed'), tr('irrigated')], y: [cropY.y.rf, cropY.y.irr], marker: { color: [colRainfed, colIrrigated] },
       text: [cropY.y.rf, cropY.y.irr].map((v) => `${fmtNum(v)} kg/ha`), textposition: 'outside', cliponaxis: false, textfont: { size: 13, color: brand.ink }, hoverinfo: 'skip' } as Data],
@@ -135,7 +142,8 @@ export default function Overview() {
   const trend = useMemo(() => {
     if (isPub) {
       if (!O || !area) return [];
-      return seasonsOf(f).map((x) => O.get(tInd, x.y, x.s, area)).filter((r): r is PubRow => !!r && r.value != null)
+      // 2019 used the older survey method and is not comparable, so the series starts in 2020
+      return seasonsOf(f).filter((x) => x.y >= FIRST_UPGRADED).map((x) => O.get(tInd, x.y, x.s, area)).filter((r): r is PubRow => !!r && r.value != null)
         .map((r) => ({ y: r.sas_year, s: r.sas_season, v: r.value as number, lo: NaN, hi: NaN, n: NaN, src: O ? `${citeShort(O, r)}, ${tr('cell')} ${r.cell}` : '' }));
     }
     return estFor(D, f, tInd).map((r) => ({ y: r.sas_year, s: r.sas_season, v: r.estimate, lo: r.ci_low ?? NaN, hi: r.ci_high ?? NaN, n: r.n, src: '' }));
@@ -168,17 +176,7 @@ export default function Overview() {
     return tr(!sig ? 'm_trend_stable' : b.v > a.v ? 'm_trend_up' : 'm_trend_down', f.area, `${a.y}${s}`, fm(a.v), `${b.y}${s}`, fm(b.v));
   }, [trend, ps, isPub, area, f.area, unitPct, tr]);
 
-  // ---- findings: what NISR reports, then our analysis ------------------------------------------
-  const nisrSays = useMemo(() => {
-    if (!O || !ps) return null;
-    const firstMain = ssMain.find((x) => x.s === ps.s && x.y >= FIRST_UPGRADED && O.get('irrig_any_farmer', x.y, x.s, 'Rwanda')?.value != null);
-    const irr0 = firstMain ? O.get('irrig_any_farmer', firstMain.y, firstMain.s, 'Rwanda') : undefined;
-    const irr1 = O.get('irrig_any_farmer', ps.y, ps.s, 'Rwanda');
-    const fert = O.get('inorganic_fert_farmer', ps.y, ps.s, 'Rwanda');
-    const maizeYrs = ssMain.filter((x) => x.s === 'A' && x.y >= FIRST_UPGRADED).map((x) => O.get('production_t', x.y, 'A', 'Rwanda', 'Maize')).filter((r): r is PubRow => !!r && r.value != null);
-    const tp = IRR_TYPES.map((t) => O.get(`irrig_type_${t}`, ps.y, ps.s, 'Rwanda')).filter((r): r is PubRow => !!r && r.value != null).sort((a, b) => (b.value as number) - (a.value as number));
-    return { irr0, irr1, fert, maize: maizeYrs, tp };
-  }, [O, ps, ssMain]);
+  // ---- our analysis ---------------------------------------------------------------------------
   const ours = useMemo(() => ({
     eq: D.equity.equity.filter((r) => r.dimension === 'gender'),
     cs: D.equity.equity.filter((r) => r.dimension === 'consolidated'),
@@ -187,30 +185,93 @@ export default function Overview() {
   }), [D, f]);
 
   const top5 = [...D.screen.table].sort((a, b) => a.rank - b.rank).slice(0, 5);
-  const pct = (v: number) => (Number.isFinite(v) ? Math.max(0, Math.min(100, Math.round(v))) : 0);
-  const typeName = (r: PubRow) => tr(`irr_type_${r.indicator.replace('irrig_type_', '')}`);
+  // the story's payoff step: maize (the main staple) when its adjusted gain is clear, else the clearest crop
+  const pay = ours.ya.find((r) => r.crop_name === 'Maize') ?? ours.ya[0];
+  // the problem is always stated for the whole country, whatever the area filter says
+  const natLand = get('cultivated_land_ha', 'Rwanda'), natIrrLand = get('irrigated_area_ha', 'Rwanda');
+  const natLandPct = natIrrLand?.value != null && natLand?.value ? (100 * natIrrLand.value) / natLand.value : NaN;
+  const natNot = Number.isFinite(val(nat)) ? Math.round(100 - val(nat)) : NaN;
+  // districts where rain is least reliable and irrigation is still rare (our analysis)
+  const gapDist = D.rain.district.filter((r) => r.quadrant === 'High need, low adoption').sort((a, b) => b.need_score - a.need_score).map((r) => r.district_std);
+  const jump = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
     <>
-      <div className="hero">
+      <div className="hero hero-problem">
         <div className="hero-text">
-          <h1>SmartIrrigate Rwanda</h1>
-          <p>{tr('tagline')}</p>
+          <span className="hero-kicker"><CloudRain size={14} /> {tr('prob_k')}</span>
+          <h1>{tr('prob_h1')}</h1>
+          <p>{tr('prob_p')}</p>
+        </div>
+        <div className="prob-stats">
+          {Number.isFinite(natLandPct) && (
+            <div className="prob-stat"><b>{fmtPct(natLandPct, 1)}</b><span>{tr('prob_s1')}</span><em>NISR · {psTxt}</em></div>)}
+          {Number.isFinite(natNot) && (
+            <div className="prob-stat"><b>{natNot}</b><span>{tr('prob_s2')}</span><em>NISR · {psTxt}</em></div>)}
+          {gapDist.length > 0 && (
+            <div className="prob-stat"><b>{gapDist.length}</b><span>{tr('prob_s3')}</span><em>{tr('st_ours')} · CHIRPS + NISR</em></div>)}
+        </div>
+        {/* the data behind every number on the page, named in full */}
+        <div className="hero-data">
+          <span className="hero-data-label">{tr('data_used')}</span>
           <div className="hero-meta">
-            <span><Database size={14} /> {tr('hero_m1')}</span><span><Calendar size={14} /> {tr('hero_m2')}</span>
-            <span><MapIcon size={14} /> {tr('hero_m3')}</span><span><CloudRain size={14} /> {tr('hero_m4')}</span>
-            <span><House size={14} /> {tr('hero_m5')}</span>
+            {/* official catalogue pages (NISR microdata needs a free account to download) */}
+            <a href="https://microdata.statistics.gov.rw/index.php/catalog/124" target="_blank" rel="noopener noreferrer"><Database size={14} /> {tr('data_sas')} <ExternalLink size={12} /></a>
+            <a href="https://www.chc.ucsb.edu/data/chirps" target="_blank" rel="noopener noreferrer"><CloudRain size={14} /> {tr('data_chirps')} <ExternalLink size={12} /></a>
+            <a href="https://microdata.statistics.gov.rw/index.php/catalog/123" target="_blank" rel="noopener noreferrer"><House size={14} /> {tr('data_ahs')} <ExternalLink size={12} /></a>
+            <Link to="/map"><MapIcon size={14} /> {tr('data_cover')}</Link>
           </div>
         </div>
-        <div className="hero-steps">
-          <Link to="/need"><Droplet size={18} />{tr('act_gap')}</Link>
-          <Link to="/evidence"><Sprout size={18} />{tr('act_payoff')}</Link>
-          <Link to="/priority"><MapPinned size={18} />{tr('act_action')}</Link>
-        </div>
-        <div className="hero-hills" />
       </div>
 
+      {/* the solution: one planning question, answered in three steps (mirrors the problem banner) */}
+      <section className="solution" aria-labelledby="sol-h">
+        <span className="sol-k"><Sprout size={14} /> {tr('sol_k')}</span>
+        <h2 id="sol-h">{tr('ov_story')}</h2>
+        <p className="sol-lead">{tr('sol_p')}</p>
+        <ol className="sol-steps">
+          <li>
+            <Link to="/need" className="sol-step">
+              <span className="sol-head"><span className="sol-n">1</span>{tr('st1_k')}</span>
+              <span className="sol-big">{gapDist.length}</span>
+              <span className="sol-t">{tr('st1_t')}</span>
+              <span className="sol-s">{tr('st1_s', gapDist.join(', '))}</span>
+              <span className="sol-go">{tr('act_gap')} <ChevronRight size={15} /></span>
+            </Link>
+          </li>
+          {pay && (
+            <li>
+              <Link to="/evidence" className="sol-step">
+                <span className="sol-head"><span className="sol-n">2</span>{tr('st2_k')}</span>
+                <span className="sol-big">{signedPct(pay.adjusted_pct)}</span>
+                <span className="sol-t">{tr('st2_t', pay.crop_name.toLowerCase())}</span>
+                <span className="sol-s">{tr('st2_s', signedPct(pay.adjusted_low), signedPct(pay.adjusted_high))}</span>
+                <span className="sol-go">{tr('act_payoff')} <ChevronRight size={15} /></span>
+              </Link>
+            </li>
+          )}
+          <li>
+            <Link to="/priority" className="sol-step">
+              <span className="sol-head"><span className="sol-n">{pay ? 3 : 2}</span>{tr('st3_k')}</span>
+              <span className="sol-big sol-names">{top5.slice(0, 3).map((r) => r.district_std).join(', ')}</span>
+              <span className="sol-t">{tr('st3_t')}</span>
+              <span className="sol-s">{tr('st3_s')}</span>
+              <span className="sol-go">{tr('act_action')} <ChevronRight size={15} /></span>
+            </Link>
+          </li>
+        </ol>
+        <p className="sol-src">{tr('sol_src')}</p>
+      </section>
+
+      <nav className="jump" aria-label={tr('jump_label')}>
+        <span className="muted small">{tr('jump_label')}</span>
+        {[['sec-key', 'sec_key'], ['sec-where', 'sec_where'], ['sec-how', 'sec_how'], ['sec-pay', 'sec_pay'], ['sec-ours', 's_our_analysis']].map(([id, k]) => (
+          <button key={id} type="button" onClick={() => jump(id)}>{tr(k)}</button>
+        ))}
+      </nav>
+
       <AudioNote id="overview" />
+      <SectionTitle id="sec-key" title={tr('sec_key')} />
       <FiltersUsed used={['years', 'seasons', 'area']} />
       <div className="toolbar season-pick">
         <Select label={tr('pub_season')} value={ps ? ysKey(ps) : ''} onChange={setSeasonKey}
@@ -218,17 +279,22 @@ export default function Overview() {
         <span className="muted small">{area ? tr('pub_for', area) : tr('pub_unavailable_hint')}</span>
       </div>
       <KpiRow>
-        <Kpi label={tr('pub_ind_irrig_any_farmer')} value={area ? fmtPct(share) : '–'} icon={UserCheck} color={brand.blue} delta={chg(kp.irr)}
+        <Kpi label={tr('pub_ind_irrig_any_farmer')} value={area ? fmtPct(share) : '–'} icon={UserCheck} color={brand.blue} delta={chg(kp.irr)} deltaUnit=" pts" deltaTitle={prevTxt}
           foot={pubFoot(kp.irr, tr('of_farmers'))}
           hint={area ? pubHint(kp.irr, kp.irr?.project_value != null ? tr('ours_was', fmtPct(kp.irr.project_value)) : '') : `${tr('pub_unavailable_hint')} ${kp.ours ? tr('ours_combined', fmtPct(kp.ours.estimate), f.area) : ''}`} />
-        <Kpi label={tr('k_season_c_pub')} value={area ? fmtPct(val(kp.sc)) : '–'} icon={Sun} color={brand.terracotta} delta={chg(kp.sc)}
-          foot={pubFoot(kp.sc, tr('of_farmers'), kp.sc ? tr('season_of', 'C', kp.sc.sas_year) : '')} hint={pubHint(kp.sc)} />
-        <Kpi label={tr('pub_ind_inorganic_fert_farmer')} value={area ? fmtPct(val(kp.fert)) : '–'} icon={FlaskConical} color="#6A4C93" delta={chg(kp.fert)}
+        <Kpi label={tr('k_land_irr')} value={area && Number.isFinite(kp.landPct) ? fmtPct(kp.landPct) : '–'} icon={LandPlot} color={brand.green}
+          foot={kp.irrLand?.value != null && kp.land?.value != null && O
+            ? <>{tr('k_land_foot', fmtNum(kp.irrLand.value), fmtNum(kp.land.value))} · {psTxt} <span className="pub-tag" title={cite(O, kp.irrLand)}>{citeShort(O, kp.irrLand)}</span></>
+            : <span className="muted">{tr('pub_unavailable')}</span>}
+          hint={kp.irrLand && kp.land && O ? `${tr('k_land_hint')} ${cite(O, kp.irrLand)}` : tr('pub_unavailable_hint')} />
+        <Kpi label={tr('pub_ind_inorganic_fert_farmer')} value={area ? fmtPct(val(kp.fert)) : '–'} icon={FlaskConical} color="#6A4C93" delta={chg(kp.fert)} deltaUnit=" pts" deltaTitle={prevTxt}
           foot={pubFoot(kp.fert, tr('of_farmers'))} hint={pubHint(kp.fert)} />
-        <Kpi label={tr('pub_ind_cultivated_land_ha')} value={area && kp.land?.value != null ? `${fmtNum(kp.land.value / 1000, 0)}k ha` : '–'} icon={LandPlot} color={brand.green}
-          foot={pubFoot(kp.land, tr('of_land'))} hint={pubHint(kp.land, tr('land_not_added'))} />
+        <Kpi label={tr('k_season_c_pub')} value={area ? fmtPct(val(kp.sc)) : '–'} icon={Sun} color={brand.terracotta} delta={chg(kp.sc)} deltaUnit=" pts"
+          deltaTitle={kp.sc ? tr('delta_vs', tr('season_of', 'C', kp.sc.sas_year - 1)) : undefined}
+          foot={pubFoot(kp.sc, tr('of_farmers'), kp.sc ? tr('season_of', 'C', kp.sc.sas_year) : '')} hint={`${tr('c_hint')} ${pubHint(kp.sc)}`} />
       </KpiRow>
 
+      <SectionTitle id="sec-where" title={tr('sec_where')} />
       <Grid cols="7fr 5fr">
         <ChartCard title={tr('ov_map_title_pub')} icon={MapPinned}
           means={dist.length >= 2 ? tr('ov_m_map_pub', psTxt, dist[0].d, fmtPct(dist[0].v), last(dist).d, fmtPct(last(dist).v), fmtPub(O, nat)) : null}
@@ -273,30 +339,15 @@ export default function Overview() {
         </section>
       </Grid>
 
-      <Grid cols="1fr 1fr 1fr">
-        <ChartCard title={tr('ov_pict_title_pub')} icon={Grid3x3}
-          means={area && Number.isFinite(share) ? tr('ov_m_pict_pub', share < 1 ? tr('lt1in100') : String(pct(share)), `${area}, ${psTxt}`) : tr('pub_unavailable')}
-          source={kp.irr && O ? <>{tr('ov_pict_legend_pub')} {pubSource(O, [kp.irr], tr)}</> : tr('pub_unavailable_hint')}
-          table={area && Number.isFinite(share) ? { cols: ['', '%'], rows: [[tr('irrigated'), fmtPct(share)], [tr('not_irrigated'), fmtPct(100 - share)]] } : null}>
-          {area && Number.isFinite(share) ? <Pictogram filled={pct(share)} label={tr('ov_m_pict_pub', String(pct(share)), `${area}, ${psTxt}`)} /> : <p className="plot-empty">{tr('pub_unavailable')}</p>}
-        </ChartCard>
+      <SectionTitle id="sec-how" title={tr('sec_how')} />
+      <Grid cols="5fr 7fr">
         <ChartCard title={tr('ov_type_title')} icon={Wrench}
           means={types.length ? tr('ov_m_type', tr(`irr_type_${types[0].t}`), fmtPct(types[0].v, 0), `${area}, ${psTxt}`) : tr('pub_unavailable')}
           source={O ? pubSource(O, types.map((x) => x.r), tr) : undefined}
           table={{ cols: [tr('ov_type_title'), '%', tr('pub_cell')], rows: types.map((x) => [tr(`irr_type_${x.t}`), fmtPct(x.v), O ? `${citeShort(O, x.r)} · ${x.r.cell}` : '']) }}>
-          <Plot fig={typeFig} height={220} empty={tr('pub_unavailable')} />
+          <Plot fig={typeFig} height={300} empty={tr('pub_unavailable')} />
         </ChartCard>
-        <ChartCard title={tr('ov_crop_title')} icon={Wheat}
-          tools={<Select value={crop} onChange={setCrop} options={D.yield.crops.map((c) => ({ value: c, label: c }))} width="100%" />}
-          means={cropY ? tr('ov_m_crop', crop, `${f.area} ${cropY.k}`, fmtNum(cropY.y.irr), fmtNum(cropY.y.rf)) : tr('ov_crop_few', crop)}
-          source={<>{tr('layer_analysis')}. {tr('src_yield')}</>}
-          table={cropY ? { cols: ['', 'kg/ha'], rows: [[tr('irrigated'), Math.round(cropY.y.irr)], [tr('rainfed'), Math.round(cropY.y.rf)]] } : null}>
-          <Plot fig={cropFig} height={220} empty={tr('no_data')} />
-        </ChartCard>
-      </Grid>
-
-      <Grid cols="7fr 5fr">
-        <ChartCard title={tr('c_trend_pub')} icon={ChartLine} means={<>{trendMeans ?? (isPub && !area ? tr('pub_unavailable_hint') : '')}{isPub && f.years.includes(2019) ? ` ${tr('usas_break')}` : ''}</>}
+        <ChartCard title={tr('c_trend_pub')} icon={ChartLine} means={<>{trendMeans ?? (isPub && !area ? tr('pub_unavailable_hint') : '')}{isPub && f.years.includes(2019) ? ` ${tr('trend_2019')}` : ''}</>}
           tools={<Select value={trendInd} onChange={setTrendInd} width="100%" options={[
             ...TREND_PUB.map((i) => ({ value: `pub:${i}`, label: `${tr(`pub_ind_${i}`)} (NISR)` })),
             ...TREND_OURS.map((i) => ({ value: i, label: `${tr(`ind_${i}`)} (${tr('layer_est')})` })),
@@ -305,6 +356,18 @@ export default function Overview() {
           table={{ cols: [tr('season'), unitPct ? '%' : O?.def.get(tInd)?.unit ?? '', isPub ? tr('pub_cell') : '95%'],
             rows: [...trend].sort((a, b) => a.y - b.y || a.s.localeCompare(b.s)).map((r) => [`${r.y}${r.s}`, unitPct ? fmtPct(r.v) : fmtNum(r.v), isPub ? r.src : `${fmtPct(r.lo)}–${fmtPct(r.hi)}`]) }}>
           <Plot fig={trendFig} height={300} empty={isPub && !area ? tr('pub_unavailable') : tr('no_data')} />
+        </ChartCard>
+      </Grid>
+
+      <SectionTitle id="sec-pay" title={tr('sec_pay')} />
+      <Grid cols="5fr 7fr">
+        <ChartCard title={tr('ov_crop_title')} icon={Wheat}
+          tools={<Select value={crop} onChange={setCrop} options={D.yield.crops.map((c) => ({ value: c, label: c }))} width="100%" />}
+          means={<>{cropY ? tr('ov_m_crop', crop, `${f.area} ${cropY.k}`, fmtNum(cropY.y.irr), fmtNum(cropY.y.rf)) : tr('ov_crop_few', crop)}
+            {cropAdj ? ` ${tr('ov_adj_note', signedPct(cropAdj.adjusted_pct), signedPct(cropAdj.adjusted_low), signedPct(cropAdj.adjusted_high))}` : ''}</>}
+          source={<>{tr('layer_analysis')}. {tr('src_yield')}</>}
+          table={cropY ? { cols: ['', 'kg/ha'], rows: [[tr('irrigated'), Math.round(cropY.y.irr)], [tr('rainfed'), Math.round(cropY.y.rf)]] } : null}>
+          <Plot fig={cropFig} height={240} empty={tr('no_data')} />
         </ChartCard>
         <section className="card chart-card">
           <header className="card-head"><span className="ch-icon"><ClipboardCheck size={15} /></span><h3>{tr('ov_short_title')}</h3></header>
@@ -326,33 +389,7 @@ export default function Overview() {
         </section>
       </Grid>
 
-      {nisrSays && O && (
-        <>
-          <SectionTitle title={tr('s_nisr_reports')} />
-          <InsightGrid>
-            {nisrSays.irr1?.value != null && (
-              <Insight icon={UserCheck} color={brand.blue} title={tr('n1_t', in100(nisrSays.irr1.value, tr), tr('season_of', ps!.s, ps!.y))}
-                text={nisrSays.irr0 && nisrSays.irr0 !== nisrSays.irr1 && nisrSays.irr0.value != null
-                  ? tr('n1', tr('season_of', nisrSays.irr0.sas_season, nisrSays.irr0.sas_year), fmtPct(nisrSays.irr0.value), citeShort(O, nisrSays.irr1))
-                  : citeShort(O, nisrSays.irr1)} />
-            )}
-            {nisrSays.fert?.value != null && (
-              <Insight icon={FlaskConical} color="#6A4C93" title={tr('n2_t', in100(nisrSays.fert.value, tr), tr('season_of', ps!.s, ps!.y))} text={tr('n_src', citeShort(O, nisrSays.fert))} />
-            )}
-            {nisrSays.tp.length > 0 && (
-              <Insight icon={Waves} color="#00897B" title={tr('n3_t', typeName(nisrSays.tp[0]), fmtPct(nisrSays.tp[0].value, 0))}
-                text={tr('n3', nisrSays.tp.slice(1, 3).map((r) => `${typeName(r)} ${fmtPct(r.value, 0)}`).join(', '), citeShort(O, nisrSays.tp[0]))} />
-            )}
-            {nisrSays.maize.length >= 1 && (
-              <Insight icon={Wheat} color="#B07A1C" title={tr('n4_t', fmtNum((last(nisrSays.maize).value as number) / 1000, 0), last(nisrSays.maize).sas_year)}
-                text={nisrSays.maize.length >= 2 ? tr('n4', fmtNum((nisrSays.maize[0].value as number) / 1000, 0), nisrSays.maize[0].sas_year, citeShort(O, last(nisrSays.maize))) : tr('n_src', citeShort(O, last(nisrSays.maize)))} />
-            )}
-          </InsightGrid>
-          <p className="muted small"><BookOpen size={13} /> {tr('n_note')}</p>
-        </>
-      )}
-
-      <SectionTitle title={tr('s_our_analysis')} />
+      <SectionTitle id="sec-ours" title={tr('s_our_analysis')} />
       <InsightGrid>
         <Insight icon={Sprout} color={brand.green} title={tr('f2_t', ours.ya.length)} text={tr('f2', ours.ya.slice(0, 4).map((r) => r.crop_name).join(', '))} />
         <Insight icon={Users} color="#B07A1C" title={tr('f3_t')}
@@ -373,18 +410,5 @@ export default function Overview() {
         })}
       </nav>
     </>
-  );
-}
-
-/** 100 squares, one per farmer in every 100; the filled ones irrigated (the count is also in the title and table) */
-function Pictogram({ filled, label }: { filled: number; label: string }) {
-  const cells = Array.from({ length: 100 }, (_, i) => i);
-  return (
-    <svg viewBox="0 0 210 210" className="pictogram" role="img" aria-label={label}>
-      {cells.map((i) => {
-        const x = (i % 10) * 21, y = Math.floor(i / 10) * 21;
-        return <rect key={i} x={x} y={y} width={18} height={18} rx={i < filled ? 9 : 3} fill={i < filled ? brand.blue : '#E1E7E3'} />;
-      })}
-    </svg>
   );
 }
