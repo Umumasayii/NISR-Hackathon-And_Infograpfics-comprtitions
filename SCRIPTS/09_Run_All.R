@@ -13,6 +13,7 @@
 #   07  survey-weighted app tables     -> SCRIPTS/app/data/
 #   08  adoption + yield models        -> SCRIPTS/app/data/
 #   12  web export (JSON)              -> SCRIPTS/web/public/data/  (no push)
+#   16  build manifest (checksums, commit, versions) -> docs/build_manifest.json
 # Then start the app:  shiny::runApp("SCRIPTS/app")
 # or the website:      cd SCRIPTS/web; npm ci; npm run dev
 # Nothing is committed or pushed by this script. Inputs: see README "Inputs".
@@ -31,7 +32,7 @@ Sys.setenv(SI_AUTO_PUSH = "FALSE")      # 12 never pushes from here
 steps <- c(if (run_select) "05_Select_Irrigation_Data.R",
            "06_Merge_Master_Data.R", if (run_ahs) "10_AHS_Preparation.R",
            if (run_official) c("11_NISR_Published_Tables.R", "14_Official_Reference.R", "15_Reconcile_With_NISR.R"),
-           "07_Build_App_Data.R", "08_Models.R", "12_Export_Web_Data.R")
+           "07_Build_App_Data.R", "08_Models.R", "12_Export_Web_Data.R", "16_Build_Manifest.R")
 
 for (s in steps) {
   message("\n==== ", s, " ====")

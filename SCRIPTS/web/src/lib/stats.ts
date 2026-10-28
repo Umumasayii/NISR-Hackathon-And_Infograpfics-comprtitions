@@ -44,33 +44,49 @@ export function mode<T extends string>(x: (T | null)[]): T | null {
 export const seasonOrder = (s: string) => ({ A: 0, B: 1, C: 2 } as Record<string, number>)[s] ?? 3;
 export const last = <T,>(x: T[]) => x[x.length - 1];
 
-export function reliabilityLab(n: number | null, cv: number | null): Reliability {
-  if (n == null || n < 30) return 'Unreliable';
-  if (cv != null && cv <= 0.2 && n >= 50) return 'Good';
+// Same rule as reliability() in SCRIPTS/00_Config.R: unweighted n, segments (n_psu) and CV.
+// A missing standard error is never read as zero: the estimate is then 'Unreliable'.
+export const MIN_N = 30, MIN_PSU = 5;
+export function reliabilityLab(n: number | null, cv: number | null, nPsu: number | null = null): Reliability {
+  if (n == null || n < MIN_N) return 'Unreliable';
+  if (nPsu != null && nPsu < MIN_PSU) return 'Unreliable';
+  if (cv != null && cv <= 0.2 && n >= 50 && (nPsu == null || nPsu >= 12)) return 'Good';
   if (cv != null && cv <= 0.35) return 'Use with caution';
   return 'Unreliable';
 }
 
+/** two-sided 97.5% Student t quantile (Cornish-Fisher expansion; exact enough for CIs) */
+export function tq975(df: number | null | undefined): number {
+  const z = 1.959963984540054;
+  if (df == null || !Number.isFinite(df) || df <= 0) return z;
+  const d = Math.max(df, 1), z3 = z ** 3, z5 = z ** 5, z7 = z ** 7;
+  return z + (z3 + z) / (4 * d) + (5 * z5 + 16 * z3 + 3 * z) / (96 * d * d) + (3 * z7 + 19 * z5 + 17 * z3 - 15 * z) / (384 * d ** 3);
+}
+
 /**
- * Several districts or provinces -> one estimate. Districts are survey strata, so the
- * combined share is the weighted-count average and its variance is the sum of the
- * stratum variances, sum((W_d / W)^2 * se_d^2).
+ * Several districts or provinces -> one estimate for the same season. Districts are
+ * separate survey strata within a season, so the combined share is the weighted-count
+ * average and its variance is sum((W_d / W)^2 * se_d^2); segments and design degrees
+ * of freedom add up. If any part has no standard error the combination has none
+ * either (shown without an interval and labelled 'Unreliable'), never se = 0.
  */
+export function combineParts<T extends { wsum: number; estimate: number; se: number | null; n: number; n_psu?: number | null; df?: number | null }>(g: T[]) {
+  const W = sum(g.map((r) => r.wsum));
+  const estimate = sum(g.map((r) => r.wsum * r.estimate)) / W;
+  const seKnown = g.every((r) => r.se != null && Number.isFinite(r.se));
+  const se = seKnown ? Math.sqrt(sum(g.map((r) => (r.wsum / W) ** 2 * (r.se as number) ** 2))) : null;
+  const n = sum(g.map((r) => r.n));
+  const n_psu = g.every((r) => r.n_psu != null) ? sum(g.map((r) => r.n_psu)) : null;
+  const df = g.every((r) => r.df != null) ? sum(g.map((r) => r.df)) : null;
+  const cv = se != null && estimate > 0 ? se / estimate : null;
+  const t = tq975(df);
+  return { wsum: W, estimate, se, n, n_psu, df, cv,
+    ci_low: se == null ? null : Math.max(estimate - t * se, 0), ci_high: se == null ? null : estimate + t * se,
+    reliability: se == null ? 'Unreliable' as Reliability : reliabilityLab(n, cv, n_psu) };
+}
 export function combineEst(d: Est[], label: string): Est[] {
-  const out: Est[] = [];
-  for (const g of groupBy(d, (r) => `${r.sas_year}|${r.sas_season}|${r.indicator}`).values()) {
-    const W = sum(g.map((r) => r.wsum));
-    const estimate = sum(g.map((r) => r.wsum * r.estimate)) / W;
-    const se = Math.sqrt(sum(g.map((r) => (r.wsum / W) ** 2 * (r.se ?? 0) ** 2)));
-    const n = sum(g.map((r) => r.n));
-    const cv = estimate > 0 ? se / estimate : null;
-    out.push({
-      ...g[0], level: 'combined', area: label, wsum: W, estimate, se, n, source: 'survey',
-      ci_low: Math.max(estimate - 1.96 * se, 0), ci_high: estimate + 1.96 * se,
-      cv, reliability: reliabilityLab(n, cv),
-    });
-  }
-  return out;
+  return [...groupBy(d, (r) => `${r.sas_year}|${r.sas_season}|${r.indicator}`).values()]
+    .map((g) => ({ ...g[0], level: 'combined' as const, area: label, source: 'survey' as const, ...combineParts(g) }));
 }
 
 /** Survey estimates for the selected area(s), combined into one series */
@@ -155,15 +171,8 @@ export function ahsFor(D: AppData, f: Filters, inds?: string[]): AhsRow[] {
   const I = inds ? new Set(inds) : null, A = new Set(f.areas);
   const d = D.ahs.indicators.filter((r) => (!I || I.has(r.indicator)) && r.level === f.areaLevel && A.has(r.area));
   if (f.areas.length <= 1 || !d.length) return d;
-  return [...groupBy(d, (r) => `${r.year}|${r.indicator}|${r.population}|${r.series_break}`).values()].map((g) => {
-    const W = sum(g.map((r) => r.wsum));
-    const estimate = sum(g.map((r) => r.wsum * r.estimate)) / W;
-    const se = Math.sqrt(sum(g.map((r) => (r.wsum / W) ** 2 * (r.se ?? 0) ** 2)));
-    const n = sum(g.map((r) => r.n));
-    const cv = estimate > 0 ? se / estimate : null;
-    return { ...g[0], level: 'combined' as const, area: f.area, wsum: W, estimate, se, n,
-      ci_low: Math.max(estimate - 1.96 * se, 0), ci_high: estimate + 1.96 * se, cv, reliability: reliabilityLab(n, cv) };
-  });
+  return [...groupBy(d, (r) => `${r.year}|${r.indicator}|${r.population}|${r.series_break}`).values()]
+    .map((g) => ({ ...g[0], level: 'combined' as const, area: f.area, ...combineParts(g) }) as AhsRow);
 }
 export const ahsVal = (d: AhsRow[], ind: string, yr: number) => d.find((r) => r.indicator === ind && r.year === yr)?.estimate ?? NaN;
 
