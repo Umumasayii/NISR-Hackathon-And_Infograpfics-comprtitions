@@ -39,6 +39,7 @@ export default function Need() {
   }, [nd, f, tr]); // eslint-disable-line
   const hnla = nd.filter((r) => r.quadrant === QLEV[0]).sort((a, b) => b.need_score - a.need_score);
 
+  const reducedMotion = () => { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
   // ---- animated bubbles: each district's irrigation (A+B) per year vs its need score
   const bub = useMemo(() => {
     const Y = new Set(f.years), Ds = new Set(f.districts);
@@ -68,7 +69,7 @@ export default function Need() {
         marker: { color: provinceCols[p], opacity: 0.85, sizemode: 'diameter', size: d.map((r) => 8 + 37 * Math.sqrt(r.ha / maxHa)), line: { color: '#fff', width: 1 } },
         text: d.map((r) => `<b>${r.d}</b> (${p}) · ${y}<br>${tr('ind_irrigated')}: ${fmtPct(r.a)}<br>${tr('need_score')}: ${fmtNum(r.need, 0)}<br>${tr('w_c_scale')}: ${fmtNum(r.ha)} ha · n = ${fmtNum(r.n)}`), hoverinfo: 'text' } as Data;
     });
-    return { data, layout: std({ x: tr('need_score'), y: tr('y_pct_plots_ab'), yaxis: { range: [0, maxA * 1.1] }, xaxis: { range: [0, 100] }, transition: { duration: 700, easing: 'cubic-in-out' } }) };
+    return { data, layout: std({ x: tr('need_score'), y: tr('y_pct_plots_ab'), yaxis: { range: [0, maxA * 1.1] }, xaxis: { range: [0, 100] }, transition: { duration: reducedMotion() ? 0 : 700, easing: 'cubic-in-out' } }) };
   }, [bub, yi, years, tr]); // eslint-disable-line
 
   // ---- anomaly map
@@ -123,7 +124,7 @@ export default function Need() {
         </ChartCard>
       </Grid>
       <Grid cols="7fr 5fr">
-        <ChartCard title={tr('c_bubble')} icon={CirclePlay} means={tr('m_bubble')}>
+        <ChartCard title={tr('c_bubble')} icon={CirclePlay} means={<>{tr('m_bubble')} {tr('m_bubble_fixed')}</>}>
           {years.length > 0 && (
             <div className="play-row">
               <button className="btn outline sm" onClick={() => { if (yi >= years.length - 1) setYi(0); setPlaying(!playing); }}>

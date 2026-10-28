@@ -94,6 +94,15 @@ export default function Model() {
         <ChartCard title={tr('c_importance')} icon={ListOrdered} means={tr('m_imp', M.importance[0]?.feature, M.importance[1]?.feature)}><Plot fig={impFig} height={340} /></ChartCard>
         <ChartCard title={tr('c_odds')} icon={ArrowLeftRight} means={tr('m_odds')}><Plot fig={oddsFig} height={340} /></ChartCard>
       </Grid>
+      {M.diagnostics && (
+        <section className="card" aria-labelledby="diag-h">
+          <header className="card-head"><span className="ch-icon"><Target size={16} /></span><h3 id="diag-h">{tr('c_diag')}</h3></header>
+          <p className="small">{tr('diag_line', M.diagnostics.converged ? '✓' : '✗', String(M.diagnostics.iterations), `${fmtNum(M.diagnostics.fitted_near_0_or_1)} / ${fmtNum(M.n_train)}`,
+            M.diagnostics.terms_with_se_over_10.length ? M.diagnostics.terms_with_se_over_10.join(', ') : '0', fmtNum(M.diagnostics.design_df), fmtNum(M.diagnostics.n_segments_train),
+            fmtNum(M.diagnostics.test_segments_in_train_pct, 0))}</p>
+          <p className="muted small">{tr('diag_ci')} {M.diagnostics.decision_date}</p>
+        </section>
+      )}
       <Grid cols="5fr 7fr">
         <section className="card chart-card">
           <header className="card-head"><span className="ch-icon"><SlidersHorizontal size={16} /></span><h3>{tr('c_simulator')}</h3></header>

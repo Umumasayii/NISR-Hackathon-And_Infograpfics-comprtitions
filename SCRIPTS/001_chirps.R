@@ -1,3 +1,5 @@
+# EXPLORATORY - NOT PART OF THE PIPELINE. Early CHIRPS look-up kept for the record (uses View() and old paths).
+# The pipeline reads CHIRPS in 03_Data_Preparation.R and builds the rain index in 07_Build_App_Data.R.
 rm(list = ls())
 chirps <- read.csv("DATA/CHIRPS/CHIRPS_District_Month_1981_2025.csv")
 library(dplyr)

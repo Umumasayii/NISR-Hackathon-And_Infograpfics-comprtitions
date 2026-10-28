@@ -1285,9 +1285,9 @@
   "rw": "Biva muri NISR 2023–2025 n'imvura ya CHIRPS. Ikinyuranyo cy'abagore n'abagabo kibarwa aho bombi bafite imirima ihagije."
  },
  "src_sensitivity": {
-  "en": "We tried 2,000 random sets of weights. Grey bar = where the district usually ranks; dot = its rank with your weights.",
-  "fr": "2 000 jeux de poids aléatoires testés. Barre grise = rang habituel ; point = rang avec vos poids.",
-  "rw": "Twagerageje uburemere 2,000 butandukanye. Umurongo w'ikijuju = umwanya usanzwe; akadomo = umwanya hamwe n'uburemere bwawe."
+  "en": "We tried 1,000 random sets of weights. Grey bar = where the district usually ranks; dot = its rank with your weights.",
+  "fr": "1 000 jeux de poids aléatoires testés. Barre grise = rang habituel ; point = rang avec vos poids.",
+  "rw": "Twagerageje uburemere 1,000 butandukanye. Umurongo w'ikijuju = umwanya usanzwe; akadomo = umwanya hamwe n'uburemere bwawe."
  },
  "score": {
   "en": "Score",
