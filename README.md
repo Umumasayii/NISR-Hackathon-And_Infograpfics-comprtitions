@@ -144,6 +144,24 @@ in `src/lib/stats.ts`; the shortlist ranking and its weight sensitivity are in `
 - **Build manifest:** every rebuild writes `docs/build_manifest.json` with the build time, git
   commit, R and package versions and SHA-256 checksums of every input and web output.
 
+##  Models
+
+Four models sit behind the Advanced pages. All use the survey weights; they show associations, not
+causes, and none decides who gets support. Full model card (data, variables, fitting, every metric,
+diagnostics, limits): [docs/Models.md](docs/Models.md). The website shows the same under
+**Methods › Models**.
+
+| Model | Why we chose it | Validation | Result (build 2026-10-23) |
+|---|---|---|---|
+| **Survey-weighted logistic regression** (`glm` + `survey::svyglm`): is a plot irrigated? 11 features: district, season, plot area, rain anomaly, erosion, consolidation, chemical and organic fertiliser, manager gender, age band, farm type | Yes/no outcome; one odds ratio per feature with a design-based 95% interval; drives the what-if simulator | Out-of-time split: train 2020–2023 (134,355 plots), test 2024–2025 (68,928). Weighted AUC, average precision, Brier vs base rate, top-10% lift, calibration by tenths, checks by gender and province | AUC **0.810**; Brier 0.0229 vs 0.0240; top 10% catches 45% of irrigated plots (×4.5 lift) |
+| **Random forest** (`ranger`, 300 trees) as a benchmark | Catches interactions and curves; tests whether the simple model misses something | Same split and measures | AUC **0.780**: no gain, so the logistic model is kept. Permutation importance: plot area, farm type, chemical fertiliser lead |
+| **Survey-weighted adjusted yield regression**, one per crop (18 crops with ≥ 150 irrigated plots) | Compares irrigated with similar rain-fed plots (inputs, seed, area, district, season) | Design-based 95% intervals (segment clusters); complete-case refit; raw ratio of totals shown beside it; 2024B/C excluded | Clearly higher on irrigated plots for 4 crops: maize +14%, Irish potato +15%, tomato +15%, sweet pepper +35% |
+| **Priority screening index** (5 criteria, min–max, default weights 30/30/20/10/0) | Transparent and adjustable by planners | Weight sensitivity: 1,000 Dirichlet(20 × weights) draws, zero stays zero; rank range and top-5 frequency | 14 of 30 districts stable; Kirehe, Ngoma, Nyagatare, Kayonza, Bugesera in the top 5 in 83–100% of draws |
+
+Limits: the adoption model uses answers from the same season, so it is not a pre-season forecast, and
+73% of test segments also appear in training. Yield results are adjusted associations: water access,
+soil and markets are not measured. The shortlist is for field checks, not investment.
+
 ##  Run it
 
 ```bash
@@ -175,6 +193,7 @@ source("SCRIPTS/09_Run_All.R")
 ##  Documentation
 
 - [Methods and reconciliation](docs/Methods_and_Reconciliation.md): estimators and every gap with NISR's tables, with its cause
+- [Models](docs/Models.md): the four models, why we chose them, validation, results and limits
 - [Reconciliation register (CSV)](docs/Reconciliation_Register_2019_2025.csv): each national NISR cell beside our value
 - [Data dictionary](docs/Data_Dictionary.md) · [Source register](docs/Source_Register.md)
 - [Limitations and pilot plan](docs/Limitations_and_Pilot_Plan.md) · [AI-use disclosure](docs/AI_Use_Disclosure.md)

@@ -36,6 +36,7 @@ mod_methods_ui <- function(id, tr) {
         h5(class = "mt-4", tr("pub_title")), p(class = "muted", tr("pub_note")), uiOutput(ns("pub")),
         h5(class = "mt-4", tr("pub_align_title")), p(class = "muted", tr("pub_align_note")), uiOutput(ns("pub_align")),
         h5(class = "mt-4", tr("bench_title")), p(class = "muted", tr("bench_note")), uiOutput(ns("bench"))),
+      nav_panel(tr("t_models"), icon = fontawesome::fa("brain"), uiOutput(ns("models"))),
       nav_panel(tr("t_ai"), icon = fontawesome::fa("robot"),
         p(tr("ai_text")), tags$ul(lapply(1:4, \(i) tags$li(tr(paste0("ai_", i)))))),
       nav_panel(tr("t_downloads"), icon = fontawesome::fa("download"),
@@ -67,6 +68,45 @@ mod_methods_server <- function(id, f, tr) {
       k <- c("irrigated", "irrig_any_farmer", "irrig_modern", "irrigated_area_ha", "yield", "adjusted", "sales", "need", "priority")
       html_table(data.frame(KPI = sapply(paste0("kd_", k, "_n"), tr), Definition = sapply(paste0("kd_", k), tr)) |>
         setNames(c("KPI", tr("definition"))))
+    })
+    # the four models: what, why, data, variables, validation, limits (numbers from the .rds files)
+    output$models <- renderUI({
+      M <- D$model; Y <- D$model_yield; S <- D$screen; dg <- M$diagnostics
+      pf <- M$performance; glm <- pf[pf$model == "Logistic regression", ]; rf <- pf[pf$model == "Random forest", ]
+      auc <- \(x) fmt_num(x, 3)
+      higher <- Y$table$crop_name[Y$table$adjusted_low > 0]
+      excl <- if (!is.null(Y$excluded_seasons) && nrow(Y$excluded_seasons)) paste(Y$excluded_seasons$season, collapse = ", ") else "2024B, 2024C"
+      stab <- \(k) sum(S$table$stability == k)
+      w <- paste(paste0(sapply(paste0("w_", names(S$default_weights)), tr), " ", round(100 * S$default_weights), "%"), collapse = " · ")
+      args <- list(
+        `1` = list(res = list(auc(glm$auc)), data = list(fmt_num(M$n_train), fmt_num(M$n_test)),
+                   valid = list(auc(min(M$fairness$auc)), auc(max(M$fairness$auc)), fmt_num(dg$design_df), fmt_num(dg$n_segments_train), fmt_num(dg$iterations)),
+                   limits = list(fmt_num(dg$test_segments_in_train_pct), fmt_num(dg$fitted_near_0_or_1))),
+        `2` = list(res = list(auc(rf$auc)), vars = list(paste(gsub("_", " ", head(M$importance$feature, 3)), collapse = ", ")),
+                   valid = list(auc(rf$auc), auc(glm$auc))),
+        `3` = list(res = list(length(higher), nrow(Y$table)), data = list(nrow(Y$table), excl), valid = list(paste(higher, collapse = ", "))),
+        `4` = list(res = list(stab("Stable")), vars = list(w),
+                   valid = list(stab("Stable"), stab("Moderately sensitive"), stab("Sensitive to weights"))))
+      t <- \(i, f) do.call(tr, c(list(paste0("m", i, "_", f)), args[[as.character(i)]][[f]]))
+      summary <- data.frame(a = sapply(1:4, t, "name"), b = sapply(1:4, t, "q"), c = sapply(1:4, t, "page"), d = sapply(1:4, t, "res")) |>
+        setNames(tr(c("mdl_col_model", "mdl_col_question", "mdl_col_page", "mdl_col_result")))
+      mrow <- \(k, f, base) c(tr(k), f(glm), f(rf), base)
+      metrics <- as.data.frame(rbind(
+        mrow("mm_auc", \(p) auc(p$auc), "0.500"),
+        mrow("mm_ap", \(p) fmt_num(p$avg_precision, 3), fmt_num(glm$avg_precision_baseline, 3)),
+        mrow("mm_brier", \(p) fmt_num(p$brier, 4), fmt_num(glm$brier_baseline_train, 4)),
+        mrow("mm_top10p", \(p) fmt_pct(p$top10_precision_pct), fmt_pct(glm$observed_pct)),
+        mrow("mm_top10r", \(p) fmt_pct(p$top10_recall_pct), "10.0%"),
+        mrow("mm_lift", \(p) paste0("×", fmt_num(p$top10_lift, 1)), "×1.0"),
+        mrow("mm_pred", \(p) paste(fmt_pct(p$predicted_pct), "/", fmt_pct(p$observed_pct)), ""))) |>
+        setNames(c(tr("mdl_metric"), "Logistic regression", "Random forest", tr("mdl_baseline")))
+      tagList(
+        p(tr("mdl_intro")), html_table(summary),
+        lapply(1:4, \(i) div(class = "mt-4",
+          h5(paste0(i, ". ", t(i, "name"))),
+          tags$dl(class = "row", lapply(c("why", "data", "vars", "valid", "limits"), \(f) tagList(
+            tags$dt(class = "col-sm-2", tr(paste0("mdl_", f))), tags$dd(class = "col-sm-10", t(i, f))))),
+          if (i == 2) tagList(h5(tr("mdl_metrics")), html_table(metrics)))))
     })
     output$coverage <- renderUI({
       q <- D$meta$season_quality; if (is.null(q)) return(NULL)

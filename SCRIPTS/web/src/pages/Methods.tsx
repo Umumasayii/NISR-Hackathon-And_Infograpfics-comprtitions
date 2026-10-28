@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Sprout, Workflow, TriangleAlert, Ruler, Bot, Download, Scale } from 'lucide-react';
+import { Sprout, Workflow, TriangleAlert, Ruler, Bot, Download, Scale, BrainCircuit } from 'lucide-react';
 import { useApp } from '../data/store';
 import { DataTable, RelBadge, Select, Tabs, type Col } from '../components/ui';
 import { citeShort, pubCsv } from '../lib/official';
@@ -22,6 +22,7 @@ export default function Methods() {
   const tabs = [
     { id: 'about', label: tr('t_about'), icon: Sprout }, { id: 'pipeline', label: tr('t_pipeline'), icon: Workflow },
     { id: 'traps', label: tr('t_traps'), icon: TriangleAlert }, { id: 'kpi', label: tr('t_kpi'), icon: Ruler },
+    { id: 'models', label: tr('t_models'), icon: BrainCircuit },
     { id: 'register', label: tr('reg_title'), icon: Scale }, { id: 'ai', label: tr('t_ai'), icon: Bot }, { id: 'downloads', label: tr('t_downloads'), icon: Download },
   ];
   return (
@@ -31,6 +32,7 @@ export default function Methods() {
       {tab === 'pipeline' && <ol className="pipeline">{[1, 2, 3, 4, 5, 6, 7].map((i) => <li key={i}><strong>{tr(`pipe_${i}_t`)}</strong> {tr(`pipe_${i}`)}</li>)}</ol>}
       {tab === 'traps' && <Traps />}
       {tab === 'kpi' && <KpiDefs />}
+      {tab === 'models' && <Models />}
       {tab === 'ai' && <><p>{tr('ai_text')}</p><ul>{[1, 2, 3, 4].map((i) => <li key={i}>{tr(`ai_${i}`)}</li>)}</ul></>}
       {tab === 'register' && <Register />}
       {tab === 'downloads' && <Downloads />}
@@ -89,6 +91,64 @@ export default function Methods() {
         <p>{tr('kpi_rule')}</p>
         <table className="ptable"><thead><tr><th>KPI</th><th>{tr('definition')}</th></tr></thead>
           <tbody>{k.map((x) => <tr key={x}><td><strong>{tr(`kd_${x}_n`)}</strong></td><td>{tr(`kd_${x}`)}</td></tr>)}</tbody></table>
+      </>
+    );
+  }
+
+  /** the four models: what, why, data, variables, validation, limits (numbers from app_data.json) */
+  function Models() {
+    const M = D.model, Y = D.model_yield, S = D.screen;
+    const [glm, rf] = ['Logistic regression', 'Random forest'].map((m) => M.performance.find((p) => p.model === m));
+    const dg = M.diagnostics;
+    const auc = (x?: number) => fmtNum(x, 3);
+    const fairAuc = M.fairness.map((f) => f.auc);
+    const top3 = M.importance.slice(0, 3).map((r) => r.feature.replace(/_/g, ' ')).join(', ');
+    const higher = Y.table.filter((r) => r.adjusted_low > 0);
+    const excl = (Y.excluded_seasons ?? []).map((r) => r.season).join(', ') || '2024B, 2024C';
+    const stab = (k: string) => S.table.filter((r) => r.stability === k).length;
+    const w = Object.entries(S.default_weights).map(([k, v]) => `${tr(`w_${k}`)} ${fmtNum(100 * v, 0)}%`).join(' · ');
+    const rows: { k: string; f: (p: NonNullable<typeof glm>) => string; base: string }[] = glm ? [
+      { k: 'mm_auc', f: (p) => auc(p.auc), base: '0.500' },
+      { k: 'mm_ap', f: (p) => fmtNum(p.avg_precision, 3), base: fmtNum(glm.avg_precision_baseline, 3) },
+      { k: 'mm_brier', f: (p) => fmtNum(p.brier, 4), base: fmtNum(glm.brier_baseline_train, 4) },
+      { k: 'mm_top10p', f: (p) => fmtPct(p.top10_precision_pct), base: fmtPct(glm.observed_pct) },
+      { k: 'mm_top10r', f: (p) => fmtPct(p.top10_recall_pct), base: '10.0%' },
+      { k: 'mm_lift', f: (p) => `×${fmtNum(p.top10_lift, 1)}`, base: '×1.0' },
+      { k: 'mm_pred', f: (p) => `${fmtPct(p.predicted_pct)} / ${fmtPct(p.observed_pct)}`, base: '' },
+    ] : [];
+    const args: Record<number, Record<string, (string | number)[]>> = {
+      1: { res: [auc(glm?.auc)], data: [fmtNum(M.n_train), fmtNum(M.n_test)],
+           valid: [auc(Math.min(...fairAuc)), auc(Math.max(...fairAuc)), fmtNum(dg?.design_df), fmtNum(dg?.n_segments_train), fmtNum(dg?.iterations)],
+           limits: [fmtNum(dg?.test_segments_in_train_pct, 0), fmtNum(dg?.fitted_near_0_or_1)] },
+      2: { res: [auc(rf?.auc)], vars: [top3], valid: [auc(rf?.auc), auc(glm?.auc)] },
+      3: { res: [higher.length, Y.table.length], data: [Y.table.length, excl], valid: [higher.map((r) => r.crop_name).join(', ')] },
+      4: { res: [stab('Stable')], vars: [w], valid: [stab('Stable'), stab('Moderately sensitive'), stab('Sensitive to weights')] },
+    };
+    const t = (i: number, f: string) => tr(`m${i}_${f}`, ...(args[i][f] ?? []));
+    const ids = [1, 2, 3, 4];
+    return (
+      <>
+        <p>{tr('mdl_intro')}</p>
+        <div className="scroll-x">
+          <table className="ptable"><thead><tr><th>{tr('mdl_col_model')}</th><th>{tr('mdl_col_question')}</th><th>{tr('mdl_col_page')}</th><th>{tr('mdl_col_result')}</th></tr></thead>
+            <tbody>{ids.map((i) => <tr key={i}><td><strong>{t(i, 'name')}</strong></td><td>{t(i, 'q')}</td><td>{t(i, 'page')}</td><td>{t(i, 'res')}</td></tr>)}</tbody></table>
+        </div>
+        {ids.map((i) => (
+          <div key={i} className="mdl-card">
+            <h5>{i}. {t(i, 'name')}</h5>
+            <dl className="mdl-dl">{['why', 'data', 'vars', 'valid', 'limits'].map((f) => (
+              <div key={f}><dt>{tr(`mdl_${f}`)}</dt><dd>{t(i, f)}</dd></div>))}</dl>
+            {i === 2 && rows.length > 0 && (
+              <>
+                <h5>{tr('mdl_metrics')}</h5>
+                <div className="scroll-x">
+                  <table className="ptable"><thead><tr><th>{tr('mdl_metric')}</th><th>Logistic regression</th><th>Random forest</th><th>{tr('mdl_baseline')}</th></tr></thead>
+                    <tbody>{rows.map((r) => <tr key={r.k}><td>{tr(r.k)}</td><td>{r.f(glm!)}</td><td>{rf ? r.f(rf) : '–'}</td><td>{r.base}</td></tr>)}</tbody></table>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
       </>
     );
   }
