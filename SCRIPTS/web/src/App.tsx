@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { HashRouter, NavLink, Route, Routes, useLocation, Link } from 'react-router-dom';
 import {
   BookOpen, LayoutDashboard, ChartColumn, Compass, House, MapPinned, IdCard, CloudSunRain, Table, Sprout, Droplets, Users, Brain, Trophy,
-  Info, ChevronRight, Menu, X, SlidersHorizontal, CalendarDays, Map, MapPin, Layers, RotateCcw, Smartphone, Pin, PinOff, ClipboardCheck, type LucideIcon,
+  Info, ChevronRight, Menu, X, SlidersHorizontal, CalendarDays, Map, MapPin, Layers, RotateCcw, Smartphone, ClipboardCheck, type LucideIcon,
 } from 'lucide-react';
 import { useApp } from './data/store';
 import { LANGS, type Lang } from './lib/i18n';
@@ -39,9 +39,9 @@ const PAGES: Record<string, PageDef> = {
   methods: { path: '/methods', key: 'p_methods', icon: Info, el: <Methods /> },
 };
 const MENUS: { key: string; icon: LucideIcon; pages: string[] }[] = [
-  // the planner's journey first: understand -> compare -> inspect evidence -> record checks and export
-  { key: 'menu_plan', icon: Compass, pages: ['overview', 'priority', 'district', 'assess'] },
-  { key: 'menu_story', icon: BookOpen, pages: ['map', 'need', 'how', 'who'] },
+  // the planner's journey first: understand -> compare -> inspect a district -> see where need meets low adoption
+  { key: 'menu_plan', icon: Compass, pages: ['overview', 'priority', 'district', 'need'] },
+  { key: 'menu_story', icon: BookOpen, pages: ['map', 'assess', 'how', 'who'] },
   // exploratory analysis, including the classification model, sits under Advanced
   { key: 'menu_advanced', icon: ChartColumn, pages: ['explorer', 'evidence', 'households', 'model'] },
 ];
@@ -57,22 +57,35 @@ export default function App() {
 }
 
 const PIN_KEY = 'si-pin-filters';
+// closed unless the viewer opened them before
 const readPin = () => { try { return localStorage.getItem(PIN_KEY) === '1'; } catch { return false; } };
+// the width at which the filters fit beside the page (same as the CSS)
+const WIDE = '(min-width: 961px)';
+const isWide = () => typeof window !== 'undefined' && window.matchMedia(WIDE).matches;
 
 function Shell() {
   const { tr, D } = useApp();
   const loc = useLocation();
-  // filters stay out of the way until opened; pinned, they stay docked at the side (wide screens)
+  // wide screens: the filters are a sidebar beside the page, open until closed.
+  // narrow screens: they slide in on demand over the page.
   const [drawer, setDrawer] = useState(false);
   const [pinned, setPinnedState] = useState(readPin);
   const setPinned = (v: boolean) => { setPinnedState(v); setDrawer(false); try { localStorage.setItem(PIN_KEY, v ? '1' : '0'); } catch { /* ignore */ } };
+  const [wide, setWide] = useState(isWide);
+  useEffect(() => {
+    const m = window.matchMedia(WIDE);
+    const on = () => setWide(m.matches);
+    m.addEventListener('change', on);
+    return () => m.removeEventListener('change', on);
+  }, []);
+  const openFilters = () => (wide ? setPinned(true) : setDrawer(true));
   const [menu, setMenu] = useState(false);
   useEffect(() => { setMenu(false); window.scrollTo({ top: 0 }); }, [loc.pathname]);
   useEffect(() => {
-    const open = () => setDrawer(true);
+    const open = () => openFilters();
     window.addEventListener('si-open-filters', open);
     return () => window.removeEventListener('si-open-filters', open);
-  }, []);
+  }, [wide]); // eslint-disable-line
   // the filter drawer takes the focus when it opens and gives it back when it closes
   const side = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -86,20 +99,20 @@ function Shell() {
   const page = Object.values(PAGES).find((p) => p.path === loc.pathname);
   useEffect(() => { document.title = page && page.path !== '/' ? `${tr(page.key)} · SmartIrrigate Rwanda` : 'SmartIrrigate Rwanda'; }, [page, tr]);
   const showFilters = !NO_FILTERS.has(loc.pathname);
-  const docked = showFilters && pinned;
+  const docked = showFilters && pinned && wide;
 
   return (
     <div className="app">
       <SideNav />
       <div className="app-body">
-      <TopBar onMenu={() => setMenu(!menu)} menuOpen={menu} onFilters={showFilters && !docked ? () => setDrawer(true) : undefined} />
+      <TopBar onMenu={() => setMenu(!menu)} menuOpen={menu} onFilters={showFilters && !docked ? openFilters : undefined} />
       {menu && <MobileNav onClose={() => setMenu(false)} />}
       <div className={`shell ${docked ? 'docked' : ''}`}>
         {showFilters && (
           <>
             <aside ref={side} className={`sidebar ${drawer ? 'open' : ''}`} aria-label={tr('filters')} aria-hidden={!docked && !drawer}
               {...(drawer && !docked ? { role: 'dialog', 'aria-modal': true } : {})}>
-              <FilterPanel onDone={() => setDrawer(false)} pinned={pinned} onPin={() => setPinned(!pinned)} />
+              <FilterPanel onDone={() => (docked ? setPinned(false) : setDrawer(false))} />
             </aside>
             {drawer && <div className="scrim" onClick={() => setDrawer(false)} />}
           </>
@@ -121,8 +134,8 @@ function Shell() {
         </main>
       </div>
       </div>
-      {showFilters && (
-        <button className="fab" onClick={() => setDrawer(true)}><SlidersHorizontal size={18} /> {tr('show_filters')}<FilterCount /></button>
+      {showFilters && !docked && (
+        <button className="fab" onClick={openFilters}><SlidersHorizontal size={18} /> {tr('show_filters')}<FilterCount /></button>
       )}
     </div>
   );
@@ -206,7 +219,7 @@ function FilterCount() {
   return n ? <span className="f-count">{n}</span> : null;
 }
 
-function FilterPanel({ onDone, pinned, onPin }: { onDone: () => void; pinned: boolean; onPin: () => void }) {
+function FilterPanel({ onDone }: { onDone: () => void }) {
   const { tr, sel, setSel, resetSel, YEARS, ALL_P, CROP_GRPS, D } = useApp();
   const scope = D.lookup.filter((r) => (sel.provinces.length ? sel.provinces : ALL_P).includes(r.province)).map((r) => r.district);
   const G = sel.cropGroups.length ? sel.cropGroups : CROP_GRPS;
@@ -217,10 +230,7 @@ function FilterPanel({ onDone, pinned, onPin }: { onDone: () => void; pinned: bo
       <div className="sidebar-head">
         <span className="sh-icon"><SlidersHorizontal size={17} /></span>
         <div className="sidebar-title">{tr('filters')}</div>
-        <button className={`icon-btn pin-btn ${pinned ? 'on' : ''}`} onClick={onPin} aria-pressed={pinned} aria-label={tr(pinned ? 'unpin' : 'pin')} title={tr(pinned ? 'unpin' : 'pin')}>
-          {pinned ? <PinOff size={16} /> : <Pin size={16} />}
-        </button>
-        <button className="icon-btn drawer-close" onClick={onDone} aria-label={tr('close')}><X size={18} /></button>
+        <button className="icon-btn drawer-close" onClick={onDone} aria-label={tr('unpin')} title={tr('unpin')}><X size={18} /></button>
       </div>
       <div className="filter-group">
         <div className="fg-title">{tr('fg_when')}</div>

@@ -72,7 +72,10 @@ interface Ctx extends Loaded {
 const AppCtx = createContext<Ctx | null>(null);
 export const useApp = () => { const c = useContext(AppCtx); if (!c) throw new Error('no app context'); return c; };
 
-const SKEY = 'si-selection';
+// v2: the defaults changed to Kayonza (East), so selections saved under the old key are not reused
+const SKEY = 'si-selection-v2';
+const DEF_PROVINCE = 'East';
+const DEF_DISTRICT = 'Kayonza';
 
 export function AppProvider({ data, children }: { data: Loaded; children: ReactNode }) {
   const { D } = data;
@@ -95,8 +98,14 @@ export function AppProvider({ data, children }: { data: Loaded; children: ReactN
   }, [D]);
   const { YEARS, CROP_GRPS, ALL_CROPS, ALL_D, ALL_P } = consts;
 
-  const fresh = useCallback((): Selection => ({ years: YEARS, seasons: ['A', 'B'], provinces: ALL_P, districts: ALL_D, cropGroups: CROP_GRPS, crops: ALL_CROPS }),
-    [YEARS, ALL_P, ALL_D, CROP_GRPS, ALL_CROPS]);
+  // the app opens on one district (Kayonza, East) so every page starts with a concrete example;
+  // falls back to the whole country if the data ever lacks them
+  const fresh = useCallback((): Selection => ({
+    years: YEARS, seasons: ['A', 'B'],
+    provinces: ALL_P.includes(DEF_PROVINCE) ? [DEF_PROVINCE] : ALL_P,
+    districts: ALL_D.includes(DEF_DISTRICT) ? [DEF_DISTRICT] : ALL_D,
+    cropGroups: CROP_GRPS, crops: ALL_CROPS,
+  }), [YEARS, ALL_P, ALL_D, CROP_GRPS, ALL_CROPS]);
   const [sel, setSelState] = useState<Selection>(() => {
     try { const s = sessionStorage.getItem(SKEY); if (s) return { ...fresh(), ...JSON.parse(s) }; } catch { /* ignore */ }
     return fresh();
