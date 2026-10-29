@@ -55,16 +55,9 @@ It is a screening aid: it does not decide who gets investment, and it makes no c
 
 ##  Tech stack
 
-```
-NISR surveys + NISR tables + CHIRPS + GADM
-        │
-        ▼
-R data pipeline (SCRIPTS/05–16)
-        │
-        ├─► SCRIPTS/app/data/*.rds ─► Shiny app ─► shinyapps.io
-        │
-        └─► SCRIPTS/web/public/data/*.json ─► React web app ─► Vercel
-```
+<p align="center">
+  <img src="Data%20pipeline%20(technical)%401x.png" width="900" alt="SmartIrrigate data pipeline: NISR surveys, NISR tables, CHIRPS and GADM feed the R pipeline (read and label, clean and merge, estimate and model, verify and export); only aggregates pass the export gate, to the Shiny app on shinyapps.io and the React web app on Vercel">
+</p>
 
 ### 1. Data pipeline (R)
 
