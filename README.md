@@ -1,8 +1,9 @@
 <img src="SCRIPTS/web/public/logo.svg" width="96" alt="SmartIrrigate Rwanda logo">
 
 # SmartIrrigate Rwanda
-
+- Live DEMO: https://youtu.be/CgHXCgNMi4c
 - Web app: https://niyoishimwe.vercel.app
+- Shiny app: https://niyobyosebranchal.shinyapps.io/NiyoIshimweAPP/
 
 ---
 
