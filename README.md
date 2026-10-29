@@ -2,8 +2,7 @@
 
 # SmartIrrigate Rwanda
 
-- Web app: https://niyoishimwe.vercel.app/
-- Shiny app: https://niyobyosebranchal.shinyapps.io/NiyoIshimweAPP/
+- Web app: https://niyoishimwe.vercel.app
 
 ---
 
