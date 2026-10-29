@@ -184,6 +184,6 @@ source("SCRIPTS/09_Run_All.R")
 
 <div align="center">
 
-<sub>Independent project, not affiliated with NISR. AI assistance (Claude) was used for code and drafting, as the rules require us to disclose; every figure comes from code run on the data.</sub>
+<sub>Independent project, not affiliated with NISR. AI assistance (Claude) was used for code and drafting, as the rules require us to disclose</sub>
 
 </div>
