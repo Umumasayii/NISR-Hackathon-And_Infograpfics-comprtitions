@@ -4,6 +4,8 @@
 
 - Web app: https://niyoishimwe.vercel.app/
 - Shiny app: https://niyobyosebranchal.shinyapps.io/NiyoIshimweAPP/
+- Demo video (2:30): [`demo/NISR Submission.webm`](demo/NISR%20Submission.webm)
+- Eligibility documents (student cards, both members): [`student_cards/`](student_cards/)
 
 ---
 
@@ -146,6 +148,11 @@ in `src/lib/stats.ts`; the shortlist ranking and its weight sensitivity are in `
 
 ##  Run it
 
+```r
+# R packages (R 4.3+), listed in requirements.txt
+install.packages(grep("^[A-Za-z]", readLines("requirements.txt"), value = TRUE))
+```
+
 ```bash
 # Web app (Node 20+)
 cd SCRIPTS/web && npm install && npm test && npm run dev
@@ -160,17 +167,24 @@ source("SCRIPTS/03_Data_Preparation.R")   # once: reads the 111 SAS files, CHIRP
 source("SCRIPTS/09_Run_All.R")
 ```
 
-### Inputs (not in this repository)
+### Data and where to get it
 
-| Input | Where it goes | Note |
-|---|---|---|
-| NISR SAS 2019–2025 microdata (111 .sav/.dta) | `DATA/SAS/` | Licensed by NISR; never published here |
-| NISR AHS 2017/2020/2024 (optional) | `DATA/Agriculture Household Survey/` | Licensed by NISR |
-| NISR SAS annual tables 2019–2025 (.xlsx) | `DATA/NISR_published/` | Public NISR releases, committed |
-| CHIRPS district-month rainfall 1981–2025 | `DATA/CHIRPS/` | See the source register |
-| GADM 4.1 Rwanda boundaries | `DATA/GADM/` | See the source register |
+The `DATA/` folder holds the public inputs: NISR's published tables, CHIRPS rainfall and GADM
+boundaries. The NISR survey microdata are **not** in this repository: they are licensed by NISR
+and too large for GitHub (111 files). Download them from the link below and place them in the
+folder shown before rebuilding.
 
-2026 survey data are excluded on purpose.
+| Data | Link | In this repository? | Where it goes |
+|---|---|---|---|
+| NISR Seasonal Agricultural Survey 2019–2025 microdata (111 .sav/.dta) | [NISR microdata catalogue](https://microdata.statistics.gov.rw/index.php/catalog) | No (licensed, large) | `DATA/SAS/` |
+| NISR Agricultural Household Survey 2017/2020/2024 (optional) | [NISR microdata catalogue](https://microdata.statistics.gov.rw/index.php/catalog) | No (licensed) | `DATA/Agriculture Household Survey/` |
+| NISR SAS annual tables 2019–2025 (.xlsx) | [NISR publications](https://www.statistics.gov.rw/) | Yes | `DATA/NISR_published/` |
+| CHIRPS v2.0 rainfall, district × month 1981–2025 | [CHIRPS, Climate Hazards Center](https://www.chc.ucsb.edu/data/chirps) | Yes (district aggregate) | `DATA/CHIRPS/` |
+| GADM 4.1 Rwanda boundaries | [GADM downloads](https://gadm.org/download_country.html) | Yes | `DATA/GADM/` |
+
+The web and Shiny apps run without the microdata: they read the aggregated files already
+committed in `SCRIPTS/web/public/data/` and `SCRIPTS/app/data/`. 2026 survey data are excluded
+on purpose. Details for each source are in the [source register](docs/Source_Register.md).
 
 ##  Documentation
 
@@ -178,7 +192,6 @@ source("SCRIPTS/09_Run_All.R")
 - [Reconciliation register (CSV)](docs/Reconciliation_Register_2019_2025.csv): each national NISR cell beside our value
 - [Data dictionary](docs/Data_Dictionary.md) · [Source register](docs/Source_Register.md)
 - [Limitations and pilot plan](docs/Limitations_and_Pilot_Plan.md) · [AI-use disclosure](docs/AI_Use_Disclosure.md)
-- Earlier notes: `docs/Audit_Fixes_2019_2025.md`, `docs/NISR_Primary_2019_2025.md`, `docs/Data_Check_v0.2.md`
 
 ## Team NiyoIshimwe
 
