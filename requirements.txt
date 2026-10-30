@@ -1,0 +1,40 @@
+# R packages needed to rebuild the data and run the Shiny app (R 4.3+).
+# Install them all from the project root with:
+#   install.packages(grep("^[A-Za-z]", readLines("requirements.txt"), value = TRUE))
+# The React web app lists its own dependencies in SCRIPTS/web/package.json (npm install).
+
+# Reading survey files and NISR tables
+haven
+labelled
+readxl
+cellranger
+
+# Data preparation
+dplyr
+tidyr
+purrr
+stringr
+readr
+tibble
+lubridate
+
+# Survey estimates, maps and models
+survey
+sf
+ranger
+
+# Web export and build manifest
+jsonlite
+openssl
+
+# Shiny app
+shiny
+bslib
+plotly
+DT
+fontawesome
+markdown
+rsconnect
+
+# Tests (SCRIPTS/tests)
+openxlsx

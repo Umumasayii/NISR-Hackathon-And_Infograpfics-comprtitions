@@ -4,7 +4,7 @@ import { useApp } from '../data/store';
 
 // Optional spoken summaries, recorded by a person (no text-to-speech). A note appears only
 // when public/audio/manifest.json lists a recording for it; nothing plays by itself, and the
-// transcript is always one tap away. See docs/Audio_Recording_Script.md.
+// transcript is always one tap away.
 interface Entry { file: string; transcript: Record<string, string>; reviewed?: boolean }
 let manifest: Promise<Record<string, Entry>> | null = null;
 const load = () => (manifest ??= fetch(`${import.meta.env.BASE_URL}audio/manifest.json`).then((r) => (r.ok ? r.json() : {})).catch(() => ({})) as Promise<Record<string, Entry>>);
