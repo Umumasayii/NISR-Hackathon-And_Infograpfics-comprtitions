@@ -1,10 +1,9 @@
 <img src="SCRIPTS/web/public/logo.svg" width="96" alt="SmartIrrigate Rwanda logo">
 
 # SmartIrrigate Rwanda
-- Live DEMO: https://youtu.be/CgHXCgNMi4c
+- Demo video (2:30): [watch on YouTube](https://youtu.be/CgHXCgNMi4c) · same video in this repository: [`demo/NISR Submission.webm`](demo/NISR%20Submission.webm)
 - Web app: https://niyoishimwe.vercel.app
 - Shiny app: https://niyobyosebranchal.shinyapps.io/NiyoIshimweAPP/
-- Demo video (2:30): [`demo/NISR Submission.webm`](demo/NISR%20Submission.webm)
 - Eligibility documents (student cards, both members): [`student_cards/`](student_cards/)
 
 ---
