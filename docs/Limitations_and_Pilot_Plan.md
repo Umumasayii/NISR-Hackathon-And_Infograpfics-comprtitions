@@ -15,7 +15,7 @@
 - 2024B crop areas are incomplete in the microdata (44% of harvested crop rows match a screened crop,
   against 99.9% in other seasons). 2024B and 2024C are left out of yield analysis. The cause could not
   be determined from the files.
-- 2022C area estimates are unreliable (see `docs/Data_Check_v0.2.md`).
+- 2022C area estimates are unreliable.
 - Season C samples are small; many district estimates are labelled "Use with care" or "Not reliable".
 
 **Methods**
