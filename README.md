@@ -177,7 +177,7 @@ folder shown before rebuilding.
 
 The web and Shiny apps run without the microdata: they read the aggregated files already
 committed in `SCRIPTS/web/public/data/` and `SCRIPTS/app/data/`. 2026 survey data are excluded
-on purpose. Details for each source are in the [source register](docs/Source_Register.md).
+on purpose. The same table and a list of the folder's contents are in [DATA/README.md](DATA/README.md).
 
 ##  Documentation
 
