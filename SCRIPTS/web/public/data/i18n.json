@@ -2959,12 +2959,297 @@
   "fr": "pas de changement",
   "rw": "nta mpinduka"
  },
- "_meta": {
-  "en": "French and Kinyarwanda are AI-assisted drafts pending native-speaker review."
- },
  "bench_nisr_farmers": {
   "en": "Farmers who irrigated (NISR SAS)",
   "fr": "Agriculteurs ayant irrigué (EAS NISR)",
   "rw": "Abahinzi buhiye (NISR SAS)"
+ },
+ "t_models": {
+  "en": "Models",
+  "fr": "Modèles",
+  "rw": "Ibyitegererezo"
+ },
+ "mdl_intro": {
+  "en": "Four models sit behind the Advanced pages. All use the survey weights. They show patterns (associations), not causes, and none of them decides who gets support.",
+  "fr": "Quatre modèles alimentent les pages avancées. Tous utilisent les poids de l'enquête. Ils montrent des tendances (associations), pas des causes, et aucun ne décide qui reçoit un appui.",
+  "rw": "Ibyitegererezo bine nibyo bikoreshwa ku mapaji y'isesengura ryimbitse. Byose bikoresha uburemere bw'ubushakashatsi. Byerekana isano, si impamvu, kandi nta na kimwe gifata icyemezo cy'uhabwa inkunga."
+ },
+ "mdl_col_model": {
+  "en": "Model",
+  "fr": "Modèle",
+  "rw": "Icyitegererezo"
+ },
+ "mdl_col_question": {
+  "en": "Question",
+  "fr": "Question",
+  "rw": "Ikibazo"
+ },
+ "mdl_col_page": {
+  "en": "Shown on",
+  "fr": "Affiché sur",
+  "rw": "Kigaragara kuri"
+ },
+ "mdl_col_result": {
+  "en": "Main result",
+  "fr": "Résultat principal",
+  "rw": "Igisubizo nyamukuru"
+ },
+ "mdl_why": {
+  "en": "Why this model",
+  "fr": "Pourquoi ce modèle",
+  "rw": "Impamvu y'iki cyitegererezo"
+ },
+ "mdl_data": {
+  "en": "Data",
+  "fr": "Données",
+  "rw": "Amakuru"
+ },
+ "mdl_vars": {
+  "en": "Variables",
+  "fr": "Variables",
+  "rw": "Ibihinduka"
+ },
+ "mdl_valid": {
+  "en": "Validation",
+  "fr": "Validation",
+  "rw": "Igenzura"
+ },
+ "mdl_limits": {
+  "en": "Limits",
+  "fr": "Limites",
+  "rw": "Aho bigarukira"
+ },
+ "mdl_metrics": {
+  "en": "Adoption models on the 2024–2025 test plots",
+  "fr": "Modèles d'adoption sur les parcelles de test 2024–2025",
+  "rw": "Ibyitegererezo by'ikoreshwa ku mirima y'igerageza 2024–2025"
+ },
+ "mdl_metric": {
+  "en": "Measure",
+  "fr": "Mesure",
+  "rw": "Igipimo"
+ },
+ "mdl_baseline": {
+  "en": "No-skill guess",
+  "fr": "Estimation naïve",
+  "rw": "Gukeka nta bumenyi"
+ },
+ "mm_auc": {
+  "en": "Ranking quality, AUC (0.5 = chance)",
+  "fr": "Qualité du classement, AUC (0,5 = hasard)",
+  "rw": "Ubwiza bwo gutondeka, AUC (0.5 = amahirwe)"
+ },
+ "mm_ap": {
+  "en": "Average precision",
+  "fr": "Précision moyenne",
+  "rw": "Ubusobanuro mpuzandengo"
+ },
+ "mm_brier": {
+  "en": "Brier score (lower is better)",
+  "fr": "Score de Brier (plus bas = mieux)",
+  "rw": "Brier (gito ni cyiza)"
+ },
+ "mm_top10p": {
+  "en": "Irrigated among the top 10% predicted",
+  "fr": "Irriguées parmi les 10 % les mieux classées",
+  "rw": "Byuhirwa mu 10% bya mbere"
+ },
+ "mm_top10r": {
+  "en": "Irrigated plots caught in the top 10%",
+  "fr": "Parcelles irriguées captées dans les 10 %",
+  "rw": "Imirima yuhirwa ifatiwe mu 10%"
+ },
+ "mm_lift": {
+  "en": "Lift over a random pick",
+  "fr": "Gain par rapport au hasard",
+  "rw": "Inyungu ugereranyije n'amahirwe"
+ },
+ "mm_pred": {
+  "en": "Predicted / observed irrigated",
+  "fr": "Irriguées prévues / observées",
+  "rw": "Byateganyijwe / byabonetse"
+ },
+ "m1_name": {
+  "en": "Adoption: survey-weighted logistic regression",
+  "fr": "Adoption : régression logistique pondérée",
+  "rw": "Ikoreshwa: logistic regression ifite uburemere"
+ },
+ "m1_q": {
+  "en": "Which plot and farmer features go with a plot being irrigated?",
+  "fr": "Quelles caractéristiques de la parcelle et de l'exploitant vont avec l'irrigation ?",
+  "rw": "Ni iyihe miterere y'umurima n'umuhinzi ijyana no kuhira?"
+ },
+ "m1_page": {
+  "en": "Adoption model",
+  "fr": "Modèle d'adoption",
+  "rw": "Icyitegererezo cy'ikoreshwa"
+ },
+ "m1_res": {
+  "en": "AUC %s on years it never saw",
+  "fr": "AUC %s sur des années jamais vues",
+  "rw": "AUC %s ku myaka itarabonye"
+ },
+ "m1_why": {
+  "en": "Easy to explain: each feature gets one odds ratio with a 95% interval, and the same equation drives the what-if simulator. A yes/no outcome calls for a logistic model.",
+  "fr": "Facile à expliquer : chaque variable a un rapport de cotes avec un intervalle à 95 %, et la même équation alimente le simulateur. Une issue oui/non appelle un modèle logistique.",
+  "rw": "Byoroshye gusobanura: buri kiranga gihabwa odds ratio imwe n'intera ya 95%, kandi iyo nteganyo ni yo ikoreshwa n'igerageza ry'ibishoboka. Igisubizo yego/oya gisaba logistic model."
+ },
+ "m1_data": {
+  "en": "SAS plots, Seasons A+B 2020–2025, with an irrigation answer and an area above 0. Trained on 2020–2023 (%s plots), tested on 2024–2025 (%s plots). Weights rescaled to a mean of 1.",
+  "fr": "Parcelles SAS, saisons A+B 2020–2025, avec réponse sur l'irrigation et surface > 0. Apprentissage 2020–2023 (%s parcelles), test 2024–2025 (%s parcelles). Poids ramenés à une moyenne de 1.",
+  "rw": "Imirima ya SAS, ibihembwe A+B 2020–2025, ifite igisubizo cyo kuhira n'ubuso burenze 0. Cyigishijwe 2020–2023 (imirima %s), kigeragezwa 2024–2025 (imirima %s). Uburemere bwashyizwe ku mpuzandengo ya 1."
+ },
+ "m1_vars": {
+  "en": "Outcome: plot irrigated (yes/no). 11 features: district, season, plot area (log, capped at 20 ha), season rain anomaly (z-score against 1991–2020), erosion, land consolidation, chemical fertiliser, organic fertiliser, plot manager's gender, age band (under 35, 35–54, 55+), large or small farm. Missing answers are kept as “Unknown”.",
+  "fr": "Issue : parcelle irriguée (oui/non). 11 variables : district, saison, surface (log, plafonnée à 20 ha), anomalie de pluie de la saison (score z vs 1991–2020), érosion, remembrement, engrais chimique, engrais organique, genre du gestionnaire, tranche d'âge (moins de 35, 35–54, 55+), grande ou petite exploitation. Les réponses manquantes restent « Inconnu ».",
+  "rw": "Igisubizo: umurima wuhiwe (yego/oya). Ibiranga 11: akarere, igihembwe, ubuso (log, ntiburenze ha 20), itandukaniro ry'imvura y'igihembwe (z-score ugereranyije na 1991–2020), isuri, guhuza ubutaka, ifumbire mvaruganda, ifumbire y'imborera, igitsina cy'ucunga umurima, imyaka (munsi ya 35, 35–54, 55+), umuhinzi munini cyangwa muto. Ibisubizo bibura bigumishwa nka “Ntibizwi”."
+ },
+ "m1_valid": {
+  "en": "Out-of-time split: fitted on 2020–2023 and scored on 2024–2025. Weighted AUC (ties count ½), average precision, Brier score against a constant base-rate guess, top-10%% precision, recall and lift, calibration by tenths of predicted risk, and the same checks by gender and by province (AUC %s to %s). Odds-ratio intervals come from svyglm with the survey segment as cluster (design df %s, %s segments), not from the naive standard errors. The fit converged in %s iterations.",
+  "fr": "Découpage temporel : ajusté sur 2020–2023, évalué sur 2024–2025. AUC pondérée (ex aequo = ½), précision moyenne, score de Brier face à une estimation constante, précision, rappel et gain des 10 %% premiers, calibration par dixièmes, et les mêmes contrôles par genre et par province (AUC %s à %s). Les intervalles des rapports de cotes viennent de svyglm avec le segment comme grappe (ddl %s, %s segments). Convergence en %s itérations.",
+  "rw": "Igabanywa ry'igihe: cyigishijwe 2020–2023, gisuzumwa kuri 2024–2025. AUC ifite uburemere, ubusobanuro mpuzandengo, Brier ugereranyije no gukeka kumwe, 10%% bya mbere (ubusobanuro, ifatwa, inyungu), kugereranya ibyateganyijwe n'ibyabonetse ku byiciro 10, n'igenzura rimwe ku gitsina no ku ntara (AUC %s kugeza %s). Intera za odds ratio zituruka kuri svyglm, segment ari itsinda (df %s, segments %s). Cyarangiye mu nshuro %s."
+ },
+ "m1_limits": {
+  "en": "It classifies plots from answers given in the same season (fertiliser, erosion, that season's rain), so it is not a pre-season forecast. %s%% of test segments were also in training, so the test is not fully independent. Rare “Unknown” groups give extreme odds ratios and %s fitted values sit within 0.001 of 0 or 1: read those as data gaps, not effects.",
+  "fr": "Il classe les parcelles avec des réponses de la même saison (engrais, érosion, pluie de la saison) : ce n'est pas une prévision avant la saison. %s %% des segments de test étaient aussi dans l'apprentissage : le test n'est pas totalement indépendant. Les groupes « Inconnu » rares donnent des rapports de cotes extrêmes et %s valeurs ajustées sont à moins de 0,001 de 0 ou 1 : ce sont des manques de données, pas des effets.",
+  "rw": "Gitondeka imirima gikoresheje ibisubizo by'igihembwe kimwe (ifumbire, isuri, imvura y'icyo gihembwe), bityo si iteganyagihe. %s%% bya segments z'igerageza zari no mu myigishirize. Amatsinda make “Ntibizwi” atanga odds ratio zikabije, kandi agaciro %s kegereye 0 cyangwa 1 munsi ya 0.001: ni ibura ry'amakuru, si ingaruka."
+ },
+ "m2_name": {
+  "en": "Benchmark: random forest (ranger)",
+  "fr": "Référence : forêt aléatoire (ranger)",
+  "rw": "Igereranya: random forest (ranger)"
+ },
+ "m2_q": {
+  "en": "Would a flexible model rank plots much better?",
+  "fr": "Un modèle plus souple classerait-il bien mieux ?",
+  "rw": "Ese icyitegererezo cyoroshye guhinduka cyatondeka neza kurushaho?"
+ },
+ "m2_page": {
+  "en": "Adoption model",
+  "fr": "Modèle d'adoption",
+  "rw": "Icyitegererezo cy'ikoreshwa"
+ },
+ "m2_res": {
+  "en": "AUC %s: no gain, so the simple model is used",
+  "fr": "AUC %s : aucun gain, le modèle simple est gardé",
+  "rw": "AUC %s: nta nyungu, hakoreshwa icyoroshye"
+ },
+ "m2_why": {
+  "en": "It picks up interactions and curves the logistic model cannot. If it scored much higher, the simple model would be missing something.",
+  "fr": "Il capte des interactions et des courbes que le modèle logistique ne voit pas. S'il faisait bien mieux, le modèle simple manquerait quelque chose.",
+  "rw": "Gifata imikoranire n'imirongo itagororotse logistic model idashobora. Iyo kiza kurusha cyane, icyoroshye cyaba gisiga ikintu."
+ },
+ "m2_data": {
+  "en": "Same plots, features, weights and split as the logistic model. Probability forest, 300 trees, minimum node size 50, seed 2026.",
+  "fr": "Mêmes parcelles, variables, poids et découpage que le modèle logistique. Forêt de probabilités, 300 arbres, nœud minimal 50, graine 2026.",
+  "rw": "Imirima, ibiranga, uburemere n'igabanywa bimwe na logistic model. Ibiti 300, node ntoya 50, seed 2026."
+ },
+ "m2_vars": {
+  "en": "The same 11 features. Permutation importance ranks them; the top three are %s.",
+  "fr": "Les mêmes 11 variables. L'importance par permutation les classe ; les trois premières : %s.",
+  "rw": "Ibiranga 11 bimwe. Permutation importance irabitondeka; bitatu bya mbere ni %s."
+ },
+ "m2_valid": {
+  "en": "Same out-of-time test and measures. It did not beat the logistic model (AUC %s against %s), so the app keeps the simpler, explainable one.",
+  "fr": "Même test temporel et mêmes mesures. Il ne bat pas le modèle logistique (AUC %s contre %s) : l'application garde le modèle simple et explicable.",
+  "rw": "Igerageza n'ibipimo bimwe. Ntiyarushije logistic model (AUC %s na %s), bityo porogaramu ikoresha icyoroshye gisobanurika."
+ },
+ "m2_limits": {
+  "en": "Importance shows what the forest relies on, not why. The district prediction gap (predicted minus observed, 2024–2025) is a lead for field checks, not what a programme would achieve.",
+  "fr": "L'importance montre sur quoi la forêt s'appuie, pas pourquoi. L'écart de prédiction par district (prévu moins observé, 2024–2025) est une piste à vérifier sur le terrain, pas un résultat de programme.",
+  "rw": "Importance yerekana icyo ishyamba rishingiyeho, si impamvu. Ikinyuranyo cy'akarere (cyateganyijwe ukuyemo icyabonetse, 2024–2025) ni ikimenyetso cyo gusuzuma, si icyo gahunda yageraho."
+ },
+ "m3_name": {
+  "en": "Harvests: survey-weighted adjusted yield regression",
+  "fr": "Récoltes : régression du rendement ajustée et pondérée",
+  "rw": "Umusaruro: regression y'umusaruro ihinduwe ifite uburemere"
+ },
+ "m3_q": {
+  "en": "Do irrigated plots harvest more than similar rain-fed plots?",
+  "fr": "Les parcelles irriguées récoltent-elles plus que des parcelles pluviales semblables ?",
+  "rw": "Ese imirima yuhiwe yera kurusha imirima isa ituhiwe?"
+ },
+ "m3_page": {
+  "en": "Irrigation & Yield Evidence",
+  "fr": "Irrigation et rendement",
+  "rw": "Kuhira n'umusaruro"
+ },
+ "m3_res": {
+  "en": "Clearly higher on irrigated plots for %s of %s crops",
+  "fr": "Nettement plus élevé sur parcelles irriguées pour %s cultures sur %s",
+  "rw": "Biri hejuru ku mirima yuhiwe ku bihingwa %s kuri %s"
+ },
+ "m3_why": {
+  "en": "Irrigated plots differ in inputs, size and place. A survey-weighted regression of log yield compares like with like and gives a % difference with a design-based interval.",
+  "fr": "Les parcelles irriguées diffèrent par les intrants, la taille et le lieu. Une régression pondérée du log du rendement compare des parcelles semblables et donne un écart en % avec un intervalle tiré du plan de sondage.",
+  "rw": "Imirima yuhiwe itandukanye mu nyongeramusaruro, ingano n'aho iri. Regression ya log y'umusaruro igereranya ibisa ikanatanga ikinyuranyo cya % n'intera ishingiye ku bushakashatsi."
+ },
+ "m3_data": {
+  "en": "One model per crop with at least 150 irrigated plots (%s crops). Seasons A+B 2019–2025, harvest above 0, area known, yield inside its crop-season 1st–99th percentile. Seasons with under 80%% crop-area coverage are left out (%s).",
+  "fr": "Un modèle par culture ayant au moins 150 parcelles irriguées (%s cultures). Saisons A+B 2019–2025, récolte > 0, surface connue, rendement entre le 1er et le 99e centile. Saisons couvrant moins de 80 %% des surfaces exclues (%s).",
+  "rw": "Icyitegererezo kimwe kuri buri gihingwa gifite nibura imirima 150 yuhiwe (ibihingwa %s). Ibihembwe A+B 2019–2025, umusaruro urenze 0, ubuso buzwi, umusaruro hagati ya percentile 1 na 99. Ibihembwe bifite ubuso buri munsi ya 80%% ntibirimo (%s)."
+ },
+ "m3_vars": {
+  "en": "Outcome: log yield (kg per ha). Irrigated (yes/no), chemical and organic fertiliser, improved seed (unknown kept as its own group), log crop area, district, year-season. Each crop is a domain of the full survey design; the segment is the cluster.",
+  "fr": "Issue : log du rendement (kg/ha). Irrigué (oui/non), engrais chimique et organique, semences améliorées (inconnu = groupe à part), log de la surface, district, année-saison. Chaque culture est un domaine du plan complet ; le segment est la grappe.",
+  "rw": "Igisubizo: log y'umusaruro (kg kuri ha). Yuhiwe (yego/oya), ifumbire mvaruganda n'imborera, imbuto z'indobanure (ibitazwi ni itsinda ryabyo), log y'ubuso, akarere, umwaka-igihembwe. Buri gihingwa ni igice cy'ubushakashatsi bwose; segment ni itsinda."
+ },
+ "m3_valid": {
+  "en": "95%% intervals from the survey design (t quantiles on the design df). Checked against a complete-case fit and against the raw ratio of weighted totals. Clearly higher on irrigated plots: %s.",
+  "fr": "Intervalles à 95 %% tirés du plan de sondage (quantiles t sur les ddl du plan). Comparé à un ajustement sur cas complets et au ratio brut des totaux pondérés. Nettement plus élevé sur parcelles irriguées : %s.",
+  "rw": "Intera za 95%% zishingiye ku bushakashatsi (t ku df). Byagereranyijwe n'imirima ifite amakuru yose n'igipimo kidahinduwe. Biri hejuru ku mirima yuhiwe: %s."
+ },
+ "m3_limits": {
+  "en": "Observational: water access, soil, skills and markets are not measured, so these are adjusted associations, not the effect of irrigation. 2024B and 2024C are excluded.",
+  "fr": "Observationnel : accès à l'eau, sol, savoir-faire et marchés ne sont pas mesurés ; ce sont des associations ajustées, pas l'effet de l'irrigation. 2024B et 2024C exclues.",
+  "rw": "Ni ukwitegereza: kubona amazi, ubutaka, ubumenyi n'amasoko ntibipimwa, bityo ni isano ihinduwe, si ingaruka zo kuhira. 2024B na 2024C ntibirimo."
+ },
+ "m4_name": {
+  "en": "District shortlist: weighted screening index",
+  "fr": "Présélection des districts : indice pondéré",
+  "rw": "Urutonde rw'uturere: igipimo gifite uburemere"
+ },
+ "m4_q": {
+  "en": "Which districts should planners check first?",
+  "fr": "Quels districts vérifier en premier ?",
+  "rw": "Ni utuhe turere twasurwa mbere?"
+ },
+ "m4_page": {
+  "en": "Priority screening",
+  "fr": "Présélection des priorités",
+  "rw": "Isuzuma ry'ibyihutirwa"
+ },
+ "m4_res": {
+  "en": "%s of 30 districts keep a stable rank",
+  "fr": "%s districts sur 30 gardent un rang stable",
+  "rw": "Uturere %s kuri 30 tugumana umwanya"
+ },
+ "m4_why": {
+  "en": "A transparent score is easier to question than a black box. Planners can change the weights and watch the order move.",
+  "fr": "Un score transparent se discute mieux qu'une boîte noire. Les planificateurs changent les poids et voient l'ordre bouger.",
+  "rw": "Igipimo kigaragara cyoroshye kubaza kurusha agasanduku kafunze. Abategura bahindura uburemere bakareba uko urutonde ruhinduka."
+ },
+ "m4_data": {
+  "en": "30 districts. CHIRPS rainfall 1991–2025; SAS 2023–2025 for irrigation, cultivated area, gender gap and fertiliser use.",
+  "fr": "30 districts. Pluies CHIRPS 1991–2025 ; SAS 2023–2025 pour l'irrigation, la surface cultivée, l'écart femmes-hommes et l'usage d'engrais.",
+  "rw": "Uturere 30. Imvura ya CHIRPS 1991–2025; SAS 2023–2025 ku kuhira, ubuso buhingwa, ikinyuranyo cy'abagore n'abagabo n'ikoreshwa ry'ifumbire."
+ },
+ "m4_vars": {
+  "en": "Five criteria, each rescaled 0–1 (min–max): rain-shortfall history, irrigation gap (1 − share irrigated), cultivated area, men–women irrigation gap, current input use. Default weights: %s.",
+  "fr": "Cinq critères ramenés à 0–1 (min–max) : historique de déficit de pluie, retard d'irrigation (1 − part irriguée), surface cultivée, écart hommes-femmes, usage actuel d'intrants. Poids par défaut : %s.",
+  "rw": "Ibipimo bitanu, buri kimwe kuva 0 kugeza 1 (min–max): amateka y'ibura ry'imvura, icyuho cyo kuhira (1 − igice cyuhiwe), ubuso buhingwa, ikinyuranyo cy'abagabo n'abagore, ikoreshwa ry'inyongeramusaruro. Uburemere busanzwe: %s."
+ },
+ "m4_valid": {
+  "en": "There is no ground truth, so it is checked for stability: 1,000 weight sets drawn from Dirichlet(20 × default weights), a zero weight stays zero, seed 2026. Each district gets a rank range (10th–90th percentile) and how often it lands in the top 5. Stable: %s; moderately sensitive: %s; sensitive to weights: %s.",
+  "fr": "Sans vérité terrain, on teste la stabilité : 1 000 jeux de poids tirés d'une Dirichlet(20 × poids par défaut), un poids nul reste nul, graine 2026. Chaque district reçoit une plage de rangs (10e–90e centile) et sa fréquence dans le top 5. Stables : %s ; moyennement sensibles : %s ; sensibles aux poids : %s.",
+  "rw": "Nta kuri kuzwi, bityo hasuzumwa ugukomera: uburemere 1,000 buvuye kuri Dirichlet(20 × uburemere busanzwe), uburemere 0 buguma 0, seed 2026. Buri karere kabona intera y'imyanya (percentile 10–90) n'inshuro kaza mu 5 ba mbere. Bihamye: %s; bihinduka gake: %s; bihinduka cyane: %s."
+ },
+ "m4_limits": {
+  "en": "A shortlist for field checks, not an investment ranking: water availability, schemes, costs and markets are not in the data (record them on the Assess page). Current input use starts at weight 0 until fertiliser figures match NISR.",
+  "fr": "Une liste pour des vérifications de terrain, pas un classement d'investissement : eau disponible, périmètres, coûts et marchés ne sont pas dans les données (à noter sur la page Évaluer). L'usage d'intrants part d'un poids 0 tant que les chiffres d'engrais ne concordent pas avec le NISR.",
+  "rw": "Ni urutonde rwo gusura, si urutonde rw'ishoramari: amazi ahari, imishinga, ibiciro n'amasoko ntibiri mu makuru (byandike kuri paji yo Gusuzuma). Ikoreshwa ry'inyongeramusaruro ritangirira ku buremere 0 kugeza imibare y'ifumbire ihuye na NISR."
+ },
+ "_meta": {
+  "en": "French and Kinyarwanda are AI-assisted drafts pending native-speaker review."
  }
 }

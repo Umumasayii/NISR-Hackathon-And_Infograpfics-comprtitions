@@ -105,7 +105,7 @@ export interface AppData {
   };
   model_yield: {
     table: { crop_name: string; raw_pct: number; adjusted_pct: number; adjusted_low: number; adjusted_high: number; n: number; n_irrigated: number }[];
-    controls: string; estimands?: Record<string, string>; eligibility?: string;
+    controls: string; estimands?: Record<string, string>; eligibility?: string; excluded_seasons?: { season: string; area_coverage_pct: number }[];
   };
   meta: {
     built: string; team: string; n_plots: number; n_crop_plots: number; n_farmers: number;

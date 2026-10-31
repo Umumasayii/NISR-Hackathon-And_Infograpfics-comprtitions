@@ -345,6 +345,13 @@ input[type=number] { width: 100%; padding: 7px 10px; border: 1px solid #CDD4D0; 
 .data-source { background: var(--canvas); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
 .data-source p { margin: 0 0 6px; }
 .pipeline li { margin: 10px 0; }
+.scroll-x { overflow-x: auto; }
+.mdl-card { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 4px; }
+.mdl-dl { margin: 0; display: grid; gap: 8px; }
+.mdl-dl > div { display: grid; grid-template-columns: 150px 1fr; gap: 12px; }
+.mdl-dl dt { font-weight: 600; color: var(--muted); font-size: 13px; }
+.mdl-dl dd { margin: 0; }
+@media (max-width: 640px) { .mdl-dl > div { grid-template-columns: 1fr; gap: 2px; } }
 .dl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
 
 /* ---- simulator, weights ---- */
